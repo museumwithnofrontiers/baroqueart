@@ -2,9 +2,11 @@
  * Global styles shared by every Baroque Art view: the legacy palette
  * variables the views reference, and the site's own colours. The shared
  * content blocks a page assembles a layout from (panels, headings, tables,
- * buttons, selects, the back-link bar) are viewer-layout's `.mwnf-*` content
+ * buttons, selects, the back-link bar) are viewer-layout's shared content
  * classes now; page chrome (header, nav, footer) is themed via
- * theme/tokens.css instead.
+ * theme/tokens.css instead. The back-bar's own link colour, for the anchors
+ * this site nests inside that shared class instead of the kit's own
+ * button-based BackLink component, lives in theme/overrides.css.
  */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 
@@ -55,9 +57,9 @@ a:hover {
 }
 
 /* ── Text inputs ────────────────────────────────────────────────────────────
- * No shared content class covers a raw text/number input (only `.mwnf-select`
- * does), so the one page that still writes one (the Database results' refine
- * row) keeps this site's own field styling.
+ * No shared content class covers a raw text/number input (only the kit's
+ * select class does), so the one page that still writes one (the Database
+ * results' refine row) keeps this site's own field styling.
  */
 input[type='text'],
 input[type='number'] {
@@ -72,17 +74,4 @@ input[type='number'] {
 }
 input:focus {
   outline: 1px solid var(--accent);
-}
-
-/* ── mwnf-back-bar, themed for a link ────────────────────────────────────────
- * The shared class themes a <button> (its `.mwnf-back-bar button` rule); this
- * site's own back controls are route links, so the bar is themed for an
- * anchor too, in the site's own muted/active colours.
- */
-.mwnf-back-bar a {
-  color: var(--muted);
-}
-.mwnf-back-bar a:hover {
-  color: var(--nav-active);
-  text-decoration: underline;
 }
