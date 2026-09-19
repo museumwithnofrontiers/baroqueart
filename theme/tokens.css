@@ -158,6 +158,13 @@
   --mwnf-featured-meta-size: 0.8125rem;
   --mwnf-featured-meta-color: #5a5a5a;
 
+  /* ---------- Content classes ---------- */
+  /* The shared back-bar class themes a <button> child only; this site's own
+     back controls are route links nested inside it instead, themed via
+     theme/overrides.css, which reads these two tokens. */
+  --mwnf-back-bar-text: var(--mwnf-color-muted);
+  --mwnf-back-bar-hover-text: var(--mwnf-color-accent);
+
   /* ---------- Shared views (@museumwnf/viewer-core) ----------
    * Only the generic entity pages read these; the block goes away when the
    * page stories replace them (features.entities: []). The page shell
