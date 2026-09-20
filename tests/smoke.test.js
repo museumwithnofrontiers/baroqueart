@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { loadEntities, mergeMessages } from '@museumwnf/viewer-core'
+import { loadEntities, mergeMessages, projectLabel } from '@museumwnf/viewer-core'
 import { checkOfferedLanguages, checkRoutes, checkSectionMeta, checkTextsRendered, mountSite } from '@museumwnf/viewer-core/testing'
 import { catalogues as sharedTexts } from '@museumwnf/viewer-i18n/standalone'
 import ownTexts from '../locales/en.json'
@@ -64,6 +64,16 @@ describe('website smoke test', () => {
     const sourceLink = sourceCredit.querySelector('a')
     expect(sourceLink.textContent.startsWith(config.site.origin)).toBe(true)
     expect(sourceLink.textContent).toContain(`#/item/${object.id}`)
+
+    // #1727 cleanup: `itemSheet` no longer names a project for the citation
+    // (composables/sheet.js), so `RecordView` resolves it from the record's
+    // own `project_id` against the manifest — read here off the data
+    // package rather than hardcoded, so the assertion tracks the source of
+    // truth rather than repeating it.
+    const expectedProjectName = projectLabel(manifest, object.project_id, 'en')
+    expect(expectedProjectName).toBeTruthy()
+    expect(host.querySelector('.mwnf-credits__citation').textContent).toContain(expectedProjectName)
+
     app.unmount()
   }, 60000)
 
