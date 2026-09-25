@@ -310,27 +310,27 @@ describe('website smoke test', () => {
 
   it('renders a partner profile on the composed record view, with contact and held items', async () => {
     // The Borghese Gallery: a museum with images, contact details and 50
-    // held objects — enough of the sheet's sections to exercise the
-    // contact/logo Markdown blocks and the reverse `partner_id` lookup the
-    // platform's `related` cannot express (partner.js's `heldItems`).
+    // held objects — enough to exercise the panel's contact tab and the
+    // reverse `partner_id` lookup the platform's `related` cannot express
+    // (partner.js's `heldItems`).
     const partnerId = 'fae81dae-0250-52ec-acc1-171da28b9eef'
     const { app, host } = await mount(`#/partner/${partnerId}`)
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-record')).not.toBeNull(), { timeout: 20000 })
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-partner-panel--full')).not.toBeNull(), { timeout: 20000 })
 
-    expect(host.querySelector('.detail-title').textContent).toContain('Borghese Gallery')
+    // The body is viewer-layout's `PartnerPanel` (inventory-app#2035).
+    expect(host.querySelector('h1.mwnf-partner-panel__name').textContent).toContain('Borghese Gallery')
     expect(host.querySelector('.detail-type-badge').textContent.trim()).toBe('Museum')
-    expect(host.textContent).toContain('Rome')
-    expect(host.textContent).toContain('Italy')
+    expect(host.querySelector('.mwnf-partner-panel__location').textContent).toBe('Rome, Italy')
+    expect([...host.querySelectorAll('[role="tab"]')].map((tab) => tab.textContent)).toContain('Contact')
 
-    // The contact block, folded into Markdown so the sheet's own section
-    // renderer carries it.
-    expect(host.textContent).toContain('+39 06 8413979')
+    // The contact tab's own lines, in the DOM behind the tab.
+    expect(host.querySelector('.mwnf-partner-panel__panel--contact').textContent).toContain('+39 06 8413979')
 
-    // "View Objects (50)" — item_count is the package's own count, not a
+    // "View objects (50)" — item_count is the package's own count, not a
     // scan of every item.
-    const viewItems = host.querySelector('.view-items-row')
+    const viewItems = host.querySelector('.mwnf-partner-panel__actions')
     expect(viewItems).not.toBeNull()
-    expect(viewItems.textContent).toContain('View Objects')
+    expect(viewItems.textContent).toContain('View objects')
     expect(viewItems.textContent).toContain('50')
 
     app.unmount()

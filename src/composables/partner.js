@@ -1,52 +1,16 @@
+import { partnerView } from '@museumwnf/viewer-core'
 import { useInventoryData } from './useInventoryData.js'
 
 // The partner pages: what viewer-layout's `PartnerListView` renders on
 // `/partners/results` (one spec per type, the site's own museum/institution
-// axis) and what its `RecordView` sibling renders on `/partner/:id`. The
-// grouping, the accordion, the sheet engine are the platform's; what is
-// declared here is only this website's: which axis a list is scoped to, the
-// contact block and the logo strip (structured data legacy showed as its
-// own sections, folded into Markdown so the sheet's block renderer can carry
-// them), and the partner's own image shape (`alt_text`, not the item
-// package's per-language `captions`).
+// axis) and what its `RecordView` sibling renders on `/partner/:id`, with
+// `PartnerPanel` as the page's body (inventory-app#2035). The grouping, the
+// accordion, the record's language and the panel — its About/Contact/Logo
+// tabs, the pictures, the map — are the platform's; what is declared here is
+// only this website's: which axis a list is scoped to, and the partner's
+// view-model with this website's routes.
 
-const { countryLabel, items, itemLabel, mdInline, mdStrip, tr } = useInventoryData()
-
-function normalizeUrl(url) {
-  return url.startsWith('http') ? url : `http://${url}`
-}
-
-// The contact block: the partner's own address/phone/email/website, its
-// extra links, and its one or two contact persons — legacy's four separate
-// `<p>` groups, folded into one Markdown block (`breaks: true` turns each
-// line into its own line) so the sheet's block section can carry it without
-// a bespoke render path for what is, structurally, still just text.
-function contactBlock(ctx) {
-  const { record, t, text } = ctx
-  const main = []
-  if (text.address) main.push(`**${t('partner.info.addresses')}:** ${text.address}`)
-  if (text.phone) main.push(`**${t('partner.info.phone')}:** ${text.phone}`)
-  if (text.email) main.push(`[${text.email}](mailto:${text.email})`)
-  if (text.website) main.push(`[${text.website}](${normalizeUrl(text.website)})`)
-  for (const url of record.additional_urls ?? []) main.push(`[${url.title ?? url.url}](${normalizeUrl(url.url)})`)
-
-  const blocks = main.length ? [main.join('\n')] : []
-  for (const person of [record.contact_person_1, record.contact_person_2]) {
-    if (!person || !(person.name || person.title)) continue
-    const lines = [[person.title, person.name].filter(Boolean).join(' — ')]
-    if (person.phone) lines.push(`${t('partner.info.phone')}: ${person.phone}`)
-    if (person.fax) lines.push(`${t('partner.info.fax')}: ${person.fax}`)
-    if (person.email) lines.push(`[${person.email}](mailto:${person.email})`)
-    blocks.push(lines.join('\n'))
-  }
-  return blocks.join('\n\n')
-}
-
-// The logo strip: Markdown images, one a line, so the sheet's block renderer
-// draws them the same way it draws any other embedded picture.
-function logoBlock(ctx) {
-  return (ctx.record.logos ?? []).map((logo) => `![](${logo.url})`).join('\n\n')
-}
+const { countryLabel, items, itemLabel, md, mdInline, tr } = useInventoryData()
 
 /**
  * `/partners/results`: one spec per type (`'museum'` / `'institution'`),
@@ -68,40 +32,38 @@ export function partnerList(type) {
   }
 }
 
-/** `/partner/:id`: description, contact and logo as sections; the location as a fact. */
+/**
+ * `/partner/:id`: the sheet declares nothing — no field, no section, no media
+ * gallery of its own (the pictures are the panel's), no citation (legacy
+ * never printed one on this page), no `related` (the held items are a reverse
+ * lookup, `item.partner_id`, which PartnerDetail.vue's `#related` slot lists).
+ */
 export const partnerSheet = {
   entity: 'partners',
-  fields: [
-    {
-      key: 'location',
-      label: 'sheet.field.location',
-      value: (ctx) => [ctx.text.city, ctx.record.country_id ? countryLabel(ctx.record.country_id) : ''].filter(Boolean).join(', '),
-    },
-  ],
-  sections: [
-    { key: 'description', label: 'partner.info.about', value: 'description' },
-    { key: 'contact', label: 'partner.info.contact', value: contactBlock },
-    { key: 'logo', label: 'partner.info.logo', value: logoBlock },
-  ],
+  fields: [],
   shortDescription: false,
-  // Partner images carry `alt_text` directly; the item package's per-language
-  // `captions` map, which `RecordView`'s default `media()` reads, is not this
-  // entity's shape.
-  media: (record) =>
-    (record.images ?? []).map((image) => ({
-      url: image.url,
-      alt: image.alt_text ?? '',
-      caption: image.alt_text ?? '',
-      photographer: image.photographer ?? '',
-      copyright: image.copyright ?? '',
-    })),
-  // No author/translator credits and no citation permalink for a partner
-  // profile — legacy never carried either for this page.
+  media: () => [],
   citation: false,
-  // The held items are a reverse lookup (`item.partner_id`, not a relation
-  // the partner record carries), which the platform's own `related` cannot
-  // express; `PartnerDetail.vue`'s `#related` slot builds it instead.
   related: false,
+}
+
+// Where a partner's "View Objects"/"View Monuments" lands: the Permanent
+// Collection, filtered on the partner.
+export function partnerObjectsLink(partner) {
+  return { path: '/permanent-collection/results', query: { partner: partner.id } }
+}
+
+// The partner's view-model, which `PartnerPanel` renders on the partner page
+// and under an item's holder text: this website's country label, its
+// renderers (the glossary-bound ones) and its two routes.
+export function partnerViewOf(partner, text) {
+  return partnerView(partner, text, {
+    countryLabel,
+    md,
+    mdInline,
+    route: (p) => ({ name: 'partner', params: { id: p.id } }),
+    objectsRoute: partnerObjectsLink,
+  })
 }
 
 /** The items a partner holds — the reverse lookup `related: false` leaves to the view. */
@@ -122,9 +84,4 @@ export function heldItemRow(item) {
     badge: item.type,
     to: { name: 'item', params: { id: item.id } },
   }
-}
-
-/** The map's own label: the partner's translated name, plain (no Markdown). */
-export function mapLabel(partner, text) {
-  return mdStrip(text.name ?? partner.id)
 }

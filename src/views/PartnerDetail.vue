@@ -1,63 +1,59 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useI18n } from '@museumwnf/viewer-core'
-import { PartnerMap, RecordLanguages, RelatedRecords } from '@museumwnf/viewer-layout/content'
+import { PartnerPanel, RecordLanguages, RelatedRecords } from '@museumwnf/viewer-layout/content'
 import { RecordView } from '@museumwnf/viewer-layout/views'
-import { heldItemRow, heldItems, mapLabel, partnerSheet } from '../composables/partner.js'
-import { useInventoryData } from '../composables/useInventoryData.js'
+import { heldItemRow, heldItems, partnerObjectsLink, partnerSheet, partnerViewOf } from '../composables/partner.js'
+
+// The partner profile: the platform's composed record page (the record's
+// language, its load, the not-found case), with viewer-layout's
+// `PartnerPanel` as its body — the name and location, the About/Contact/
+// Logo tabs and the homepage link (decision D2, inventory-app#2035), the
+// pictures, the map. What is this website's: the way back and the record's
+// languages, the type badge, the "View Objects/Monuments" action counted
+// from the package's own `item_count` (decision G.1 — never a scan of every
+// item), the map for a museum only, as legacy drew it, and the held items
+// under the panel.
 
 defineProps({ id: { type: String, required: true } })
 
 const router = useRouter()
 const { t } = useI18n()
-const { mdInline } = useInventoryData()
 
 function back() {
   if (window.history.length > 2) router.back()
   else router.push('/partners')
 }
 
-// The "View Objects"/"View Monuments" count is the package's own
-// `item_count` (decision G.1) — not a scan of every item, which the profile
-// used to run just to print a number the exporter already carries.
 function viewItemsLabel(record) {
-  return record.type === 'institution' ? t('baroqueart.action.viewMonuments') : t('baroqueart.action.viewObjects')
-}
-function viewItemsLink(record) {
-  return { path: '/permanent-collection/results', query: { partner: record.id } }
-}
-
-function normalizeUrl(url) {
-  return url.startsWith('http') ? url : `http://${url}`
+  return record.type === 'institution' ? t('partner.action.viewMonuments') : t('partner.action.viewObjects')
 }
 </script>
 
 <template>
   <RecordView :spec="partnerSheet" :id="id" class="detail mwnf-panel">
-    <template #header="{ record, text, language, languages, select, dir, glossary }">
+    <template #header="{ language, languages, select }">
       <div class="mwnf-back-bar"><a href="#" @click.prevent="back">← {{ $t('partner.nav.back') }}</a></div>
-      <div><span class="detail-type-badge">{{ record.type === 'institution' ? $t('partner.info.typeInstitution') : $t('partner.info.typeMuseum') }}</span></div>
       <RecordLanguages :languages="languages" :language="language" @select="select" />
-      <h1 class="detail-title" :dir="dir" v-html="mdInline(text.name ?? record.id, glossary)"></h1>
     </template>
 
-    <template #before-sheet="{ record, text }">
-      <div v-if="record.item_count" class="view-items-row">
-        <RouterLink :to="viewItemsLink(record)" class="mwnf-button">{{ viewItemsLabel(record) }} ({{ record.item_count }}) →</RouterLink>
-        <a v-if="text.website" :href="normalizeUrl(text.website)" target="_blank" rel="noopener" class="homepage-link">
-          {{ $t('baroqueart.action.visitWebsite') }} ↗
-        </a>
-      </div>
-    </template>
-
-    <template #after-sheet="{ record, text }">
-      <PartnerMap
-        v-if="record.type === 'museum'"
-        :latitude="record.latitude"
-        :longitude="record.longitude"
-        :zoom="record.map_zoom ?? 15"
-        :label="mapLabel(record, text)"
-      />
+    <template #before-sheet="{ record, text, dir }">
+      <PartnerPanel
+        variant="full"
+        :partner="partnerViewOf(record, text)"
+        :heading="1"
+        :show="{ map: record.type === 'museum' }"
+        :dir="dir"
+      >
+        <template #badge>
+          <div><span class="detail-type-badge">{{ record.type === 'institution' ? $t('partner.info.typeInstitution') : $t('partner.info.typeMuseum') }}</span></div>
+        </template>
+        <template #actions>
+          <RouterLink v-if="record.item_count" :to="partnerObjectsLink(record)" class="mwnf-button">
+            {{ viewItemsLabel(record) }} ({{ record.item_count }}) →
+          </RouterLink>
+        </template>
+      </PartnerPanel>
     </template>
 
     <template #related="{ record }">
@@ -80,29 +76,6 @@ function normalizeUrl(url) {
   color: var(--heading);
   border: 1px solid var(--accent);
   padding: 2px 8px;
-  margin-bottom: 10px;
-  font-family: 'Roboto', sans-serif;
-}
-
-.detail-title {
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--heading);
-  margin: 10px 0 16px;
-  line-height: 1.3;
-  font-family: 'Roboto', sans-serif;
-}
-
-.view-items-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.homepage-link {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--nav-active);
   font-family: 'Roboto', sans-serif;
 }
 </style>

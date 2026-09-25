@@ -1,9 +1,6 @@
 {
   "baroqueart.action.browseInstitutions": "Browse Institutions",
   "baroqueart.action.browseMuseums": "Browse Museums",
-  "baroqueart.action.viewMonuments": "View Monuments",
-  "baroqueart.action.viewObjects": "View Objects",
-  "baroqueart.action.visitWebsite": "Visit Website",
   "baroqueart.exhibition.backTo": "Back to",
   "baroqueart.exhibition.empty": "No content available for this exhibition yet.",
   "baroqueart.exhibition.selectPrompt": "Select an exhibition below to explore its themes, monuments, and objects.",
