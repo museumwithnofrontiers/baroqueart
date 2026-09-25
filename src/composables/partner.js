@@ -1,5 +1,5 @@
 import { partnerView } from '@museumwnf/viewer-core'
-import { useInventoryData } from './useInventoryData.js'
+import { useData } from './data.js'
 
 // The partner pages: what viewer-layout's `PartnerListView` renders on
 // `/partners/results` (one spec per type, the site's own museum/institution
@@ -10,7 +10,7 @@ import { useInventoryData } from './useInventoryData.js'
 // only this website's: which axis a list is scoped to, and the partner's
 // view-model with this website's routes.
 
-const { countryLabel, items, itemLabel, md, mdInline, tr } = useInventoryData()
+const { countryLabel, items, itemRow, md, mdInline } = useData()
 
 /**
  * `/partners/results`: one spec per type (`'museum'` / `'institution'`),
@@ -72,16 +72,6 @@ export function heldItems(partner) {
   return items.value.filter((item) => item.partner_id === partner.id)
 }
 
-export function heldItemRow(item) {
-  const text = tr('items', item.id)
-  const name = text.name ?? item.internal_name ?? item.id
-  return {
-    id: item.id,
-    image: item.images?.[0]?.url ?? '',
-    imageAlt: itemLabel(item),
-    name: mdInline(name),
-    meta: [countryLabel(item.country_id), text.dates].filter(Boolean),
-    badge: item.type,
-    to: { name: 'item', params: { id: item.id } },
-  }
-}
+// The row on a partner's own page: the country and the date, never the
+// holder's own name again.
+export const heldItemRow = (item) => itemRow(item, ['country', 'dates'])

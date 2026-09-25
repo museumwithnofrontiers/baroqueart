@@ -159,11 +159,25 @@
   --mwnf-featured-meta-color: #5a5a5a;
 
   /* ---------- Content classes ---------- */
-  /* The shared back-bar class themes a <button> child only; this site's own
-     back controls are route links nested inside it instead, themed via
-     theme/overrides.css, which reads these two tokens. */
+  /* The back bar (viewer-layout's BackLink `variant="bar"`, and the forward
+     links drawn in its style): a plain link in the page's text size, muted,
+     the accent on hover, with the legacy gap under it. */
+  --mwnf-back-bar-padding: 0;
+  --mwnf-back-bar-margin: 0 0 12px;
+  --mwnf-back-bar-size: 0.875rem;
   --mwnf-back-bar-text: var(--mwnf-color-muted);
   --mwnf-back-bar-hover-text: var(--mwnf-color-accent);
+  /* The item page's blocks (special features, related media, on display
+     in), in the sizes and colours the page's own blocks had. */
+  --mwnf-special-features-name-color: var(--heading);
+  --mwnf-special-features-meta-color: var(--muted);
+  --mwnf-related-media-link-size: 0.8125rem;
+  --mwnf-related-media-link-weight: 500;
+  --mwnf-related-media-link-color: var(--nav-active);
+  --mwnf-related-media-description-color: var(--muted);
+  --mwnf-on-display-size: 0.8125rem;
+  --mwnf-on-display-gap: 0;
+  --mwnf-on-display-link-color: var(--nav-active);
 
   /* ---------- Shared views (@museumwnf/viewer-core) ----------
    * Only the generic entity pages read these; the block goes away when the

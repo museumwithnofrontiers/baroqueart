@@ -41,6 +41,31 @@ export default {
 
   shell: SiteShell,
 
+  // The landing page, viewer-layout's `HomeView`: the welcome, the five
+  // sections as cards, and one item with an image on display, picked once
+  // per visit — every text an entry name, written out, that the view
+  // resolves. The welcome and the item sit in the site's panels.
+  home: {
+    title: 'baroqueart.home.title',
+    intro: 'baroqueart.home.intro',
+    cards: [
+      { title: 'baroqueart.nav.permanentCollection', description: 'baroqueart.home.permanentCollectionText', action: 'core.action.browse', to: { name: 'permanent-collection' } },
+      { title: 'baroqueart.nav.database', description: 'baroqueart.home.databaseText', action: 'core.action.search', to: { name: 'database' } },
+      { title: 'baroqueart.nav.timeline', description: 'baroqueart.home.timelineText', action: 'core.action.explore', to: { name: 'timeline' } },
+      { title: 'baroqueart.nav.partners', description: 'baroqueart.home.partnersText', action: 'core.action.browse', to: { name: 'partners' } },
+      { title: 'baroqueart.nav.exhibitions', description: 'baroqueart.home.exhibitionsText', action: 'core.action.explore', to: { name: 'exhibitions' } },
+    ],
+    featured: {
+      entity: 'items',
+      heading: 'baroqueart.home.itemOnDisplay',
+      action: 'core.action.viewDetails',
+      route: 'item',
+      eyebrow: (record) => record.type,
+      meta: ['location', 'dates'],
+    },
+    panels: true,
+  },
+
   // The legacy site's own top-level sections, in its own order — this site
   // has no Dynasties or Artistic Introduction. `label` is an entry name,
   // resolved by SiteShell through `t()`; `section` is matched against
@@ -68,25 +93,25 @@ export default {
     {
       path: '/',
       name: 'home',
-      component: () => import('./views/Home.vue'),
+      component: () => import('@museumwnf/viewer-layout/views').then((views) => views.HomeView),
       meta: meta('home', ['items']),
     },
     {
       path: '/permanent-collection',
       name: 'permanent-collection',
-      component: () => import('./views/PcEntrance.vue'),
+      component: () => import('./views/PermanentCollectionSearch.vue'),
       meta: meta('permanent-collection', ['items', 'countries', 'partners']),
     },
     {
       path: '/permanent-collection/results',
       name: 'permanent-collection-results',
-      component: () => import('./views/PcList.vue'),
+      component: () => import('./views/PermanentCollectionResults.vue'),
       meta: meta('permanent-collection', ['items', 'countries', 'partners']),
     },
     {
       path: '/database',
       name: 'database',
-      component: () => import('./views/Database.vue'),
+      component: () => import('./views/DatabaseSearch.vue'),
       meta: meta('database'),
     },
     {

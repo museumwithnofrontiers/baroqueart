@@ -1,6 +1,8 @@
-import { dateRange, effectiveYearTo, eventDateLabel } from '@museumwnf/viewer-core'
-import { useInventoryData } from './useInventoryData.js'
-import { DATE_MODE, PAGE_SIZE, permanentCollection } from './catalogue.js'
+import {
+  CATALOGUE_DATE_MODE, CATALOGUE_PAGE_SIZE, dateRange, effectiveYearTo, eventDateLabel, objectsAndMonumentsSummary,
+} from '@museumwnf/viewer-core'
+import { useData } from './data.js'
+import { itemRecord } from './catalogue.js'
 
 // The timeline spec: what viewer-layout's `TimelineResultsView` renders on
 // `/timeline` (`entrance: true`, the form alone) and `/timeline/results`
@@ -12,7 +14,7 @@ import { DATE_MODE, PAGE_SIZE, permanentCollection } from './catalogue.js'
 // into the Permanent Collection results (unchanged since before this spec
 // existed), and the gallery's own country-and-period scope.
 
-const { countryLabel, items, md, mdInline, tr } = useInventoryData()
+const { countryLabel, items, md, mdInline, tr } = useData()
 
 /** The three controls every one of this site's Timeline pages offers. */
 const CONTROLS = [{ key: 'country' }, { key: 'begin' }, { key: 'end' }]
@@ -53,7 +55,7 @@ function galleryCount(ctx) {
   return dateRange(items.value.filter((item) => scopedToFilters(item, ctx.filters)), {
     begin: ctx.filters.begin,
     end: ctx.filters.end,
-    mode: DATE_MODE,
+    mode: CATALOGUE_DATE_MODE,
   }).length
 }
 
@@ -91,13 +93,13 @@ export const timelineGallery = {
   entity: 'items',
   keys: ['country', 'begin', 'end'],
   scope: scopedToFilters,
-  dates: { mode: DATE_MODE },
+  dates: { mode: CATALOGUE_DATE_MODE },
   sort: 'chronological',
-  pageSize: PAGE_SIZE,
+  pageSize: CATALOGUE_PAGE_SIZE,
   variant: 'list',
   recordRoute: 'item',
   empty: 'catalogue.results.noResultsFilter',
   pagination: { window: 7 },
-  record: permanentCollection.record,
-  summary: permanentCollection.summary,
+  record: itemRecord,
+  summary: objectsAndMonumentsSummary,
 }

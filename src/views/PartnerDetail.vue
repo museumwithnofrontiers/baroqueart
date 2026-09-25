@@ -1,7 +1,6 @@
 <script setup>
-import { useRouter } from 'vue-router'
 import { useI18n } from '@museumwnf/viewer-core'
-import { PartnerPanel, RecordLanguages, RelatedRecords } from '@museumwnf/viewer-layout/content'
+import { BackLink, PartnerPanel, RecordLanguages, RelatedRecords } from '@museumwnf/viewer-layout/content'
 import { RecordView } from '@museumwnf/viewer-layout/views'
 import { heldItemRow, heldItems, partnerObjectsLink, partnerSheet, partnerViewOf } from '../composables/partner.js'
 
@@ -17,13 +16,7 @@ import { heldItemRow, heldItems, partnerObjectsLink, partnerSheet, partnerViewOf
 
 defineProps({ id: { type: String, required: true } })
 
-const router = useRouter()
 const { t } = useI18n()
-
-function back() {
-  if (window.history.length > 2) router.back()
-  else router.push('/partners')
-}
 
 function viewItemsLabel(record) {
   return record.type === 'institution' ? t('partner.action.viewMonuments') : t('partner.action.viewObjects')
@@ -33,7 +26,7 @@ function viewItemsLabel(record) {
 <template>
   <RecordView :spec="partnerSheet" :id="id" class="detail mwnf-panel">
     <template #header="{ language, languages, select }">
-      <div class="mwnf-back-bar"><a href="#" @click.prevent="back">← {{ $t('partner.nav.back') }}</a></div>
+      <BackLink variant="bar" label="partner.nav.back" :to="{ name: 'partners' }" />
       <RecordLanguages :languages="languages" :language="language" @select="select" />
     </template>
 
