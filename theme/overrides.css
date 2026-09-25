@@ -39,14 +39,23 @@
   text-align: center;
 }
 
-/* The shared back-bar class themes a <button> (its `.mwnf-back-bar button`
- * rule); this site's own back controls are route links nested inside it
- * instead, so the bar is themed for an anchor too, reading the same
- * text/hover-text tokens theme/tokens.css sets. */
-.mwnf-back-bar a {
-  color: var(--mwnf-back-bar-text, inherit);
+/*
+ * The home page (viewer-layout's HomeView, `panels: true`): the welcome in
+ * the site's panel under the accent rule, its title in the heading colour
+ * at the legacy size and weight, the intro in the body text.
+ */
+.mwnf-home__welcome {
+  border-top: 3px solid var(--accent);
 }
-.mwnf-back-bar a:hover {
-  color: var(--mwnf-back-bar-hover-text, inherit);
-  text-decoration: underline;
+.mwnf-home__title {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--heading);
+}
+.mwnf-home__intro {
+  max-width: 680px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
 }

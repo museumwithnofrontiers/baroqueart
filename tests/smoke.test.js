@@ -6,7 +6,7 @@ import ownTexts from '../locales/en.json'
 import collectionsTranslations from '../node_modules/@museumwnf/baroqueart-data/translations/collections.en.json'
 import manifest from '../node_modules/@museumwnf/baroqueart-data/manifest.json'
 import config from '../src/dataset.config.js'
-import { useInventoryData } from '../src/composables/useInventoryData.js'
+import { useData } from '../src/composables/data.js'
 
 // The same two layers main.js assembles, in the same order: the shared bundle
 // first, this website's own file last. Mounting without them would prove
@@ -26,12 +26,21 @@ describe('website smoke test', () => {
     expect(host.textContent).toContain(config.siteName)
     expect(host.querySelector('.mwnf-page')).not.toBeNull()
 
-    // The website's own Home view (registered under the route name 'home')
-    // must replace viewer-core's generic home view.
+    // The home route renders viewer-layout's HomeView from `config.home`, in
+    // place of viewer-core's generic home view: the welcome and the five
+    // sections, the welcome in the site's panel.
     expect(host.querySelector('.vc-home')).toBeNull()
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-home__welcome')).not.toBeNull(), { timeout: 15000 })
+    expect(host.querySelector('.mwnf-home__welcome').classList.contains('mwnf-panel')).toBe(true)
+    expect(host.querySelectorAll('.mwnf-cards__title')).toHaveLength(5)
 
     app.unmount()
-  }, 20000)
+    // Longer than vitest's default 5s. This mounts the whole website against
+    // the real data package; being the first test, it also pays for
+    // transforming the composed views the home page is. A blocking check
+    // that fails at random teaches people to re-run it rather than read it,
+    // so it gets the minute the other page tests have.
+  }, 60000)
 
   // The Permanent Collection list and the item sheet run on the platform's
   // composed views (metanull/viewer-core#50): the rows and the filter panel
@@ -73,6 +82,41 @@ describe('website smoke test', () => {
     const expectedProjectName = projectLabel(manifest, object.project_id, 'en')
     expect(expectedProjectName).toBeTruthy()
     expect(host.querySelector('.mwnf-credits__citation').textContent).toContain(expectedProjectName)
+
+    app.unmount()
+  }, 60000)
+
+  // The blocks after the sheet are viewer-layout's item-page blocks. This
+  // dataset carries no `media` (unlike islamicart's), so only the THG
+  // galleries exercise `RelatedMedia`/`OnDisplayIn` here: by name — the
+  // package carries no address for them, and a same-page anchor would lead
+  // the hash router to its not-found page.
+  it('shows the THG galleries through the shared item-page blocks', async () => {
+    const [items] = await loadEntities(['items'])
+    const item = items.find((i) => i.thg_galleries?.length)
+    expect(item).toBeTruthy()
+    const { app, host } = await mount(`#/item/${encodeURIComponent(item.id)}?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-on-display')).not.toBeNull(), { timeout: 20000 })
+
+    const galleries = Array.from(host.querySelectorAll('.mwnf-on-display')).find((block) =>
+      item.thg_galleries.every((g) => block.textContent.includes(g.name)))
+    expect(galleries).toBeTruthy()
+    expect(galleries.querySelector('a[href*="ThematicGallery"]')).toBeNull()
+
+    app.unmount()
+  }, 60000)
+
+  // A monument's sub-details, embedded on the record as `details` — the old
+  // hand-written page never read them, so this section renders for the
+  // first time on this website.
+  it('shows a monument\'s special features', async () => {
+    const [items] = await loadEntities(['items'])
+    const monument = items.find((i) => i.type === 'monument' && i.details?.length)
+    expect(monument).toBeTruthy()
+    const { app, host } = await mount(`#/item/${encodeURIComponent(monument.id)}?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-special-features')).not.toBeNull(), { timeout: 20000 })
+
+    expect(host.querySelectorAll('.mwnf-special-features__item').length).toBe(monument.details.length)
 
     app.unmount()
   }, 60000)
@@ -266,7 +310,8 @@ describe('website smoke test', () => {
     const sourceCredit = host.querySelector('.mwnf-source-credit')
     expect(sourceCredit).not.toBeNull()
     expect(sourceCredit.querySelector('a').textContent.startsWith(config.site.origin)).toBe(true)
-    expect(host.querySelector('.mwnf-back-bar')).not.toBeNull()
+    const back = host.querySelector('.mwnf-back-bar--link')
+    expect(back.getAttribute('href')).toBe(`#/exhibitions/${withIntro.id}`)
 
     app.unmount()
   }, 30000)
@@ -414,7 +459,7 @@ describe('website smoke test', () => {
   // page would simply render nothing. This is where that shows.
   it('resolves a record through the shared index', async () => {
     const { loadEntities } = await import('@museumwnf/viewer-core')
-    const { itemById } = useInventoryData()
+    const { itemById } = useData()
     const [items] = await loadEntities(['items'])
     expect(itemById.value).toBeInstanceOf(Map)
     expect(itemById.value.get(items[0].id)).toBe(items[0])

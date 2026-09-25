@@ -2,10 +2,10 @@
 import { useI18n } from '@museumwnf/viewer-core'
 import { TimelineResultsView } from '@museumwnf/viewer-layout/views'
 import { timelineResults } from '../composables/timeline.js'
-import { useInventoryData } from '../composables/useInventoryData.js'
+import { useData } from '../composables/data.js'
 
 const { t } = useI18n()
-const { countryLabel } = useInventoryData()
+const { countryLabel } = useData()
 
 // The active-filter suffix on the heading, unchanged from before this view
 // moved onto the spec: null when nothing is filtered, so the heading never
@@ -22,7 +22,7 @@ function filterLabel(filters) {
 <template>
   <TimelineResultsView :spec="timelineResults">
     <template #before="{ filters }">
-      <div class="mwnf-back-bar"><RouterLink to="/timeline">‹ {{ $t('timeline.nav.backLink') }}</RouterLink></div>
+      <RouterLink to="/timeline" class="mwnf-back-bar mwnf-back-bar--link">‹ {{ $t('timeline.nav.backLink') }}</RouterLink>
       <h1 class="mwnf-heading">
         {{ $t('baroqueart.nav.timeline') }}
         <span v-if="filterLabel(filters)" class="heading-filter"> — {{ filterLabel(filters) }}</span>

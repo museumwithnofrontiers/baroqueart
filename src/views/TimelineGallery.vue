@@ -21,7 +21,7 @@ const backTo = computed(() => ({
 <template>
   <CatalogueResultsView :spec="timelineGallery">
     <template #before>
-      <div class="mwnf-back-bar"><RouterLink :to="backTo">‹ {{ $t('timeline.nav.backToEvents') }}</RouterLink></div>
+      <RouterLink :to="backTo" class="mwnf-back-bar mwnf-back-bar--link">‹ {{ $t('timeline.nav.backToEvents') }}</RouterLink>
       <h1 class="mwnf-heading">{{ $t('timeline.results.galleryHeading') }}</h1>
     </template>
   </CatalogueResultsView>

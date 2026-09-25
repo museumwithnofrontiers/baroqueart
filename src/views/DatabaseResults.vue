@@ -1,29 +1,31 @@
 <script setup>
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useSearchFieldOptions } from '@museumwnf/viewer-core'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
-import { useInventoryData } from '../composables/useInventoryData.js'
-import { searchResults, useSearchFieldLabels } from '../composables/search.js'
+import { useData } from '../composables/data.js'
+import { SEARCH_FIELDS } from '../composables/catalogue.js'
+import { searchResults } from '../composables/search.js'
 
 // The database results: the query in the URL, read the same way
 // `SearchFormView` writes it (`q`/`field`, `q2..4`/`field2..4`/`op2..4`,
 // `from`, `to`, `lang`); the eight fields and the AND/OR fold of
 // database.php, run by viewer-core's field grammar (decision D3: ranked by
 // hit count, with the glossary and country expansions) over this website's
-// field map (`composables/search.js`). What is this page's own is the
+// field map (`composables/catalogue.js`). What is this page's own is the
 // refine row (a fourth keyword the entrance never offers) and the
 // search-language watch — a second `useListQuery` inside the spec would
 // fight the one `CatalogueResultsView` already keeps, so this reads the
 // route directly instead.
 
 const route = useRoute()
-const { loadTranslations } = useInventoryData()
+const { loadTranslations } = useData()
 watch(() => route.query.lang, (lang) => { if (lang) loadTranslations('items', lang) }, { immediate: true })
 
-// Resolved once here (`t` on a literal name each), not per iteration in the
-// template below — a template that called `$t(f.label)` on a value out of
-// an array would be a name the check that every name resolves cannot see.
-const fieldOptions = useSearchFieldLabels()
+// Resolved once here, not per iteration in the template below — a template
+// that called `$t(f.label)` on a value out of an array would be a name the
+// check that every name resolves cannot see.
+const fieldOptions = useSearchFieldOptions(SEARCH_FIELDS)
 </script>
 
 <template>
@@ -44,7 +46,7 @@ const fieldOptions = useSearchFieldLabels()
               <option value="OR">{{ $t('catalogue.search.or') }}</option>
             </select>
             <select v-model="filters.field4" class="mwnf-select field">
-              <option v-for="f in fieldOptions" :key="f.key" :value="f.key">{{ f.label }}</option>
+              <option v-for="f in fieldOptions" :key="f.value" :value="f.value">{{ f.label }}</option>
             </select>
             <input v-model="filters.q4" type="text" class="keyword" :placeholder="$t('catalogue.search.keywordPlaceholder')" />
           </div>
