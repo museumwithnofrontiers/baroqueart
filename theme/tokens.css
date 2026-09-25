@@ -177,4 +177,8 @@
   --vc-content-width: 100%;
   --vc-content-padding: 0;
   --vc-weight-label: 600;
+  /* The partner page and the holding-museum line (viewer-layout's
+     PartnerPanel): the name and headings in the heading colour. */
+  --mwnf-partner-name-color: #12376b;
+  --mwnf-partner-tab-color: #12376b;
 }

@@ -2,15 +2,17 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { timelineLinkFor } from '@museumwnf/viewer-core'
-import { MediaGallery, RecordLanguages, SheetSection } from '@museumwnf/viewer-layout/content'
+import { MediaGallery, PartnerPanel, RecordLanguages, SheetSection } from '@museumwnf/viewer-layout/content'
 import { RecordView } from '@museumwnf/viewer-layout/views'
 import { useInventoryData } from '../composables/useInventoryData.js'
 import { exhibitionLinksForItem } from '../composables/exhibitions.js'
+import { partnerViewOf } from '../composables/partner.js'
 import { itemSheet } from '../composables/sheet.js'
 
 // The item sheet is the platform's composed record page, rendering the spec
 // in composables/sheet.js. What is this website's fills the page's slots:
-// the header — the way back, the timeline link, the type badge — and, after
+// the header — the way back, the timeline link, the type badge — the holding
+// museum's partner line, and, after
 // the sheet, the blocks only Baroque Art has: a monument's special features,
 // the related media, the exhibitions the item is on display in, the THG
 // galleries.
@@ -18,7 +20,7 @@ import { itemSheet } from '../composables/sheet.js'
 defineProps({ id: { type: String, required: true } })
 
 const router = useRouter()
-const { items, md, mdInline, tr } = useInventoryData()
+const { items, md, mdInline, partners, tr } = useInventoryData()
 
 function back() {
   if (window.history.length > 2) router.back()
@@ -27,6 +29,17 @@ function back() {
 
 const timelineLink = (record) => timelineLinkFor(record, { name: 'timeline-results' })
 
+// The holding museum (decision D3, inventory-app#2035): the item's holder
+// text, then the partner it refers to as `PartnerPanel`'s summary — "About
+// {name}, {city}, {country}", linked to the partner's page. Legacy showed
+// no such link for an associated museum (`associated_museums`, the
+// package's `level: 'associated_partner'`), and neither does this page.
+const partnerById = computed(() => new Map((partners.value ?? []).map((p) => [p.id, p])))
+function holderPartner(record, language) {
+  const partner = partnerById.value.get(record.partner_id)
+  if (!partner || partner.level === 'associated_partner') return null
+  return partnerViewOf(partner, tr('partners', partner.id, language))
+}
 // A monument's sub-details are child items of type `detail`.
 const detailsByParent = computed(() => {
   const map = new Map()
@@ -73,6 +86,13 @@ const thgGalleryLinks = (record) =>
       <div><span class="detail-type-badge">{{ record.type }}</span></div>
       <RecordLanguages :languages="languages" :language="language" @select="select" />
       <h1 class="detail-title" :dir="dir" v-html="mdInline(text.name ?? record.internal_name ?? record.id, glossary)"></h1>
+    </template>
+
+    <template #holder="{ row, record, language, dir, glossary }">
+      <span v-html="mdInline(row.value, { glossary })"></span>
+      <template v-for="partner in [holderPartner(record, language)]" :key="'holder-partner'">
+        <PartnerPanel v-if="partner" variant="summary" :partner="partner" label="partner.info.about" :dir="dir" />
+      </template>
     </template>
 
     <template #after-sheet="{ record, language, dir, glossary }">
