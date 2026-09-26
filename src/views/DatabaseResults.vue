@@ -30,7 +30,7 @@ const fieldOptions = useSearchFieldOptions(SEARCH_FIELDS)
 
 <template>
   <div>
-    <h1 class="mwnf-heading">{{ $t('baroqueart.nav.database') }} — {{ $t('catalogue.results.heading') }}</h1>
+    <h1 class="mwnf-heading">{{ $t('standalone.nav.database') }} — {{ $t('catalogue.results.heading') }}</h1>
 
     <div class="mwnf-panel">
       <CatalogueResultsView :spec="searchResults">

@@ -24,7 +24,7 @@ function filterLabel(filters) {
     <template #before="{ filters }">
       <RouterLink to="/timeline" class="mwnf-back-bar mwnf-back-bar--link">‹ {{ $t('timeline.nav.backLink') }}</RouterLink>
       <h1 class="mwnf-heading">
-        {{ $t('baroqueart.nav.timeline') }}
+        {{ $t('core.nav.timeline') }}
         <span v-if="filterLabel(filters)" class="heading-filter"> — {{ filterLabel(filters) }}</span>
       </h1>
     </template>

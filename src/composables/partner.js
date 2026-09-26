@@ -27,8 +27,8 @@ export function partnerList(type) {
     nested: true,
     route: 'partner',
     count: true,
-    label: (countryId, ctx) => (countryId ? countryLabel(countryId) : ctx.t('baroqueart.results.otherCountry')),
-    empty: type === 'museum' ? 'baroqueart.partner.noMuseums' : 'baroqueart.partner.noInstitutions',
+    label: (countryId, ctx) => (countryId ? countryLabel(countryId) : ctx.t('catalogue.field.other')),
+    empty: type === 'museum' ? 'standalone.partner.noMuseums' : 'standalone.partner.noInstitutions',
   }
 }
 

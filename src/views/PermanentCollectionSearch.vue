@@ -13,12 +13,12 @@ import { permanentCollectionSearch } from '../composables/search.js'
 
 <template>
   <div>
-    <h1 class="mwnf-heading">{{ $t('baroqueart.nav.permanentCollection') }}</h1>
+    <h1 class="mwnf-heading">{{ $t('standalone.nav.permanentCollection') }}</h1>
 
     <div class="mwnf-panel">
       <SearchFormView :spec="permanentCollectionSearch">
         <template #intro>
-          <I18nText tag="p" class="intro-text" keypath="baroqueart.pc.intro" />
+          <I18nText tag="p" class="intro-text" keypath="standalone.permanentCollection.intro" />
         </template>
       </SearchFormView>
     </div>

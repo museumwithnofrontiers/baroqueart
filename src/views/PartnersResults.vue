@@ -11,7 +11,7 @@ const { t } = useI18n()
 const filterType = computed(() => (route.query.type === 'institution' ? 'institution' : 'museum'))
 const otherType = computed(() => (filterType.value === 'museum' ? 'institution' : 'museum'))
 const otherTypeLabel = computed(() =>
-  otherType.value === 'museum' ? t('baroqueart.partner.viewMuseums') : t('baroqueart.partner.viewInstitutions')
+  otherType.value === 'museum' ? t('standalone.partner.viewMuseums') : t('standalone.partner.viewInstitutions')
 )
 
 // One spec per type: the museum/institution axis is this site's own, read
