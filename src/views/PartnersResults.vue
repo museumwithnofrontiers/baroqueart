@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from '@museumwnf/viewer-core'
 import { PartnerListView } from '@museumwnf/viewer-layout/views'
-import { partnerList } from '../composables/partner.js'
+import { partnersResultsSpec } from '../composables/partner.js'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -11,14 +11,14 @@ const { t } = useI18n()
 const filterType = computed(() => (route.query.type === 'institution' ? 'institution' : 'museum'))
 const otherType = computed(() => (filterType.value === 'museum' ? 'institution' : 'museum'))
 const otherTypeLabel = computed(() =>
-  otherType.value === 'museum' ? t('baroqueart.partner.viewMuseums') : t('baroqueart.partner.viewInstitutions')
+  otherType.value === 'museum' ? t('standalone.partner.viewMuseums') : t('standalone.partner.viewInstitutions')
 )
 
 // One spec per type: the museum/institution axis is this site's own, read
 // off its own route rather than a spec option — `PartnerListView` groups
 // and nests the result, unchanged whichever type is showing.
 const spec = computed(() => ({
-  ...partnerList(filterType.value),
+  ...partnersResultsSpec(filterType.value),
   title: filterType.value === 'museum' ? 'partner.list.museums' : 'partner.list.institutions',
 }))
 </script>

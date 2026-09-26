@@ -1,7 +1,7 @@
 <script setup>
 import { I18nText } from '@museumwnf/viewer-core'
 import { SearchFormView } from '@museumwnf/viewer-layout/views'
-import { searchEntrance } from '../composables/search.js'
+import { databaseSearchSpec } from '../composables/search.js'
 
 // The search entrance: legacy database.php's three-row keyword form, kept
 // in its shape (decision D2) but drawn by the platform's own `SearchFormView`
@@ -12,10 +12,10 @@ import { searchEntrance } from '../composables/search.js'
 
 <template>
   <div>
-    <h1 class="mwnf-heading">{{ $t('baroqueart.nav.database') }}</h1>
+    <h1 class="mwnf-heading">{{ $t('standalone.nav.database') }}</h1>
 
     <div class="mwnf-panel">
-      <SearchFormView :spec="searchEntrance">
+      <SearchFormView :spec="databaseSearchSpec">
         <template #intro>
           <I18nText tag="p" class="intro-text" keypath="catalogue.search.intro" />
         </template>

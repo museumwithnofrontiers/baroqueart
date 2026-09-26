@@ -12,10 +12,10 @@ import { SiteShell } from '@museumwnf/viewer-layout/components'
 </script>
 
 <template>
-  <SiteShell v-bind="$attrs" :footer-text="$t('baroqueart.identity.copyright')">
+  <SiteShell v-bind="$attrs" :footer-text="$t('standalone.identity.copyright')">
     <template #brand>
       <a class="site-logo" href="#/">
-        <span class="site-logo-org">{{ $t('baroqueart.identity.organisation') }}</span>
+        <span class="site-logo-org">{{ $t('standalone.identity.organisation') }}</span>
         <span class="site-logo-title">{{ $t('baroqueart.identity.title') }}</span>
       </a>
     </template>

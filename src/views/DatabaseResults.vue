@@ -5,7 +5,7 @@ import { useSearchFieldOptions } from '@museumwnf/viewer-core'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
 import { useData } from '../composables/data.js'
 import { SEARCH_FIELDS } from '../composables/catalogue.js'
-import { searchResults } from '../composables/search.js'
+import { databaseResultsSpec } from '../composables/search.js'
 
 // The database results: the query in the URL, read the same way
 // `SearchFormView` writes it (`q`/`field`, `q2..4`/`field2..4`/`op2..4`,
@@ -30,10 +30,10 @@ const fieldOptions = useSearchFieldOptions(SEARCH_FIELDS)
 
 <template>
   <div>
-    <h1 class="mwnf-heading">{{ $t('baroqueart.nav.database') }} — {{ $t('catalogue.results.heading') }}</h1>
+    <h1 class="mwnf-heading">{{ $t('standalone.nav.database') }} — {{ $t('catalogue.results.heading') }}</h1>
 
     <div class="mwnf-panel">
-      <CatalogueResultsView :spec="searchResults">
+      <CatalogueResultsView :spec="databaseResultsSpec">
         <template #actions>
           <RouterLink :to="{ name: 'database' }" class="mwnf-button mwnf-button--secondary small">{{ $t('catalogue.search.newSearch') }}</RouterLink>
         </template>

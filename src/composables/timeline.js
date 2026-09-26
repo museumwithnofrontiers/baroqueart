@@ -68,7 +68,7 @@ const shared = {
 }
 
 /** `/timeline`: the form alone, navigating to the results on submit. */
-export const timelineEntrance = {
+export const timelineEntranceSpec = {
   ...shared,
   entrance: true,
   route: 'timeline-results',
@@ -76,7 +76,7 @@ export const timelineEntrance = {
 }
 
 /** `/timeline/results`: the same controls, paginated, with the gallery cross-link. */
-export const timelineResults = {
+export const timelineResultsSpec = {
   ...shared,
   pageSize: 15,
   filterTitle: 'catalogue.filter.heading',
@@ -89,7 +89,7 @@ export const timelineResults = {
  * summary are the Permanent Collection's own, unchanged — this is the same
  * catalogue, scoped rather than re-described.
  */
-export const timelineGallery = {
+export const timelineGallerySpec = {
   entity: 'items',
   keys: ['country', 'begin', 'end'],
   scope: scopedToFilters,

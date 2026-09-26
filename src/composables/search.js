@@ -18,7 +18,7 @@ const { items, itemRow } = useData()
 
 // ── `/database`: the three-row keyword entrance ────────────────────────────
 
-export const searchEntrance = {
+export const databaseSearchSpec = {
   mode: 'rows',
   fields: searchFieldOptions(SEARCH_FIELDS),
   dates: { presets: centuryPresets() },
@@ -34,7 +34,7 @@ export const searchEntrance = {
 
 const pcFacetOptions = useFacets(items, FACETS)
 
-export const permanentCollectionSearch = computed(() => ({
+export const permanentCollectionSearchSpec = computed(() => ({
   mode: 'radio',
   facets: [
     { key: 'country', label: 'catalogue.facet.country', options: pcFacetOptions.value.country },
@@ -54,7 +54,7 @@ export const permanentCollectionSearch = computed(() => ({
 
 const { narrow } = useFieldSearch({ fields: SEARCH_FIELDS })
 
-export const searchResults = {
+export const databaseResultsSpec = {
   entity: 'items',
   keys: [...searchRowKeys(), 'from', 'to', 'lang'],
   narrow,

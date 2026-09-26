@@ -1,24 +1,24 @@
 <script setup>
 import { I18nText } from '@museumwnf/viewer-core'
 import { SearchFormView } from '@museumwnf/viewer-layout/views'
-import { permanentCollectionSearch } from '../composables/search.js'
+import { permanentCollectionSearchSpec } from '../composables/search.js'
 
 // The Permanent Collection entrance: one filter at a time, chosen by a
 // radio, as legacy's form was (decision D2) — now `SearchFormView`'s own
 // `mode: 'radio'`. The options are the values the records carry (this
 // website's `FACETS`, read through `composables/search.js`'s
-// `permanentCollectionSearch`); the page only supplies the intro text and
+// `permanentCollectionSearchSpec`); the page only supplies the intro text and
 // the heading.
 </script>
 
 <template>
   <div>
-    <h1 class="mwnf-heading">{{ $t('baroqueart.nav.permanentCollection') }}</h1>
+    <h1 class="mwnf-heading">{{ $t('standalone.nav.permanentCollection') }}</h1>
 
     <div class="mwnf-panel">
-      <SearchFormView :spec="permanentCollectionSearch">
+      <SearchFormView :spec="permanentCollectionSearchSpec">
         <template #intro>
-          <I18nText tag="p" class="intro-text" keypath="baroqueart.pc.intro" />
+          <I18nText tag="p" class="intro-text" keypath="standalone.permanentCollection.intro" />
         </template>
       </SearchFormView>
     </div>
