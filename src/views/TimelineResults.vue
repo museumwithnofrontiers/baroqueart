@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from '@museumwnf/viewer-core'
 import { TimelineResultsView } from '@museumwnf/viewer-layout/views'
-import { timelineResults } from '../composables/timeline.js'
+import { timelineResultsSpec } from '../composables/timeline.js'
 import { useData } from '../composables/data.js'
 
 const { t } = useI18n()
@@ -20,7 +20,7 @@ function filterLabel(filters) {
 </script>
 
 <template>
-  <TimelineResultsView :spec="timelineResults">
+  <TimelineResultsView :spec="timelineResultsSpec">
     <template #before="{ filters }">
       <RouterLink to="/timeline" class="mwnf-back-bar mwnf-back-bar--link">‹ {{ $t('timeline.nav.backLink') }}</RouterLink>
       <h1 class="mwnf-heading">

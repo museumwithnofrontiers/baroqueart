@@ -19,7 +19,7 @@ const { countryLabel, items, itemRow, md, mdInline } = useData()
  * (`partnerHierarchy`) rather than the flat "Associated Partners" column, for
  * the third that has one.
  */
-export function partnerList(type) {
+export function partnersResultsSpec(type) {
   return {
     entity: 'partners',
     scope: (partner) => partner.type === type,
@@ -38,7 +38,7 @@ export function partnerList(type) {
  * never printed one on this page), no `related` (the held items are a reverse
  * lookup, `item.partner_id`, which PartnerDetail.vue's `#related` slot lists).
  */
-export const partnerSheet = {
+export const partnerSheetSpec = {
   entity: 'partners',
   fields: [],
   shortDescription: false,

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
-import { timelineGallery } from '../composables/timeline.js'
+import { timelineGallerySpec } from '../composables/timeline.js'
 
 const route = useRoute()
 
@@ -19,7 +19,7 @@ const backTo = computed(() => ({
 </script>
 
 <template>
-  <CatalogueResultsView :spec="timelineGallery">
+  <CatalogueResultsView :spec="timelineGallerySpec">
     <template #before>
       <RouterLink :to="backTo" class="mwnf-back-bar mwnf-back-bar--link">‹ {{ $t('timeline.nav.backToEvents') }}</RouterLink>
       <h1 class="mwnf-heading">{{ $t('timeline.results.galleryHeading') }}</h1>

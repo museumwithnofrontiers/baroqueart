@@ -59,7 +59,7 @@ const objectSections = [
 
 const isMonument = (ctx) => ctx.record?.type === 'monument'
 
-export const itemSheet = {
+export const itemSheetSpec = {
   entity: 'items',
   translations: ['glossary'],
   fields: (ctx) => (isMonument(ctx) ? monumentFacts : objectFacts),

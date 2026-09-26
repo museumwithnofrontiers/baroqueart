@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from '@museumwnf/viewer-core'
 import { PartnerListView } from '@museumwnf/viewer-layout/views'
-import { partnerList } from '../composables/partner.js'
+import { partnersResultsSpec } from '../composables/partner.js'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -18,7 +18,7 @@ const otherTypeLabel = computed(() =>
 // off its own route rather than a spec option — `PartnerListView` groups
 // and nests the result, unchanged whichever type is showing.
 const spec = computed(() => ({
-  ...partnerList(filterType.value),
+  ...partnersResultsSpec(filterType.value),
   title: filterType.value === 'museum' ? 'partner.list.museums' : 'partner.list.institutions',
 }))
 </script>

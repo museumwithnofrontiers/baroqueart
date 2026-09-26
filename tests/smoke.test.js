@@ -74,7 +74,7 @@ describe('website smoke test', () => {
     expect(sourceLink.textContent.startsWith(config.site.origin)).toBe(true)
     expect(sourceLink.textContent).toContain(`#/item/${object.id}`)
 
-    // #1727 cleanup: `itemSheet` no longer names a project for the citation
+    // #1727 cleanup: `itemSheetSpec` no longer names a project for the citation
     // (composables/sheet.js), so `RecordView` resolves it from the record's
     // own `project_id` against the manifest — read here off the data
     // package rather than hardcoded, so the assertion tracks the source of

@@ -6,7 +6,7 @@ import { useData } from './data.js'
 // fields of the legacy search form, the result row — is viewer-core's
 // catalogue layer and viewer-layout's views; what is declared here is only
 // what is this website's: the two facets of the Permanent Collection, and
-// the `permanentCollection` spec that composes them for viewer-layout's
+// the `permanentCollectionResultsSpec` that composes them for viewer-layout's
 // `CatalogueResultsView`. Two entrances and two results pages read this one
 // declaration.
 
@@ -49,7 +49,7 @@ export const FACETS = {
 // never an id. Shared with the Timeline gallery (composables/timeline.js).
 export const itemRecord = (item) => itemRow(item, ['country', 'dates', 'holder'])
 
-export const permanentCollection = {
+export const permanentCollectionResultsSpec = {
   entity: 'items',
   keys: ['country', 'partner', 'begin', 'end'],
   facets: FACETS,
