@@ -64,7 +64,7 @@ const fieldOptions = useSearchFieldOptions(SEARCH_FIELDS)
 <style scoped>
 .mwnf-button.small { font-size: 12px; padding: 4px 12px; text-decoration: none; }
 .refine-row { display: flex; align-items: center; gap: 8px; }
-.refine-label { font-size: 12px; color: var(--muted); }
+.refine-label { font-size: 12px; color: var(--mwnf-color-muted); }
 .cond { width: 60px; }
 .field { width: 200px; }
 .keyword { width: 200px; }

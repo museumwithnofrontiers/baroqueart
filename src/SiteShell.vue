@@ -28,7 +28,7 @@ import { SiteShell } from '@museumwnf/viewer-layout/components'
   display: flex;
   flex-direction: column;
   gap: 1px;
-  color: var(--header-fg);
+  color: var(--mwnf-header-text);
   text-decoration: none !important;
 }
 .site-logo-org {
@@ -45,6 +45,6 @@ import { SiteShell } from '@museumwnf/viewer-layout/components'
   text-transform: uppercase;
 }
 .site-logo:hover {
-  color: var(--header-fg);
+  color: var(--mwnf-header-text);
 }
 </style>

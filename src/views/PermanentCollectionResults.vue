@@ -35,16 +35,5 @@ function activeFilterLabel(filters) {
 </template>
 
 <style scoped>
-.heading-filter { font-weight: normal; font-size: 14px; color: var(--muted); }
-.permanent-collection :deep(.mwnf-catalogue__filters) { margin-bottom: 16px; }
-/* CatalogueResultsView's own root has no class prop to carry mwnf-panel, so
-   this reaches its inner body by depth instead — the panel look every
-   section's page otherwise gets straight from the class. */
-.permanent-collection :deep(.mwnf-catalogue__body) {
-  background: var(--content-bg);
-  border: 1px solid var(--border);
-  padding: 20px;
-  margin-bottom: 16px;
-}
-.permanent-collection :deep(.mwnf-facet__select[type='number']) { width: 100px; }
+.heading-filter { font-weight: normal; font-size: 14px; color: var(--mwnf-color-muted); }
 </style>
