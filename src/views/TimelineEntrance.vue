@@ -19,7 +19,7 @@ import { timelineEntranceSpec } from '../composables/timeline.js'
 .intro-text {
   font-size: 13px;
   line-height: 1.65;
-  color: var(--muted);
+  color: var(--mwnf-color-muted);
   margin-bottom: 0;
   font-family: 'Roboto', sans-serif;
 }

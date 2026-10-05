@@ -66,8 +66,8 @@ function viewItemsLabel(record) {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--heading);
-  border: 1px solid var(--accent);
+  color: var(--mwnf-heading-color);
+  border: 1px solid var(--site-rule-color);
   padding: 2px 8px;
   font-family: 'Roboto', sans-serif;
 }
