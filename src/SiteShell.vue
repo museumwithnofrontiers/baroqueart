@@ -25,7 +25,9 @@ import logo from '../theme/assets/logo_bar_en.png'
 const { t } = useI18n()
 const section = useSection()
 
-// Legacy prints its `footer5` text and the current year straight after it.
+// Legacy prints its `footer5` text and the current year after it. The stored
+// text ends in spaces the browser collapses to one; the extraction trims
+// them, so the line puts that one space back itself.
 const year = new Date().getFullYear()
 
 const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.home.cooperation')) : ''))
@@ -59,7 +61,7 @@ const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.
         <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/language-policy" target="_blank" rel="noopener">{{ $t('core.footer.languagePolicy') }}</a></li>
         <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/cookies" target="_blank" rel="noopener">{{ $t('core.footer.cookies') }}</a></li>
       </ul>
-      <p class="mwnf-footer__text">{{ $t('baroqueart.footer.copyright') }}{{ year }}</p>
+      <p class="mwnf-footer__text">{{ $t('baroqueart.footer.copyright') }} {{ year }}</p>
     </template>
   </SiteShell>
 </template>

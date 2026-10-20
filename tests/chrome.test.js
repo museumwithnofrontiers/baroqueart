@@ -78,7 +78,7 @@ describe("legacy's chrome", () => {
     // Language Policy and Cookies open in a new tab, as on legacy.
     expect(links.map((a) => a.getAttribute('target'))).toEqual([null, null, null, null, '_blank', '_blank'])
     expect(host.querySelector('.mwnf-footer__text').textContent)
-      .toBe(`${ownTexts['baroqueart.footer.copyright']}${new Date().getFullYear()}`)
+      .toBe(`${ownTexts['baroqueart.footer.copyright']} ${new Date().getFullYear()}`)
     // The rights-holder line is not legacy's (Pascal, 2026-10-20).
     expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
     app.unmount()
