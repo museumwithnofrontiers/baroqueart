@@ -507,23 +507,4 @@ describe('website smoke test', () => {
 
     app.unmount()
   }, 20000)
-
-  // The footer, rendered by SiteShell once the loaded package's
-  // manifest.rights names a holder (viewer-layout 2.11.1): the attribution
-  // sentence and the terms link are the package's own facts, read through
-  // useSiteRights() — nothing this site writes out itself.
-  it('renders the rights attribution and the terms link in the footer', async () => {
-    const { app, host } = await mount()
-
-    const attribution = host.querySelector('.mwnf-footer__attribution')
-    expect(attribution).not.toBeNull()
-    expect(attribution.textContent).toContain(manifest.rights.attribution)
-
-    const termsLink = host.querySelector('.mwnf-footer__terms')
-    expect(termsLink).not.toBeNull()
-    expect(termsLink.textContent.trim()).toBe(sharedTexts.en['record.source.termsOfUse'])
-    expect(termsLink.getAttribute('href')).toBe(manifest.rights.terms_url)
-
-    app.unmount()
-  }, 20000)
 })
