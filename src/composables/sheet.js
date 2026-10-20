@@ -34,11 +34,17 @@ const objectFacts = [
   { key: 'artists', label: 'sheet.field.artists', value: (c) => artistLine((c.record.artist_names ?? []).join(', '), c.text) },
   { key: 'scribe', label: 'sheet.field.scribe', value: 'scriber' },
   { key: 'inventoryNumber', label: 'sheet.field.inventoryNumber', value: (c) => c.record.owner_reference },
-  { key: 'materials', label: 'sheet.field.materials', value: 'type' },
+  // Legacy's Material(s) / Technique(s) line is the record's own materials
+  // column, as written (inventory-app#2233 C23); the package ships it as one
+  // entry.
+  { key: 'materials', label: 'sheet.field.materials', value: (c) => c.text.materials, join: '; ' },
   { key: 'dimensions', label: 'sheet.field.dimensions', value: 'dimensions' },
   { key: 'dynasty', label: 'sheet.field.periodDynasty', value: periodDynasty },
   { key: 'provenance', label: 'sheet.field.provenance', value: 'provenance' },
   { key: 'workshop', label: 'sheet.field.workshop', value: 'workshop' },
+  // Legacy printed the type under its own heading, after the workshop and the
+  // provenance.
+  { key: 'type', label: 'sheet.field.type', value: 'type' },
   { key: 'binding', label: 'sheet.field.binding', value: 'binding_desc' },
   { key: 'currentOwner', label: 'sheet.field.currentOwner', value: 'owner' },
   { key: 'originalOwner', label: 'sheet.field.originalOwner', value: 'initial_owner' },
