@@ -431,7 +431,7 @@ describe('website smoke test', () => {
       names: [
         'home', 'permanent-collection', 'permanent-collection-results', 'database', 'database-results',
         'timeline', 'timeline-results', 'timeline-gallery', 'partners', 'partners-results', 'partner',
-        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item',
+        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item', 'credits',
       ],
     })).toEqual([])
     // This website has never been published under another URL shape.
@@ -492,8 +492,8 @@ describe('website smoke test', () => {
     // From viewer-i18n: the layout's skip link and the menu's first entry.
     expect(text).toContain('Skip to content')
     expect(text).toContain('Home')
-    // From locales/en.json: the header lockup, a menu entry, the footer.
-    expect(text).toContain('Museum With No Frontiers')
+    // The header lockup (the logo's name is its alt text), a menu entry.
+    expect(host.querySelector('.site-portal-logo img').getAttribute('alt')).toBe('Museum With No Frontiers')
     expect(text).toContain('Permanent Collection')
     expect(text).toContain('Welcome to Baroque Art')
     // Nothing rendered as a bare entry name, which is what a missing text

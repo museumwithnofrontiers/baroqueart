@@ -59,3 +59,48 @@
   line-height: 1.7;
   color: var(--mwnf-color-text);
 }
+
+/*
+ * Legacy's picture banners (theme/assets): edge to edge, the home page's
+ * at its full height, every other page's a 160px band cut from its picture,
+ * as legacy's `background-size: cover` cuts it.
+ */
+.mwnf-banner {
+  padding-inline: 0;
+}
+.mwnf-banner__image {
+  max-height: none;
+}
+.site-inner-page .mwnf-banner__image {
+  height: 160px;
+  object-fit: cover;
+}
+
+/*
+ * The home page's cooperation band (legacy's section.sponsors): white text
+ * centred on the slate band, its links white, underlined on hover.
+ */
+.mwnf-sponsors {
+  border-top: none;
+}
+/* The section is always there (src/SiteShell.vue); without the band, as on
+   every page but the home page, it shows nothing. */
+.mwnf-sponsors:not(:has(.site-cooperation)) {
+  display: none;
+}
+.site-cooperation {
+  line-height: 19px;
+  text-align: center;
+  color: #ffffff;
+}
+.site-cooperation p {
+  margin: 0;
+}
+.site-cooperation a {
+  color: #ffffff;
+  text-decoration: none;
+}
+.site-cooperation a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}

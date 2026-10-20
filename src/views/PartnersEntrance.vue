@@ -1,8 +1,14 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { I18nText } from '@museumwnf/viewer-core'
+import { I18nText, useI18n } from '@museumwnf/viewer-core'
+import { hasText } from '../composables/texts.js'
 
 const router = useRouter()
+const { t } = useI18n()
+
+// Legacy's "About" text for this page (4:PartnerMuseumIntro_DBA), delivered
+// by the extraction; nothing is shown in its place until it is there.
+const ABOUT = 'baroqueart.partner.about'
 
 function browse(type) {
   router.push({ path: '/partners/results', query: { type } })
@@ -14,7 +20,7 @@ function browse(type) {
     <h1 class="mwnf-heading">{{ $t('core.nav.partners') }}</h1>
 
     <div class="mwnf-panel">
-      <I18nText tag="p" class="intro-text" keypath="baroqueart.partner.introDiscover" />
+      <I18nText v-if="hasText(t, ABOUT)" tag="p" class="intro-text" :keypath="ABOUT" />
 
       <table class="mwnf-form-table filter-table">
         <tbody>
@@ -32,6 +38,11 @@ function browse(type) {
           </tr>
         </tbody>
       </table>
+
+      <!-- Legacy's last link on this page: the MWNF credits, on the portal. -->
+      <p class="partners-credits">
+        <a href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a>
+      </p>
     </div>
   </div>
 </template>

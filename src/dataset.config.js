@@ -1,5 +1,8 @@
 import { languageLabels, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
 import SiteShell from './SiteShell.vue'
+import { hasText } from './composables/texts.js'
+import bannerHome from '../theme/assets/banner.jpg'
+import bannerInside from '../theme/assets/banner_inside.jpg'
 
 // The whole declaration of this website. Before it mounts, the website reads
 // nothing from its package but the manifest: the languages it offers, their
@@ -18,6 +21,8 @@ const languages = offeredLanguages()
 // menu entry); the shell reads it through viewer-core's `useSection()` to
 // mark the active menu entry, rather than deriving it from the path.
 const meta = (section, entities = []) => ({ section, entities })
+
+const CREDITS_BODY = 'baroqueart.credits.body'
 
 export default {
   // The dataset package this website renders. Must match the alias in
@@ -81,6 +86,23 @@ export default {
       { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
       { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
     ],
+    // Legacy's footer links to the MWNF portal, in its order. Its Legal
+    // Notice is already in the footer: SiteShell links the package's terms of
+    // use (`manifest.rights`), which is that page. Language Policy and
+    // Cookies open in a new tab, as legacy opens them.
+    footerLinks: [
+      { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
+      { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
+      { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
+      { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
+      { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
+    ],
+  },
+
+  // Legacy's picture banners: the home page's, its title part of the
+  // picture, and the band every other page shows (theme/assets, D7).
+  banner: {
+    image: ({ section }) => (section === 'home' ? bannerHome : bannerInside),
   },
 
   // The route map: every route named, kebab-case sections, the package id in
@@ -160,6 +182,22 @@ export default {
       component: () => import('./views/PartnerDetail.vue'),
       props: (route) => ({ id: decodeURIComponent(route.params.id) }),
       meta: meta('partners', ['partners', 'items', 'countries']),
+    },
+    {
+      // Legacy's own credits page (mwnf_credit.php), which no menu entry
+      // opens: other MWNF sites link to it. Its text comes from legacy
+      // through the extraction; until it is there the page has its title only.
+      path: '/credits',
+      name: 'credits',
+      component: () => import('@museumwnf/viewer-layout/views').then((views) => views.TextPageView),
+      props: {
+        spec: {
+          heading: 'core.section.credits',
+          body: ({ t }) => (hasText(t, CREDITS_BODY) ? t(CREDITS_BODY) : ''),
+          back: false,
+        },
+      },
+      meta: meta('credits'),
     },
     {
       path: '/exhibitions',

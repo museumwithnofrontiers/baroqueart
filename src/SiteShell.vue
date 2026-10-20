@@ -2,47 +2,88 @@
 // A mount of the layout's SiteShell: the menu links, the active entry (off
 // `meta.section` through viewer-core's `useSection()`) and the offered
 // languages all come from `dataset.config.js`'s `navigation`, read inside
-// SiteShell itself through `useSiteConfig()`. All that is left here is the
-// header lockup ("Museum With No Frontiers" over "Baroque Art"), through the
-// `#brand` slot — SiteShell renders it beside the computed nav links, unlike
-// a full `#header` override. The footer line stays a prop rather than a
-// config field: it is a text, and a text is only available inside the
-// application, where `t()` runs against the installed catalogue.
+// SiteShell itself through `useSiteConfig()`. What is left here:
+//
+// - the header lockup, through the `#brand` slot (SiteShell renders it beside
+//   the computed nav links, unlike a full `#header` override): legacy's MWNF
+//   logo, linked to the portal as legacy links it, beside "Baroque Art";
+// - the footer's portal links, kept to those whose label has a text. Their
+//   labels come from legacy through the extraction (scripts/site-i18n), and a
+//   label it has not delivered would otherwise print its own name;
+// - legacy's cooperation band on the home page (its `section.sponsors`), in
+//   the layout's sponsors section, once its text is there;
+// - `site-inner-page` on every page but the home page, which overrides.css
+//   reads to cut the inner banner to legacy's band.
+//
+// The footer line stays a prop rather than a config field: it is a text, and
+// a text is only available inside the application, where `t()` runs against
+// the installed catalogue.
+import { computed } from 'vue'
+import { md, useI18n, useSection, useSiteConfig } from '@museumwnf/viewer-core'
 import { SiteShell } from '@museumwnf/viewer-layout/components'
+import logo from '../theme/assets/logo_bar_en.png'
+import { hasText } from './composables/texts.js'
+
+const { t } = useI18n()
+const section = useSection()
+const siteConfig = useSiteConfig()
+
+const shellConfig = computed(() => ({
+  navigation: {
+    ...siteConfig.navigation,
+    footerLinks: (siteConfig.navigation?.footerLinks ?? []).filter((link) => hasText(t, link.label)),
+  },
+}))
+
+const COOPERATION = 'baroqueart.home.cooperation'
+const cooperation = computed(() => (
+  section.value === 'home' && hasText(t, COOPERATION) ? md(t(COOPERATION)) : ''
+))
 </script>
 
 <template>
-  <SiteShell v-bind="$attrs" :footer-text="$t('standalone.identity.copyright')">
+  <SiteShell
+    v-bind="$attrs"
+    :class="{ 'site-inner-page': section !== 'home' }"
+    :config="shellConfig"
+    :footer-text="$t('standalone.identity.copyright')"
+  >
     <template #brand>
-      <a class="site-logo" href="#/">
-        <span class="site-logo-org">{{ $t('standalone.identity.organisation') }}</span>
-        <span class="site-logo-title">{{ $t('baroqueart.identity.title') }}</span>
-      </a>
+      <span class="site-brand">
+        <a class="site-portal-logo" href="https://www.museumwnf.org">
+          <img :src="logo" :alt="$t('standalone.identity.organisation')" width="120" height="50" />
+        </a>
+        <a class="site-logo" href="#/">{{ $t('baroqueart.identity.title') }}</a>
+      </span>
     </template>
     <slot />
+    <!-- Always passed: AppSponsors (viewer-layout 3.3.0) reads whether it has
+         a slot in a computed, which never updates, so a slot that appears
+         after the first render (the route resolves after it) would never
+         show. overrides.css hides the section while it holds no band. -->
+    <template #sponsors>
+      <div v-if="cooperation" class="site-cooperation" v-html="cooperation"></div>
+    </template>
   </SiteShell>
 </template>
 
 <style scoped>
-.site-logo {
+.site-brand {
   display: flex;
-  flex-direction: column;
-  gap: 1px;
+  align-items: center;
+  gap: 1.5rem;
+}
+.site-portal-logo {
+  display: block;
+  line-height: 0;
+}
+.site-logo {
   color: var(--mwnf-header-text);
-  text-decoration: none !important;
-}
-.site-logo-org {
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 400;
-  opacity: 0.8;
-}
-.site-logo-title {
   font-size: 28px;
   font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-decoration: none !important;
 }
 .site-logo:hover {
   color: var(--mwnf-header-text);
