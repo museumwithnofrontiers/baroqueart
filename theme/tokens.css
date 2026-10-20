@@ -63,8 +63,8 @@
   --mwnf-hyperlinks-link-color: #12376b;
 
   /* ---------- Sponsors ---------- */
-  --mwnf-sponsors-padding: 1rem;
-  --mwnf-sponsors-background: transparent;
+  --mwnf-sponsors-padding: 36px; /* legacy section.sponsors: 36px 0 35px */
+  --mwnf-sponsors-background: #3f6289;
   --mwnf-sponsors-gap: 1.5rem;
   --mwnf-sponsors-logo-height: 2.5rem;
 
@@ -73,6 +73,7 @@
   --mwnf-footer-background: #14214e;
   --mwnf-footer-text-color: #ffffff;
   --mwnf-footer-text-size: 0.75rem;
+  --mwnf-footer-justify: center; /* legacy: one centred line */
 
   /* ---------- Content: the record page ---------- */
   /* The sheet as the legacy site set it: a bordered table with pale blue
