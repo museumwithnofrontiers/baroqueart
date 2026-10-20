@@ -9,6 +9,8 @@ const { t } = useI18n()
 // Legacy's "About" text for this page (4:PartnerMuseumIntro_DBA), delivered
 // by the extraction; nothing is shown in its place until it is there.
 const ABOUT = 'baroqueart.partner.about'
+// Legacy's label of the Sponsors link (3:pm_home_sponsors).
+const SPONSORS = 'baroqueart.partner.sponsors'
 
 function browse(type) {
   router.push({ path: '/partners/results', query: { type } })
@@ -39,7 +41,11 @@ function browse(type) {
         </tbody>
       </table>
 
-      <!-- Legacy's last link on this page: the MWNF credits, on the portal. -->
+      <!-- Legacy's last two links on this page: its Sponsors page (once its
+           label is extracted) and the MWNF credits, on the portal. -->
+      <p v-if="hasText(t, SPONSORS)" class="partners-sponsors">
+        <router-link :to="{ name: 'sponsors' }">{{ t(SPONSORS) }}</router-link>
+      </p>
       <p class="partners-credits">
         <a href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a>
       </p>

@@ -86,13 +86,13 @@ export default {
       { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
       { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
     ],
-    // Legacy's footer links to the MWNF portal, in its order. Its Legal
-    // Notice is already in the footer: SiteShell links the package's terms of
-    // use (`manifest.rights`), which is that page. Language Policy and
-    // Cookies open in a new tab, as legacy opens them.
+    // Legacy's footer links to the MWNF portal, in its order, drawn by
+    // src/SiteShell.vue before the copyright. Language Policy and Cookies
+    // open in a new tab, as legacy opens them.
     footerLinks: [
       { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
       { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
+      { label: 'core.footer.legalNotice', href: 'https://www.museumwnf.org/about/legal-notice' },
       { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
       { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
       { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
@@ -175,6 +175,16 @@ export default {
       name: 'partners-results',
       component: () => import('./views/PartnersResults.vue'),
       meta: meta('partners', ['partners', 'countries']),
+    },
+    {
+      // Legacy's Local Sponsors page (atrium_sponsor_detail.php?id=BAR&flg=local),
+      // opened from the Partners page. Website copy, not inventory data:
+      // its rows come from legacy through the extraction, its logos from
+      // theme/assets/sponsors.
+      path: '/sponsors',
+      name: 'sponsors',
+      component: () => import('./views/SponsorsPage.vue'),
+      meta: meta('partners'),
     },
     {
       path: '/partner/:id',

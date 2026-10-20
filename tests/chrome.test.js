@@ -8,12 +8,11 @@ import ownTexts from '../locales/en.json'
 import config from '../src/dataset.config.js'
 
 // Legacy's chrome on this website (inventory-app#2233: A5, T2, T7): its
-// pictures from theme/assets, the footer's portal links, the home page's
-// cooperation band, the Partners page's About text and Credits link, and
-// legacy's credits page.
+// pictures from theme/assets, the footer line, the home page's cooperation
+// band, the Partners page's About text and its Sponsors and Credits links,
+// legacy's credits page and its Sponsors page.
 //
-// The texts of the band, the About text, the credits page and the Language
-// Policy label come from legacy through the extraction (scripts/site-i18n).
+// Those texts come from legacy through the extraction (scripts/site-i18n).
 // Each block is left out until its text is there, so the page never prints
 // an entry's name. The fixtures below stand in for the extraction's output;
 // they are markers, not texts the site ships.
@@ -21,9 +20,13 @@ import config from '../src/dataset.config.js'
 const messages = mergeMessages(sharedTexts, { en: ownTexts })
 const FIXTURES = {
   'core.footer.languagePolicy': 'LANGUAGE-POLICY-FIXTURE',
+  'baroqueart.footer.copyright': 'COPYRIGHT-FIXTURE ',
   'baroqueart.home.cooperation': 'COOPERATION-FIXTURE\n[Austria](#/partners) and [Slovenia](#/partners).',
   'baroqueart.partner.about': 'PARTNER-ABOUT-FIXTURE',
+  'baroqueart.partner.sponsors': 'SPONSORS-LINK-FIXTURE',
   'baroqueart.credits.body': 'CREDITS-BODY-FIXTURE',
+  'baroqueart.sponsors.title': 'SPONSORS-TITLE-FIXTURE',
+  'baroqueart.sponsors.localHeading': 'LOCAL-SPONSORS-FIXTURE',
 }
 const extracted = mergeMessages(messages, { en: FIXTURES })
 
@@ -41,10 +44,10 @@ const HOME = '.mwnf-home__welcome'
 const PARTNERS = '.partners-credits'
 
 describe("legacy's chrome", () => {
-  it('declares the favicon kept in theme/assets', () => {
+  it("declares legacy's favicon, served from public/", () => {
     const html = readFileSync(root('index.html'), 'utf8')
-    expect(html).toMatch(/<link rel="icon" href="\.\/theme\/assets\/favicon\.ico"/)
-    expect(existsSync(root('theme/assets/favicon.ico'))).toBe(true)
+    expect(html).toMatch(/<link rel="icon" href="%BASE_URL%favicon\.ico"/)
+    expect(existsSync(root('public/favicon.ico'))).toBe(true)
   })
 
   it("puts legacy's MWNF logo in the header, linked to the portal", async () => {
@@ -68,30 +71,40 @@ describe("legacy's chrome", () => {
     inner.app.unmount()
   }, 60000)
 
-  it("links the portal's pages from the footer, in legacy's order", async () => {
+  it("draws legacy's footer line: the portal's pages, then the copyright", async () => {
     const hrefs = (host) => [...host.querySelectorAll('.mwnf-footer__link')].map((a) => a.getAttribute('href'))
 
-    // Without the Language Policy label, its link is left out.
+    // Without the Language Policy label, its link is left out; without
+    // legacy's copyright text, the shared line stands in.
     const before = await mountOn('#/', messages, HOME)
     expect(hrefs(before.host)).toEqual([
       'https://www.museumwnf.org/about',
       'https://www.museumwnf.org/about/contact',
+      'https://www.museumwnf.org/about/legal-notice',
       'https://www.museumwnf.org/about/credits',
       'https://www.museumwnf.org/about/cookies',
     ])
+    expect(before.host.querySelector('.mwnf-footer__text').textContent)
+      .toBe(sharedTexts.en['standalone.identity.copyright'])
     before.app.unmount()
 
     const after = await mountOn('#/', extracted, HOME)
     expect(hrefs(after.host)).toEqual([
       'https://www.museumwnf.org/about',
       'https://www.museumwnf.org/about/contact',
+      'https://www.museumwnf.org/about/legal-notice',
       'https://www.museumwnf.org/about/credits',
       'https://www.museumwnf.org/about/language-policy',
       'https://www.museumwnf.org/about/cookies',
     ])
-    const policy = [...after.host.querySelectorAll('.mwnf-footer__link')][3]
+    const policy = [...after.host.querySelectorAll('.mwnf-footer__link')][4]
     expect(policy.textContent).toBe('LANGUAGE-POLICY-FIXTURE')
     expect(policy.getAttribute('target')).toBe('_blank')
+    // Legacy prints its text and the current year after it.
+    expect(after.host.querySelector('.mwnf-footer__text').textContent)
+      .toBe(`COPYRIGHT-FIXTURE ${new Date().getFullYear()}`)
+    // The rights-holder line is not legacy's (Pascal, 2026-10-20).
+    expect(after.host.querySelector('.mwnf-footer__attribution')).toBeNull()
     after.app.unmount()
   }, 60000)
 
@@ -111,9 +124,10 @@ describe("legacy's chrome", () => {
     inner.app.unmount()
   }, 60000)
 
-  it("gives the Partners page legacy's About text and its Credits link", async () => {
+  it("gives the Partners page legacy's About text and its Sponsors and Credits links", async () => {
     const without = await mountOn('#/partners', messages, PARTNERS)
     expect(without.host.querySelector('.intro-text')).toBeNull()
+    expect(without.host.querySelector('.partners-sponsors')).toBeNull()
     const credits = without.host.querySelector('.partners-credits a')
     expect(credits.getAttribute('href')).toBe('https://www.museumwnf.org/about/credits')
     expect(credits.textContent).toBe(sharedTexts.en['core.footer.credits'])
@@ -122,7 +136,19 @@ describe("legacy's chrome", () => {
     const withText = await mountOn('#/partners', extracted, PARTNERS)
     await vi.waitFor(() => expect(withText.host.querySelector('.intro-text')).not.toBeNull(), { timeout: 15000 })
     expect(withText.host.querySelector('.intro-text').textContent).toContain('PARTNER-ABOUT-FIXTURE')
+    const sponsors = withText.host.querySelector('.partners-sponsors a')
+    expect(sponsors.textContent).toBe('SPONSORS-LINK-FIXTURE')
+    expect(sponsors.getAttribute('href')).toBe('#/sponsors')
     withText.app.unmount()
+  }, 60000)
+
+  it("renders legacy's Sponsors page: its headings and its links back to the partner lists", async () => {
+    const page = await mountOn('#/sponsors', extracted, '.sponsors-back')
+    expect(page.host.querySelector('.sponsors-page .mwnf-heading').textContent).toBe('SPONSORS-TITLE-FIXTURE')
+    expect(page.host.querySelector('.sponsors-heading').textContent).toBe('LOCAL-SPONSORS-FIXTURE')
+    const hrefs = [...page.host.querySelectorAll('.sponsors-back a')].map((a) => a.getAttribute('href'))
+    expect(hrefs.slice(1)).toEqual(['#/partners/results?type=museum', '#/partners/results?type=institution'])
+    page.app.unmount()
   }, 60000)
 
   it("renders legacy's credits page from the extracted text", async () => {

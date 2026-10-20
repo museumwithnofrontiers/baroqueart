@@ -8,7 +8,7 @@ nothing is served from the legacy site or from `images.museumwnf.org`.
 
 | File | Legacy URL | sha256 | Used in |
 |---|---|---|---|
-| `favicon.ico` | https://baroqueart.museumwnf.org/favicon.ico | `35ee0786acc6fd844652b764fc5f58be3c664ce299c70a754b40f5d8a89c7496` | `index.html` |
+| `public/favicon.ico` (served as is, so it lives in `public/`, not here) | https://baroqueart.museumwnf.org/favicon.ico | `35ee0786acc6fd844652b764fc5f58be3c664ce299c70a754b40f5d8a89c7496` | `index.html` |
 | `logo_bar_en.png` | https://baroqueart.museumwnf.org/images/logo_bar_en.png | `1f17bace0ca1e67d9b222d051787dfefe5396598fe10e603df2a807cc97fa308` | the header (`src/SiteShell.vue`) |
 | `banner.jpg` | https://baroqueart.museumwnf.org/images/banner.jpg | `e191f371359dd4016f8bdcee137636a640f39144d4232867a5011c6330ef2283` | the home page's banner (`src/dataset.config.js`) |
 | `banner_inside.jpg` | https://baroqueart.museumwnf.org/images/banner_inside.jpg | `c04d8d84750a80aa7af15644f2a08656c9d5c03de1e41f2797e2b124e2a643d8` | every other page's banner (`src/dataset.config.js`) |
@@ -33,7 +33,7 @@ partners and timeline boxes, the Virtual Exhibitions area and the Sponsors page.
 | `exhibitions/logo_pt.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_pt.gif | `456ffca8d409048def8730811a03d76c52e49ac2f9c7a9528dd5489c6ddf5723` | Portuguese |
 | `exhibitions/logo_es.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_es.gif | `da4f8d434cd3a0cb3649f0ecc53d7824e85dced87628e3d5da6ab416e126e5bd` | Spanish |
 | `exhibitions/logo_ar.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_ar.gif | `dffc44f00d5488d21dafac73e4b41887b420ea9a8822a61d816142b50f0f33cd` | Arabic |
-| `sponsors/34.jpg` | https://images.museumwnf.org/full/sponsors/34.jpg | `e46908a55189b937247d9b3bd13524ced0482ea9c408216abb45b0eeb1e82b46` | the Sponsors page (`atrium_sponsor_detail.php?id=BAR&flg=local`) |
+| `sponsors/34.jpg` | https://images.museumwnf.org/full/sponsors/34.jpg | `e46908a55189b937247d9b3bd13524ced0482ea9c408216abb45b0eeb1e82b46` | the Sponsors page (`atrium_sponsor_detail.php?id=BAR&flg=local`), once its rows are extracted |
 | `sponsors/35.jpg` | https://images.museumwnf.org/full/sponsors/35.jpg | `6eb6099f58bf7259bd3c55adbde5e221273c72e5b520d8ec4da6932dd4b132d1` | 〃 |
 | `sponsors/36.jpg` | https://images.museumwnf.org/full/sponsors/36.jpg | `b25cc924ba96c18bc63ee0f1e52880b6fe44d6d326f4d036e6fad7fc2c39b337` | 〃 |
 | `sponsors/38.jpg` | https://images.museumwnf.org/full/sponsors/38.jpg | `1cc9f568fc773704ce5ed73f0990fc1d3251dcc4991f09f4826a8294b03d7015` | 〃 |

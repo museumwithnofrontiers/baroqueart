@@ -431,7 +431,7 @@ describe('website smoke test', () => {
       names: [
         'home', 'permanent-collection', 'permanent-collection-results', 'database', 'database-results',
         'timeline', 'timeline-results', 'timeline-gallery', 'partners', 'partners-results', 'partner',
-        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item', 'credits',
+        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item', 'credits', 'sponsors',
       ],
     })).toEqual([])
     // This website has never been published under another URL shape.
@@ -508,21 +508,15 @@ describe('website smoke test', () => {
     app.unmount()
   }, 20000)
 
-  // The footer, rendered by SiteShell once the loaded package's
-  // manifest.rights names a holder (viewer-layout 2.11.1): the attribution
-  // sentence and the terms link are the package's own facts, read through
-  // useSiteRights() — nothing this site writes out itself.
-  it('renders the rights attribution and the terms link in the footer', async () => {
+  // The footer is legacy's line (src/SiteShell.vue): its Legal Notice link is
+  // the page the package's terms of use name, and there is no rights-holder
+  // sentence, which legacy doesn't have (Pascal, 2026-10-20).
+  it("links legacy's Legal Notice, the package's terms of use, from the footer", async () => {
     const { app, host } = await mount()
 
-    const attribution = host.querySelector('.mwnf-footer__attribution')
-    expect(attribution).not.toBeNull()
-    expect(attribution.textContent).toContain(manifest.rights.attribution)
-
-    const termsLink = host.querySelector('.mwnf-footer__terms')
-    expect(termsLink).not.toBeNull()
-    expect(termsLink.textContent.trim()).toBe(sharedTexts.en['record.source.termsOfUse'])
-    expect(termsLink.getAttribute('href')).toBe(manifest.rights.terms_url)
+    const hrefs = [...host.querySelectorAll('.mwnf-footer__link')].map((a) => a.getAttribute('href'))
+    expect(hrefs).toContain(manifest.rights.terms_url)
+    expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
 
     app.unmount()
   }, 20000)
