@@ -14,7 +14,8 @@ function browse(type) {
     <h1 class="mwnf-heading">{{ $t('core.nav.partners') }}</h1>
 
     <div class="mwnf-panel">
-      <I18nText tag="p" class="intro-text" keypath="baroqueart.partner.introDiscover" />
+      <!-- Legacy's "About" text for this page (4:PartnerMuseumIntro_DBA). -->
+      <I18nText tag="p" class="intro-text" keypath="baroqueart.partner.about" />
 
       <table class="mwnf-form-table filter-table">
         <tbody>
@@ -32,6 +33,15 @@ function browse(type) {
           </tr>
         </tbody>
       </table>
+
+      <!-- Legacy's last two links on this page: its Sponsors page and the
+           MWNF credits, on the portal. -->
+      <p class="partners-sponsors">
+        <router-link :to="{ name: 'sponsors' }">{{ $t('baroqueart.partner.sponsors') }}</router-link>
+      </p>
+      <p class="partners-credits">
+        <a href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a>
+      </p>
     </div>
   </div>
 </template>

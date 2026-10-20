@@ -431,7 +431,7 @@ describe('website smoke test', () => {
       names: [
         'home', 'permanent-collection', 'permanent-collection-results', 'database', 'database-results',
         'timeline', 'timeline-results', 'timeline-gallery', 'partners', 'partners-results', 'partner',
-        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item',
+        'exhibitions', 'exhibition', 'exhibition-introduction', 'exhibition-theme', 'item', 'credits', 'sponsors',
       ],
     })).toEqual([])
     // This website has never been published under another URL shape.
@@ -492,8 +492,8 @@ describe('website smoke test', () => {
     // From viewer-i18n: the layout's skip link and the menu's first entry.
     expect(text).toContain('Skip to content')
     expect(text).toContain('Home')
-    // From locales/en.json: the header lockup, a menu entry, the footer.
-    expect(text).toContain('Museum With No Frontiers')
+    // The header lockup (the logo's name is its alt text), a menu entry.
+    expect(host.querySelector('.site-portal-logo img').getAttribute('alt')).toBe('Museum With No Frontiers')
     expect(text).toContain('Permanent Collection')
     expect(text).toContain('Welcome to Baroque Art')
     // Nothing rendered as a bare entry name, which is what a missing text
@@ -504,6 +504,19 @@ describe('website smoke test', () => {
     expect(checkTextsRendered(host, {
       namespaces: ['baroqueart', 'core', 'layout', 'catalogue', 'record', 'sheet', 'timeline', 'partner', 'exhibition'],
     })).toEqual([])
+
+    app.unmount()
+  }, 20000)
+
+  // The footer is legacy's line (src/SiteShell.vue): its Legal Notice link is
+  // the page the package's terms of use name, and there is no rights-holder
+  // sentence, which legacy doesn't have (Pascal, 2026-10-20).
+  it("links legacy's Legal Notice, the package's terms of use, from the footer", async () => {
+    const { app, host } = await mount()
+
+    const hrefs = [...host.querySelectorAll('.mwnf-footer__link')].map((a) => a.getAttribute('href'))
+    expect(hrefs).toContain(manifest.rights.terms_url)
+    expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
 
     app.unmount()
   }, 20000)

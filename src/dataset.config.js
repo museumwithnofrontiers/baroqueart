@@ -1,5 +1,8 @@
 import { languageLabels, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
+import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
 import SiteShell from './SiteShell.vue'
+import bannerHome from '../theme/assets/banner.jpg'
+import bannerInside from '../theme/assets/banner_inside.jpg'
 
 // The whole declaration of this website. Before it mounts, the website reads
 // nothing from its package but the manifest: the languages it offers, their
@@ -81,6 +84,26 @@ export default {
       { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
       { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
     ],
+    // Legacy's footer links to the MWNF portal, in its order; only Language
+    // Policy and Cookies open in a new tab, as on legacy. The labels are
+    // legacy's, extracted into locales/en.json. src/SiteShell.vue passes the
+    // copyright line that follows them.
+    footerLinks: [
+      { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
+      { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
+      { label: 'core.footer.legalNotice', href: 'https://www.museumwnf.org/about/legal-notice' },
+      { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
+      { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
+      { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
+    ],
+    // Legacy's six social-network icons, after the footer line.
+    socialLinks: mwnfSocialLinks,
+  },
+
+  // Legacy's picture banners: the home page's, its title part of the
+  // picture, and the band every other page shows (theme/assets, D7).
+  banner: {
+    image: ({ section }) => (section === 'home' ? bannerHome : bannerInside),
   },
 
   // The route map: every route named, kebab-case sections, the package id in
@@ -155,11 +178,36 @@ export default {
       meta: meta('partners', ['partners', 'countries']),
     },
     {
+      // Legacy's Local Sponsors page (atrium_sponsor_detail.php?id=BAR&flg=local),
+      // opened from the Partners page. Website copy, not inventory data:
+      // its rows come from legacy through the extraction, its logos from
+      // theme/assets/sponsors.
+      path: '/sponsors',
+      name: 'sponsors',
+      component: () => import('./views/SponsorsPage.vue'),
+      meta: meta('partners'),
+    },
+    {
       path: '/partner/:id',
       name: 'partner',
       component: () => import('./views/PartnerDetail.vue'),
       props: (route) => ({ id: decodeURIComponent(route.params.id) }),
       meta: meta('partners', ['partners', 'items', 'countries']),
+    },
+    {
+      // Legacy's own credits page (mwnf_credit.php), which no menu entry
+      // opens: other MWNF sites link to it. Its text is legacy's, extracted.
+      path: '/credits',
+      name: 'credits',
+      component: () => import('@museumwnf/viewer-layout/views').then((views) => views.TextPageView),
+      props: {
+        spec: {
+          heading: 'core.section.credits',
+          body: 'baroqueart.credits.body',
+          back: false,
+        },
+      },
+      meta: meta('credits'),
     },
     {
       path: '/exhibitions',
