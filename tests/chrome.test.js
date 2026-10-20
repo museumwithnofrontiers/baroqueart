@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { mergeMessages } from '@museumwnf/viewer-core'
+import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
 import { mountSite } from '@museumwnf/viewer-core/testing'
 import { catalogues as sharedTexts } from '@museumwnf/viewer-i18n/standalone'
 import ownTexts from '../locales/en.json'
@@ -81,10 +82,9 @@ describe("legacy's chrome", () => {
       .toBe(`${ownTexts['baroqueart.footer.copyright']} ${new Date().getFullYear()}`)
     // Legacy's six social-network icons follow the line (viewer-layout's
     // mwnfSocialLinks).
-    const social = [...host.querySelectorAll('.mwnf-footer a')].map((a) => a.getAttribute('href'))
-      .filter((href) => !href.startsWith('https://www.museumwnf.org'))
-    expect(social).toHaveLength(6)
-    expect(social.some((href) => href.includes('youtube.com'))).toBe(true)
+    const all = [...host.querySelectorAll('.mwnf-footer a')].map((a) => a.getAttribute('href'))
+    expect(all).toEqual([...links.map((a) => a.getAttribute('href')), ...mwnfSocialLinks.map((link) => link.href)])
+    expect(mwnfSocialLinks).toHaveLength(6)
     // The rights-holder line is not legacy's (Pascal, 2026-10-20).
     expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
     app.unmount()
@@ -123,7 +123,9 @@ describe("legacy's chrome", () => {
     // images.museumwnf.org (D7).
     const logos = [...host.querySelectorAll('.sponsors-row__logo img')].map((img) => img.getAttribute('src'))
     expect(logos).toHaveLength(sponsorRows.filter((row) => row.logo).length)
-    expect(logos.every((src) => src && !src.includes('museumwnf.org'))).toBe(true)
+    // Resolved against the page's own address, each stays on it.
+    const page = 'https://baroqueart.site.test/'
+    expect(logos.every((src) => src && new URL(src, page).origin === new URL(page).origin)).toBe(true)
     const hrefs = [...host.querySelectorAll('.sponsors-back a')].map((a) => a.getAttribute('href'))
     expect(hrefs.slice(1)).toEqual(['#/partners/results?type=museum', '#/partners/results?type=institution'])
     app.unmount()
