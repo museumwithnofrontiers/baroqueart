@@ -11,8 +11,9 @@ const logos = { 'sponsors/34.jpg': '/assets/34-abc.jpg' }
 describe('sponsor rows', () => {
   it('renders the Markdown and resolves the logo', () => {
     const [row] = sponsorRows([
-      { label: 'COUNTRY/\nREGION', name: 'NAME', web: 'www.example.org', remarks: '*REMARKS*', logo: 'sponsors/34.jpg' },
+      { label: 'COUNTRY/  \nREGION', region: 'REGION-LINE', name: 'NAME', web: 'www.example.org', remarks: '*REMARKS*', logo: 'sponsors/34.jpg' },
     ], logos)
+    expect(row.region).toBe('REGION-LINE')
     expect(row.name).toBe('NAME')
     expect(row.web).toBe('www.example.org')
     expect(row.labelHtml).toContain('COUNTRY/<br')
@@ -22,7 +23,7 @@ describe('sponsor rows', () => {
 
   it('leaves out what a row lacks, and a logo the site does not hold', () => {
     const [row] = sponsorRows([{ name: 'NAME', logo: 'sponsors/99.jpg' }], logos)
-    expect(row).toEqual({ name: 'NAME', web: '', labelHtml: '', remarksHtml: '', logoUrl: '' })
+    expect(row).toEqual({ region: '', name: 'NAME', web: '', labelHtml: '', remarksHtml: '', logoUrl: '' })
     expect(sponsorRows(undefined, logos)).toEqual([])
   })
 

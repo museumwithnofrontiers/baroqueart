@@ -12,12 +12,12 @@ import config from '../src/dataset.config.js'
 // band, the Partners page's About text and its Sponsors and Credits links,
 // legacy's credits page and its Sponsors page.
 //
-// Those texts come from legacy through the extraction (scripts/site-i18n).
-// Each block is left out until its text is there, so the page never prints
-// an entry's name. The fixtures below stand in for the extraction's output;
-// they are markers, not texts the site ships.
+// Those texts come from legacy through the extraction (scripts/site-i18n,
+// copied into locales/en.json). Each block is left out while its text is
+// missing, so the page never prints an entry's name: `messages` below is the
+// site's catalogue without the extracted entries, and the fixtures stand in
+// for them with markers, so each block is tested both ways.
 
-const messages = mergeMessages(sharedTexts, { en: ownTexts })
 const FIXTURES = {
   'core.footer.languagePolicy': 'LANGUAGE-POLICY-FIXTURE',
   'baroqueart.footer.copyright': 'COPYRIGHT-FIXTURE ',
@@ -28,7 +28,10 @@ const FIXTURES = {
   'baroqueart.sponsors.title': 'SPONSORS-TITLE-FIXTURE',
   'baroqueart.sponsors.localHeading': 'LOCAL-SPONSORS-FIXTURE',
 }
+const withoutExtracted = Object.fromEntries(Object.entries(ownTexts).filter(([key]) => !(key in FIXTURES)))
+const messages = mergeMessages(sharedTexts, { en: withoutExtracted })
 const extracted = mergeMessages(messages, { en: FIXTURES })
+const shipped = mergeMessages(sharedTexts, { en: ownTexts })
 
 // Vitest runs from the repository's root.
 const root = (path) => resolve(process.cwd(), path)
@@ -44,6 +47,19 @@ const HOME = '.mwnf-home__welcome'
 const PARTNERS = '.partners-credits'
 
 describe("legacy's chrome", () => {
+  it('ships every text the extraction delivers', () => {
+    for (const key of Object.keys(FIXTURES)) expect(ownTexts[key], key).toBeTruthy()
+    expect(ownTexts).not.toHaveProperty('baroqueart.partner.introDiscover')
+  })
+
+  it("shows legacy's cooperation band with the shipped texts, its countries linked to the Partners page", async () => {
+    const home = await mountOn('#/', shipped, HOME)
+    const links = [...home.host.querySelectorAll('.site-cooperation a')]
+    expect(links).toHaveLength(8)
+    expect(new Set(links.map((a) => a.getAttribute('href')))).toEqual(new Set(['#/partners']))
+    home.app.unmount()
+  }, 60000)
+
   it("declares legacy's favicon, served from public/", () => {
     const html = readFileSync(root('index.html'), 'utf8')
     expect(html).toMatch(/<link rel="icon" href="%BASE_URL%favicon\.ico"/)

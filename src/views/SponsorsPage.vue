@@ -2,14 +2,14 @@
 // Legacy's Local Sponsors page (atrium_sponsor_detail.php?id=BAR&flg=local):
 // one row per sponsor, in legacy's order. A row has the country label (on
 // the first row of a country only, "ITALY/ROME" for an Italian region), the
-// sponsor's name, its web address, legacy's remarks and its logo.
+// sponsor's region line and name, its web address, legacy's remarks (in
+// italics, as legacy sets them) and its logo.
 //
 // Sponsors are website copy (Pascal, 2026-10-20), not inventory data. The
 // rows come from legacy's sponsor tables through the extraction
 // (inventory-app scripts/site-i18n), written to src/legacy/sponsors.json as
-// `[{ label, name, web, remarks, logo }]`: `label` and `remarks` Markdown,
-// `logo` the file's path under theme/assets (`sponsors/34.jpg`). Until the
-// extraction delivers it, the page has no rows.
+// `[{ label, region, name, web, remarks, logo }]`: `label` and `remarks`
+// Markdown, `logo` the file's path under theme/assets (`sponsors/34.jpg`).
 import { useI18n } from '@museumwnf/viewer-core'
 import { assetMap, sponsorRows } from '../composables/sponsors.js'
 import { hasText } from '../composables/texts.js'
@@ -48,6 +48,7 @@ function back() {
     <div v-for="(sponsor, index) in sponsors" :key="index" class="sponsors-row">
       <div class="sponsors-row__label" v-html="sponsor.labelHtml"></div>
       <div class="sponsors-row__text">
+        <p v-if="sponsor.region">{{ sponsor.region }}</p>
         <p v-if="sponsor.name">{{ sponsor.name }}</p>
         <p v-if="sponsor.web">
           <a :href="`http://${sponsor.web}`" target="_blank" rel="noopener">{{ sponsor.web }}</a>
