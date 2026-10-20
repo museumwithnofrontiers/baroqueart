@@ -83,11 +83,6 @@
 .mwnf-sponsors {
   border-top: none;
 }
-/* The section is always there (src/SiteShell.vue); without the band, as on
-   every page but the home page, it shows nothing. */
-.mwnf-sponsors:not(:has(.site-cooperation)) {
-  display: none;
-}
 .site-cooperation {
   line-height: 19px;
   text-align: center;
@@ -103,4 +98,10 @@
 .site-cooperation a:hover {
   color: #ffffff;
   text-decoration: underline;
+}
+
+/* Legacy's one footer line: "… | Cookies | © Museum With No Frontiers …". */
+.mwnf-footer__links + .mwnf-footer__text::before {
+  content: "|";
+  padding-inline-end: var(--mwnf-footer-gap, 0.5rem);
 }

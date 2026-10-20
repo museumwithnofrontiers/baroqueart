@@ -79,6 +79,12 @@ describe("legacy's chrome", () => {
     expect(links.map((a) => a.getAttribute('target'))).toEqual([null, null, null, null, '_blank', '_blank'])
     expect(host.querySelector('.mwnf-footer__text').textContent)
       .toBe(`${ownTexts['baroqueart.footer.copyright']} ${new Date().getFullYear()}`)
+    // Legacy's six social-network icons follow the line (viewer-layout's
+    // mwnfSocialLinks).
+    const social = [...host.querySelectorAll('.mwnf-footer a')].map((a) => a.getAttribute('href'))
+      .filter((href) => !href.startsWith('https://www.museumwnf.org'))
+    expect(social).toHaveLength(6)
+    expect(social.some((href) => href.includes('youtube.com'))).toBe(true)
     // The rights-holder line is not legacy's (Pascal, 2026-10-20).
     expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
     app.unmount()

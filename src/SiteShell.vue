@@ -1,15 +1,16 @@
 <script setup>
 // A mount of the layout's SiteShell: the menu links, the active entry (off
-// `meta.section` through viewer-core's `useSection()`) and the offered
-// languages all come from `dataset.config.js`'s `navigation`, read inside
-// SiteShell itself through `useSiteConfig()`. What is left here:
+// `meta.section` through viewer-core's `useSection()`), the offered
+// languages, the footer's links and its social icons all come from
+// `dataset.config.js`'s `navigation`, read inside SiteShell itself through
+// `useSiteConfig()`. What is left here:
 //
 // - the header lockup, through the `#brand` slot (SiteShell renders it beside
 //   the computed nav links, unlike a full `#header` override): legacy's MWNF
 //   logo, linked to the portal as legacy links it, beside "Baroque Art";
-// - legacy's footer line, through the `#footer` slot: its links to the MWNF
-//   portal, in its order, then "© … 2004 – <year>". It replaces the layout's
-//   footer, whose rights-holder line legacy doesn't have;
+// - the footer line after the links, "© … 2004 – <year>", as legacy prints
+//   it. The layout draws no rights-holder line unless a site asks for it,
+//   and legacy has none;
 // - legacy's cooperation band on the home page (its `section.sponsors`), in
 //   the layout's sponsors section;
 // - `site-inner-page` on every page but the home page, which overrides.css
@@ -28,13 +29,13 @@ const section = useSection()
 // Legacy prints its `footer5` text and the current year after it. The stored
 // text ends in spaces the browser collapses to one; the extraction trims
 // them, so the line puts that one space back itself.
-const year = new Date().getFullYear()
+const copyright = computed(() => `${t('baroqueart.footer.copyright')} ${new Date().getFullYear()}`)
 
 const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.home.cooperation')) : ''))
 </script>
 
 <template>
-  <SiteShell v-bind="$attrs" :class="{ 'site-inner-page': section !== 'home' }">
+  <SiteShell v-bind="$attrs" :class="{ 'site-inner-page': section !== 'home' }" :footer-text="copyright">
     <template #brand>
       <span class="site-brand">
         <a class="site-portal-logo" href="https://www.museumwnf.org">
@@ -44,24 +45,8 @@ const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.
       </span>
     </template>
     <slot />
-    <!-- Always passed: AppSponsors (viewer-layout 3.3.0) reads whether it has
-         a slot in a computed, which never updates, so a slot that appears
-         after the first render (the route resolves after it) would never
-         show. overrides.css hides the section while it holds no band. -->
-    <template #sponsors>
-      <div v-if="cooperation" class="site-cooperation" v-html="cooperation"></div>
-    </template>
-    <template #footer>
-      <!-- Language Policy and Cookies open in a new tab, as legacy opens them. -->
-      <ul class="mwnf-footer__links">
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about">{{ $t('core.footer.aboutMwnf') }}</a></li>
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/contact">{{ $t('core.footer.contact') }}</a></li>
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/legal-notice">{{ $t('core.footer.legalNotice') }}</a></li>
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a></li>
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/language-policy" target="_blank" rel="noopener">{{ $t('core.footer.languagePolicy') }}</a></li>
-        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/cookies" target="_blank" rel="noopener">{{ $t('core.footer.cookies') }}</a></li>
-      </ul>
-      <p class="mwnf-footer__text">{{ $t('baroqueart.footer.copyright') }} {{ year }}</p>
+    <template v-if="cooperation" #sponsors>
+      <div class="site-cooperation" v-html="cooperation"></div>
     </template>
   </SiteShell>
 </template>
@@ -86,10 +71,5 @@ const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.
 }
 .site-logo:hover {
   color: var(--mwnf-header-text);
-}
-/* Legacy's one line: "… | Cookies | © Museum With No Frontiers …". */
-.mwnf-footer__links + .mwnf-footer__text::before {
-  content: "|";
-  padding-inline-end: var(--mwnf-footer-gap, 0.5rem);
 }
 </style>

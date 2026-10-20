@@ -1,4 +1,5 @@
 import { languageLabels, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
+import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
 import SiteShell from './SiteShell.vue'
 import bannerHome from '../theme/assets/banner.jpg'
 import bannerInside from '../theme/assets/banner_inside.jpg'
@@ -83,6 +84,20 @@ export default {
       { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
       { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
     ],
+    // Legacy's footer links to the MWNF portal, in its order; only Language
+    // Policy and Cookies open in a new tab, as on legacy. The labels are
+    // legacy's, extracted into locales/en.json. src/SiteShell.vue passes the
+    // copyright line that follows them.
+    footerLinks: [
+      { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
+      { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
+      { label: 'core.footer.legalNotice', href: 'https://www.museumwnf.org/about/legal-notice' },
+      { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
+      { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
+      { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
+    ],
+    // Legacy's six social-network icons, after the footer line.
+    socialLinks: mwnfSocialLinks,
   },
 
   // Legacy's picture banners: the home page's, its title part of the
