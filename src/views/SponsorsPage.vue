@@ -10,11 +10,8 @@
 // (inventory-app scripts/site-i18n), written to src/legacy/sponsors.json as
 // `[{ label, region, name, web, remarks, logo }]`: `label` and `remarks`
 // Markdown, `logo` the file's path under theme/assets (`sponsors/34.jpg`).
-import { useI18n } from '@museumwnf/viewer-core'
 import { assetMap, sponsorRows } from '../composables/sponsors.js'
-import { hasText } from '../composables/texts.js'
-
-const extracted = import.meta.glob('../legacy/sponsors.json', { eager: true, import: 'default' })
+import rows from '../legacy/sponsors.json'
 
 // theme/assets/sponsors, fingerprinted by Vite, keyed as the rows name them.
 const logos = assetMap(
@@ -22,11 +19,7 @@ const logos = assetMap(
   '../../theme/assets/',
 )
 
-const sponsors = sponsorRows(Object.values(extracted)[0], logos)
-
-const { t } = useI18n()
-const TITLE = 'baroqueart.sponsors.title'
-const HEADING = 'baroqueart.sponsors.localHeading'
+const sponsors = sponsorRows(rows, logos)
 
 function back() {
   window.history.back()
@@ -35,7 +28,7 @@ function back() {
 
 <template>
   <div class="sponsors-page">
-    <h1 v-if="hasText(t, TITLE)" class="mwnf-heading">{{ t(TITLE) }}</h1>
+    <h1 class="mwnf-heading">{{ $t('baroqueart.sponsors.title') }}</h1>
 
     <p class="sponsors-back">
       <a href="#" @click.prevent="back">{{ $t('core.action.back') }}</a>
@@ -43,7 +36,7 @@ function back() {
       <router-link :to="{ name: 'partners-results', query: { type: 'institution' } }">{{ $t('standalone.partner.others') }}</router-link>
     </p>
 
-    <h2 v-if="hasText(t, HEADING)" class="sponsors-heading">{{ t(HEADING) }}</h2>
+    <h2 class="sponsors-heading">{{ $t('baroqueart.sponsors.localHeading') }}</h2>
 
     <div v-for="(sponsor, index) in sponsors" :key="index" class="sponsors-row">
       <div class="sponsors-row__label" v-html="sponsor.labelHtml"></div>

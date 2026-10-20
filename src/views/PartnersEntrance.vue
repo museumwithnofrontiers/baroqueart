@@ -1,16 +1,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { I18nText, useI18n } from '@museumwnf/viewer-core'
-import { hasText } from '../composables/texts.js'
+import { I18nText } from '@museumwnf/viewer-core'
 
 const router = useRouter()
-const { t } = useI18n()
-
-// Legacy's "About" text for this page (4:PartnerMuseumIntro_DBA), delivered
-// by the extraction; nothing is shown in its place until it is there.
-const ABOUT = 'baroqueart.partner.about'
-// Legacy's label of the Sponsors link (3:pm_home_sponsors).
-const SPONSORS = 'baroqueart.partner.sponsors'
 
 function browse(type) {
   router.push({ path: '/partners/results', query: { type } })
@@ -22,7 +14,8 @@ function browse(type) {
     <h1 class="mwnf-heading">{{ $t('core.nav.partners') }}</h1>
 
     <div class="mwnf-panel">
-      <I18nText v-if="hasText(t, ABOUT)" tag="p" class="intro-text" :keypath="ABOUT" />
+      <!-- Legacy's "About" text for this page (4:PartnerMuseumIntro_DBA). -->
+      <I18nText tag="p" class="intro-text" keypath="baroqueart.partner.about" />
 
       <table class="mwnf-form-table filter-table">
         <tbody>
@@ -41,10 +34,10 @@ function browse(type) {
         </tbody>
       </table>
 
-      <!-- Legacy's last two links on this page: its Sponsors page (once its
-           label is extracted) and the MWNF credits, on the portal. -->
-      <p v-if="hasText(t, SPONSORS)" class="partners-sponsors">
-        <router-link :to="{ name: 'sponsors' }">{{ t(SPONSORS) }}</router-link>
+      <!-- Legacy's last two links on this page: its Sponsors page and the
+           MWNF credits, on the portal. -->
+      <p class="partners-sponsors">
+        <router-link :to="{ name: 'sponsors' }">{{ $t('baroqueart.partner.sponsors') }}</router-link>
       </p>
       <p class="partners-credits">
         <a href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a>

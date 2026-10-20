@@ -1,6 +1,5 @@
 import { languageLabels, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
 import SiteShell from './SiteShell.vue'
-import { hasText } from './composables/texts.js'
 import bannerHome from '../theme/assets/banner.jpg'
 import bannerInside from '../theme/assets/banner_inside.jpg'
 
@@ -21,8 +20,6 @@ const languages = offeredLanguages()
 // menu entry); the shell reads it through viewer-core's `useSection()` to
 // mark the active menu entry, rather than deriving it from the path.
 const meta = (section, entities = []) => ({ section, entities })
-
-const CREDITS_BODY = 'baroqueart.credits.body'
 
 export default {
   // The dataset package this website renders. Must match the alias in
@@ -85,17 +82,6 @@ export default {
       { section: 'timeline', label: 'core.nav.timeline', to: { name: 'timeline' } },
       { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
       { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
-    ],
-    // Legacy's footer links to the MWNF portal, in its order, drawn by
-    // src/SiteShell.vue before the copyright. Language Policy and Cookies
-    // open in a new tab, as legacy opens them.
-    footerLinks: [
-      { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
-      { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
-      { label: 'core.footer.legalNotice', href: 'https://www.museumwnf.org/about/legal-notice' },
-      { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
-      { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
-      { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
     ],
   },
 
@@ -195,15 +181,14 @@ export default {
     },
     {
       // Legacy's own credits page (mwnf_credit.php), which no menu entry
-      // opens: other MWNF sites link to it. Its text comes from legacy
-      // through the extraction; until it is there the page has its title only.
+      // opens: other MWNF sites link to it. Its text is legacy's, extracted.
       path: '/credits',
       name: 'credits',
       component: () => import('@museumwnf/viewer-layout/views').then((views) => views.TextPageView),
       props: {
         spec: {
           heading: 'core.section.credits',
-          body: ({ t }) => (hasText(t, CREDITS_BODY) ? t(CREDITS_BODY) : ''),
+          body: 'baroqueart.credits.body',
           back: false,
         },
       },

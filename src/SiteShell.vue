@@ -7,40 +7,28 @@
 // - the header lockup, through the `#brand` slot (SiteShell renders it beside
 //   the computed nav links, unlike a full `#header` override): legacy's MWNF
 //   logo, linked to the portal as legacy links it, beside "Baroque Art";
-// - legacy's footer line, through the `#footer` slot: the portal links of
-//   `navigation.footerLinks`, then "© … 2004 – <year>". It replaces the
-//   layout's footer, whose rights-holder line legacy doesn't have. A link
-//   whose label the extraction (scripts/site-i18n) has not delivered yet is
-//   left out rather than printing its name;
+// - legacy's footer line, through the `#footer` slot: its links to the MWNF
+//   portal, in its order, then "© … 2004 – <year>". It replaces the layout's
+//   footer, whose rights-holder line legacy doesn't have;
 // - legacy's cooperation band on the home page (its `section.sponsors`), in
-//   the layout's sponsors section, once its text is there;
+//   the layout's sponsors section;
 // - `site-inner-page` on every page but the home page, which overrides.css
 //   reads to cut the inner banner to legacy's band.
+//
+// The texts are legacy's, extracted by inventory-app scripts/site-i18n into
+// locales/en.json.
 import { computed } from 'vue'
-import { md, useI18n, useSection, useSiteConfig } from '@museumwnf/viewer-core'
+import { md, useI18n, useSection } from '@museumwnf/viewer-core'
 import { SiteShell } from '@museumwnf/viewer-layout/components'
 import logo from '../theme/assets/logo_bar_en.png'
-import { hasText } from './composables/texts.js'
 
 const { t } = useI18n()
 const section = useSection()
-const siteConfig = useSiteConfig()
 
-const footerLinks = computed(() => (siteConfig.navigation?.footerLinks ?? [])
-  .filter((link) => hasText(t, link.label))
-  .map((link) => ({ ...link, label: t(link.label) })))
+// Legacy prints its `footer5` text and the current year straight after it.
+const year = new Date().getFullYear()
 
-// Legacy prints its `footer5` text and the current year after it. Until the
-// extraction delivers that text, the shared line stands in.
-const COPYRIGHT = 'baroqueart.footer.copyright'
-const copyright = computed(() => (
-  hasText(t, COPYRIGHT) ? `${t(COPYRIGHT)}${new Date().getFullYear()}` : t('standalone.identity.copyright')
-))
-
-const COOPERATION = 'baroqueart.home.cooperation'
-const cooperation = computed(() => (
-  section.value === 'home' && hasText(t, COOPERATION) ? md(t(COOPERATION)) : ''
-))
+const cooperation = computed(() => (section.value === 'home' ? md(t('baroqueart.home.cooperation')) : ''))
 </script>
 
 <template>
@@ -62,17 +50,16 @@ const cooperation = computed(() => (
       <div v-if="cooperation" class="site-cooperation" v-html="cooperation"></div>
     </template>
     <template #footer>
+      <!-- Language Policy and Cookies open in a new tab, as legacy opens them. -->
       <ul class="mwnf-footer__links">
-        <li v-for="link in footerLinks" :key="link.href">
-          <a
-            class="mwnf-footer__link"
-            :href="link.href"
-            :target="link.external ? '_blank' : undefined"
-            :rel="link.external ? 'noopener' : undefined"
-          >{{ link.label }}</a>
-        </li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about">{{ $t('core.footer.aboutMwnf') }}</a></li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/contact">{{ $t('core.footer.contact') }}</a></li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/legal-notice">{{ $t('core.footer.legalNotice') }}</a></li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/credits">{{ $t('core.footer.credits') }}</a></li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/language-policy" target="_blank" rel="noopener">{{ $t('core.footer.languagePolicy') }}</a></li>
+        <li><a class="mwnf-footer__link" href="https://www.museumwnf.org/about/cookies" target="_blank" rel="noopener">{{ $t('core.footer.cookies') }}</a></li>
       </ul>
-      <p class="mwnf-footer__text">{{ copyright }}</p>
+      <p class="mwnf-footer__text">{{ $t('baroqueart.footer.copyright') }}{{ year }}</p>
     </template>
   </SiteShell>
 </template>
