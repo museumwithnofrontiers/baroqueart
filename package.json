@@ -14,10 +14,10 @@
     "namespace": "baroqueart"
   },
   "dependencies": {
-    "@museumwnf/baroqueart-data": "^2.0.22",
-    "@museumwnf/viewer-core": "^2.6.0",
-    "@museumwnf/viewer-i18n": "^6.0.0",
-    "@museumwnf/viewer-layout": "^3.4.0",
+    "@museumwnf/baroqueart-data": "^2.0.23",
+    "@museumwnf/viewer-core": "^2.7.0",
+    "@museumwnf/viewer-i18n": "^6.1.0",
+    "@museumwnf/viewer-layout": "^3.5.0",
     "vue": "^3.5.0",
     "vue-router": "^5.0.0"
   },
