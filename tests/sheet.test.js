@@ -37,6 +37,20 @@ describe('item sheet spec', () => {
     expect(field.value({ record: { ...object, artist_names: [] }, text })).toBe('')
   })
 
+  it("prints the record's own materials line, and the type under its own heading", () => {
+    const fields = fieldsOf(object)
+    const materials = row(fields, 'materials')
+    expect(materials.label).toBe('sheet.field.materials')
+    expect(materials.value({ record: object, text: { materials: ['Silver, gilded; enamel.'], type: 'Monstrance' } })).toEqual([
+      'Silver, gilded; enamel.',
+    ])
+    expect(materials.join).toBe('; ')
+    expect(row(fields, 'type')).toMatchObject({ label: 'sheet.field.type', value: 'type' })
+    const keys = fields.map((f) => f.key)
+    expect(keys.indexOf('type')).toBeGreaterThan(keys.indexOf('provenance'))
+    expect(keys.indexOf('type')).toBeGreaterThan(keys.indexOf('workshop'))
+  })
+
   it('closes both sheets with the rights line', () => {
     for (const record of [object, monument]) {
       expect(sectionsOf(record).at(-1)).toMatchObject({ key: 'copyright', label: 'sheet.field.copyrightInformation', value: 'copyright' })
