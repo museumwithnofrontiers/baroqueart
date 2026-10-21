@@ -12,6 +12,7 @@ nothing is served from the legacy site or from `images.museumwnf.org`.
 | `logo_bar_en.png` | https://baroqueart.museumwnf.org/images/logo_bar_en.png | `1f17bace0ca1e67d9b222d051787dfefe5396598fe10e603df2a807cc97fa308` | the header (`src/dataset.config.js`, `standalone.logo`) |
 | `banner.jpg` | https://baroqueart.museumwnf.org/images/banner.jpg | `e191f371359dd4016f8bdcee137636a640f39144d4232867a5011c6330ef2283` | the home page's banner (`src/dataset.config.js`) |
 | `banner_inside.jpg` | https://baroqueart.museumwnf.org/images/banner_inside.jpg | `c04d8d84750a80aa7af15644f2a08656c9d5c03de1e41f2797e2b124e2a643d8` | every other page's banner (`src/dataset.config.js`) |
+| `random_image/DBA_new/1.jpg` … `75.jpg` (75 files) | https://baroqueart.museumwnf.org/random_image/DBA_new/<n>.jpg (copied from the legacy checkout; the live files are identical, checked 2026-10-21) | `1.jpg`: `c4651066283e07dcce7ba8d7940df660b7ae7f4627e8b02cc10c4b140b220c56` | today's highlight on the home page (`standalone.home.highlight.pictures`) |
 
 ## Kept for the legacy layout (not used yet)
 

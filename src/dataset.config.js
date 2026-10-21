@@ -94,6 +94,10 @@ export default {
         alsoKnownAs: 'baroqueart.home.alsoKnownAs',
         action: 'baroqueart.home.viewDescription',
         route: 'item',
+        // Legacy's own picture of the day (libs/class.homepage_item.inc.php):
+        // random_image/DBA_new/1.jpg to 75.jpg, a cycle of its own by the day
+        // of the year, kept under theme/assets/.
+        pictures: Array.from({ length: 75 }, (_, i) => `random_image/DBA_new/${i + 1}.jpg`),
       },
     },
   },
