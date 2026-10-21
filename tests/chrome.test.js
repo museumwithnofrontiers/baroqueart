@@ -29,7 +29,7 @@ async function mountOn(hash, selector) {
   await vi.waitFor(() => expect(mounted.host.querySelector(selector)).not.toBeNull(), { timeout: 30000 })
   return mounted
 }
-const HOME = '.mwnf-home__welcome'
+const HOME = '.mwnf-standalone-highlight'
 const PARTNERS = '.partners-credits'
 
 describe("legacy's chrome", () => {
@@ -43,25 +43,25 @@ describe("legacy's chrome", () => {
     expect(ownTexts).not.toHaveProperty('baroqueart.partner.introDiscover')
   })
 
-  it("puts legacy's MWNF logo in the header, linked to the portal", async () => {
+  it("puts legacy's logo in the header, linked to the portal", async () => {
     const { app, host } = await mountOn('#/', HOME)
-    const link = host.querySelector('.site-portal-logo')
-    expect(link.getAttribute('href')).toBe('https://www.museumwnf.org')
-    const img = link.querySelector('img')
+    const img = host.querySelector('.mwnf-header__brand-logo')
     expect(img.getAttribute('src')).toContain('logo_bar_en')
-    expect(img.getAttribute('alt')).toBe(sharedTexts.en['standalone.identity.organisation'])
+    expect(img.getAttribute('alt')).toBe(ownTexts['baroqueart.identity.title'])
+    expect(img.closest('a').getAttribute('href')).toMatch(/^https:\/\/www\.museumwnf\.org\/?$/)
     app.unmount()
   }, 60000)
 
   it("shows legacy's home banner on the home page and its band on the others", async () => {
     const home = await mountOn('#/', HOME)
     expect(home.host.querySelector('.mwnf-banner__image').getAttribute('src')).toMatch(/banner\.jpg|banner-/)
-    expect(home.host.querySelector('.site-inner-page')).toBeNull()
+    expect(home.host.querySelector('.mwnf-page').classList.contains('mwnf-standalone--home')).toBe(true)
     home.app.unmount()
 
+    // An inner page: legacy's band, titled with the section's own word.
     const inner = await mountOn('#/partners', PARTNERS)
-    expect(inner.host.querySelector('.site-inner-page')).not.toBeNull()
-    expect(inner.host.querySelector('.mwnf-banner__image').getAttribute('src')).toContain('banner_inside')
+    expect(inner.host.querySelector('.mwnf-page').classList.contains('mwnf-standalone--home')).toBe(false)
+    expect(inner.host.querySelector('.mwnf-standalone-banner').textContent.trim()).toBe(ownTexts['baroqueart.section.partners'])
     inner.app.unmount()
   }, 60000)
 
@@ -82,8 +82,8 @@ describe("legacy's chrome", () => {
       .toBe(`${ownTexts['baroqueart.footer.copyright']} ${new Date().getFullYear()}`)
     // Legacy's six social-network icons follow the line (viewer-layout's
     // mwnfSocialLinks).
-    const all = [...host.querySelectorAll('.mwnf-footer a')].map((a) => a.getAttribute('href'))
-    expect(all).toEqual([...links.map((a) => a.getAttribute('href')), ...mwnfSocialLinks.map((link) => link.href)])
+    const social = [...host.querySelectorAll('.mwnf-footer__social-link')].map((a) => a.getAttribute('href'))
+    expect(social).toEqual(mwnfSocialLinks.map((link) => link.href))
     expect(mwnfSocialLinks).toHaveLength(6)
     // The rights-holder line is not legacy's (Pascal, 2026-10-20).
     expect(host.querySelector('.mwnf-footer__attribution')).toBeNull()
@@ -92,13 +92,13 @@ describe("legacy's chrome", () => {
 
   it('shows the cooperation band on the home page only, its countries linked to the Partners page', async () => {
     const home = await mountOn('#/', HOME)
-    const links = [...home.host.querySelectorAll('.mwnf-sponsors .site-cooperation a')]
+    const links = [...home.host.querySelectorAll('.mwnf-sponsors a')]
     expect(links).toHaveLength(8)
     expect(new Set(links.map((a) => a.getAttribute('href')))).toEqual(new Set(['#/partners']))
     home.app.unmount()
 
     const inner = await mountOn('#/partners', PARTNERS)
-    expect(inner.host.querySelector('.site-cooperation')).toBeNull()
+    expect(inner.host.querySelector('.mwnf-sponsors')).toBeNull()
     inner.app.unmount()
   }, 60000)
 

@@ -222,3 +222,20 @@
      carries: the rule above the welcome and around the type badges. */
   --site-rule-color: #12376b;
 }
+
+/* ---------- The standalone family's chrome ----------
+ * viewer-layout's standalone family stylesheet, in legacy Discover Baroque
+ * Art's colours (css/style.css): the navy header, the menu's cells alternating
+ * navy and slate with white links and a pale gold hover, the slate band above
+ * the navy footer. */
+:root {
+  --mwnf-standalone-menu-background: #14214e;
+  --mwnf-standalone-menu-alt-background: #3f6289;
+  --mwnf-standalone-menu-link: #ffffff;
+  --mwnf-standalone-menu-hover: #f5da66;
+  --mwnf-standalone-header-link-color: #ffffff;
+  --mwnf-standalone-banner-height: 160px;
+  --mwnf-standalone-sponsors-background: #3f6289;
+  --mwnf-standalone-sponsors-padding: 36px;
+  --mwnf-standalone-sponsors-text-size: 16px;
+}

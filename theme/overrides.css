@@ -1,107 +1,19 @@
 /*
- * Legacy treatments that tokens cannot express — keep this file short;
- * anything a token can say, say with a token (theme/tokens.css).
+ * What tokens cannot express. The legacy chrome — the header, the menu, the
+ * banners, the cooperation band — is viewer-layout's standalone family
+ * stylesheet, themed by tokens.css. Left here: the cooperation band's text,
+ * white and centred on the slate band as legacy printed it, its country
+ * links white, underlined on hover.
  */
-
-/* Nav links are solid blocks with an alternating slate background and a
- * pale-gold hover, matching the old Discover Baroque Art blue bar. */
-.mwnf-nav__link {
-  display: inline-block;
-  padding: 0.5rem 1.25rem;
-  text-decoration: none;
-  transition:
-    color 0.15s,
-    background 0.15s;
-}
-.mwnf-nav__links li:nth-child(even) .mwnf-nav__link {
-  background: #3f6289;
-}
-.mwnf-nav__link:hover {
-  color: var(--mwnf-nav-link-active-color, #f5da66);
-  background: rgba(0, 0, 0, 0.15);
-  text-decoration: none;
-}
-.mwnf-nav__language {
-  padding-inline: 0.5rem;
-}
-/* The switcher label inherits the page text color, which is unreadable on
- * the navy bar; the select keeps its own light background and dark text. */
-.mwnf-nav__language-label {
-  color: var(--mwnf-nav-link-color, #ffffff);
-}
-
-/* The legacy header carries a 3px slate rule under the navy bar. */
-.mwnf-header {
-  border-bottom: 3px solid #3f6289;
-}
-
-.mwnf-footer {
-  text-align: center;
-}
-
-/*
- * The home page (viewer-layout's HomeView, `panels: true`): the welcome in
- * the site's panel under the accent rule, its title in the heading colour
- * at the legacy size and weight, the intro in the body text.
- */
-.mwnf-home__welcome {
-  border-top: 3px solid var(--site-rule-color);
-}
-.mwnf-home__title {
-  margin-bottom: 10px;
-  font-size: 20px;
-  font-weight: 400;
-  color: var(--mwnf-heading-color);
-}
-.mwnf-home__intro {
-  max-width: 680px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--mwnf-color-text);
-}
-
-/*
- * Legacy's picture banners (theme/assets): edge to edge, the home page's
- * at its full height, every other page's a 160px band cut from its picture,
- * as legacy's `background-size: cover` cuts it.
- */
-.mwnf-banner {
-  padding-inline: 0;
-}
-.mwnf-banner__image {
-  max-height: none;
-}
-.site-inner-page .mwnf-banner__image {
-  height: 160px;
-  object-fit: cover;
-}
-
-/*
- * The home page's cooperation band (legacy's section.sponsors): white text
- * centred on the slate band, its links white, underlined on hover.
- */
-.mwnf-sponsors {
-  border-top: none;
-}
-.site-cooperation {
-  line-height: 19px;
-  text-align: center;
+.mwnf-standalone-sponsors__text {
   color: #ffffff;
+  text-align: center;
 }
-.site-cooperation p {
-  margin: 0;
-}
-.site-cooperation a {
+.mwnf-standalone-sponsors__text a {
   color: #ffffff;
   text-decoration: none;
 }
-.site-cooperation a:hover {
+.mwnf-standalone-sponsors__text a:hover {
   color: #ffffff;
   text-decoration: underline;
-}
-
-/* Legacy's one footer line: "… | Cookies | © Museum With No Frontiers …". */
-.mwnf-footer__links + .mwnf-footer__text::before {
-  content: "|";
-  padding-inline-end: var(--mwnf-footer-gap, 0.5rem);
 }

@@ -1,8 +1,15 @@
-import { languageLabels, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
+import { languageLabels, mwnfLinks, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
 import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
-import SiteShell from './SiteShell.vue'
-import bannerHome from '../theme/assets/banner.jpg'
-import bannerInside from '../theme/assets/banner_inside.jpg'
+import { StandaloneShell } from '@museumwnf/viewer-layout/standalone'
+import homeItems from './home-items.json'
+
+// The chrome is legacy's own pictures, kept in this repository under
+// theme/assets/ (decision D7; theme/assets/SOURCES.md names where each one
+// was taken from), handed to the layout as one map that Vite builds and
+// fingerprints. The config below names a file by its path under theme/assets/.
+const chrome = import.meta.glob('../theme/assets/**/*.{jpg,jpeg,png,gif,svg}', {
+  eager: true, query: '?url', import: 'default',
+})
 
 // The whole declaration of this website. Before it mounts, the website reads
 // nothing from its package but the manifest: the languages it offers, their
@@ -42,68 +49,91 @@ export default {
 
   languages,
 
-  shell: SiteShell,
+  // viewer-layout's standalone family shell: legacy Discover Baroque Art's
+  // chrome (index.php, dbaTemplates/, includes/header_bottom.php), read from
+  // `standalone` below. Every text in this file is an entry of locales/,
+  // extracted from legacy by inventory-app's `scripts/site-i18n`
+  // (`extract:standalone`).
+  shell: StandaloneShell,
 
-  // The landing page, viewer-layout's `HomeView`: the welcome, the five
-  // sections as cards, and one item with an image on display, picked once
-  // per visit — every text an entry name, written out, that the view
-  // resolves. The welcome and the item sit in the site's panels.
-  home: {
-    title: 'baroqueart.home.title',
-    intro: 'baroqueart.home.intro',
-    cards: [
-      { title: 'standalone.nav.permanentCollection', description: 'standalone.home.permanentCollectionText', action: 'core.action.browse', to: { name: 'permanent-collection' } },
-      { title: 'standalone.nav.database', description: 'standalone.home.databaseText', action: 'core.action.search', to: { name: 'database' } },
-      { title: 'core.nav.timeline', description: 'standalone.home.timelineText', action: 'core.action.explore', to: { name: 'timeline' } },
-      { title: 'core.nav.partners', description: 'standalone.home.partnersText', action: 'core.action.browse', to: { name: 'partners' } },
-      { title: 'standalone.nav.exhibitions', description: 'baroqueart.home.exhibitionsText', action: 'core.action.explore', to: { name: 'exhibitions' } },
-    ],
-    featured: {
-      entity: 'items',
-      heading: 'standalone.home.itemOnDisplay',
-      action: 'core.action.viewDetails',
-      route: 'item',
-      eyebrow: (record) => record.type,
-      meta: ['location', 'dates'],
+  chrome,
+
+  standalone: {
+    // The logo links to the MWNF portal, as legacy's did.
+    logo: {
+      src: 'logo_bar_en.png',
+      alt: 'baroqueart.identity.title',
+      href: mwnfLinks.portal,
+      print: 'logo_print.gif',
     },
-    panels: true,
+    heading: 'baroqueart.identity.heading',
+    headerLinks: [
+      { label: 'baroqueart.nav.portal', href: mwnfLinks.portal },
+      { label: 'baroqueart.nav.home', to: { name: 'home' }, on: 'inner' },
+    ],
+    banner: { home: 'banner.jpg', inner: 'banner_inside.jpg' },
+    // libs/config.inc.php offers English only: no switcher.
+    languages: false,
+    copyright: 'baroqueart.footer.copyright',
+    // The band above the footer on the home page (dbaTemplates/bottomSection1.php):
+    // legacy's two words, its country names linked to the Partners page.
+    sponsors: {
+      on: 'home',
+      columns: [{ width: 12, text: 'baroqueart.home.cooperation' }],
+    },
+    // The home page's two columns (dbaTemplates/leftLink.php, randomText.php):
+    // the one side link, and the item of the day from legacy's own list
+    // (data/home_items_img_dba_new.txt).
+    home: {
+      links: [
+        { label: 'baroqueart.home.credits', href: mwnfLinks.credits },
+      ],
+      highlight: {
+        list: homeItems,
+        heading: 'baroqueart.home.highlight',
+        alsoKnownAs: 'baroqueart.home.alsoKnownAs',
+        action: 'baroqueart.home.viewDescription',
+        route: 'item',
+      },
+    },
   },
 
-  // The legacy site's own top-level sections, in its own order — this site
-  // has no Dynasties or Artistic Introduction. `label` is an entry name,
-  // resolved by SiteShell through `t()`; `section` is matched against
-  // `useSection()` (itself read off a route's `meta.section`) to mark the
-  // active menu entry, never derived from the path.
+  // The menu, in legacy's order (index.php, includes/header_bottom.php): each
+  // label an entry name, the entry whose `section` matches the route's
+  // `meta.section` marked active. My Collection leaves for the portal, as
+  // legacy's did. It sits under the home page's picture, and above every
+  // other page's band.
   navigation: {
     languages: languageLabels(languages),
     links: [
-      { section: 'home', label: 'core.nav.home', to: { name: 'home' } },
-      { section: 'permanent-collection', label: 'standalone.nav.permanentCollection', to: { name: 'permanent-collection' } },
-      { section: 'database', label: 'standalone.nav.database', to: { name: 'database' } },
-      { section: 'timeline', label: 'core.nav.timeline', to: { name: 'timeline' } },
-      { section: 'partners', label: 'core.nav.partners', to: { name: 'partners' } },
-      { section: 'exhibitions', label: 'standalone.nav.exhibitions', to: { name: 'exhibitions' } },
+      { section: 'permanent-collection', label: 'baroqueart.nav.permanentCollection', to: { name: 'permanent-collection' } },
+      { section: 'database', label: 'baroqueart.nav.database', to: { name: 'database' } },
+      { section: 'exhibitions', label: 'baroqueart.nav.exhibitions', to: { name: 'exhibitions' } },
+      { section: 'partners', label: 'baroqueart.nav.partners', to: { name: 'partners' } },
+      { section: 'timeline', label: 'baroqueart.nav.timeline', to: { name: 'timeline' } },
+      { label: 'baroqueart.nav.myCollection', href: mwnfLinks.myCollection, external: true },
     ],
-    // Legacy's footer links to the MWNF portal, in its order; only Language
-    // Policy and Cookies open in a new tab, as on legacy. The labels are
-    // legacy's, extracted into locales/en.json. src/SiteShell.vue passes the
-    // copyright line that follows them.
+    placement: ({ section }) => (section === 'home' ? 'after-banner' : 'before-banner'),
+    // Legacy's footer links to the MWNF portal (includes/footer.php), in its
+    // order; only Language Policy and Cookies open in a new tab, as on legacy.
+    // The copyright line and the year follow (`standalone.copyright`).
     footerLinks: [
-      { label: 'core.footer.aboutMwnf', href: 'https://www.museumwnf.org/about' },
-      { label: 'core.footer.contact', href: 'https://www.museumwnf.org/about/contact' },
-      { label: 'core.footer.legalNotice', href: 'https://www.museumwnf.org/about/legal-notice' },
-      { label: 'core.footer.credits', href: 'https://www.museumwnf.org/about/credits' },
+      { label: 'core.footer.aboutMwnf', href: mwnfLinks.about },
+      { label: 'core.footer.contact', href: mwnfLinks.contact },
+      { label: 'core.footer.legalNotice', href: mwnfLinks.legalNotice },
+      { label: 'core.footer.credits', href: mwnfLinks.credits },
       { label: 'core.footer.languagePolicy', href: 'https://www.museumwnf.org/about/language-policy', external: true },
-      { label: 'core.footer.cookies', href: 'https://www.museumwnf.org/about/cookies', external: true },
+      { label: 'core.footer.cookies', href: mwnfLinks.cookies, external: true },
     ],
     // Legacy's six social-network icons, after the footer line.
     socialLinks: mwnfSocialLinks,
-  },
-
-  // Legacy's picture banners: the home page's, its title part of the
-  // picture, and the band every other page shows (theme/assets, D7).
-  banner: {
-    image: ({ section }) => (section === 'home' ? bannerHome : bannerInside),
+    // The title on each section's band (legacy's SectionTitle() per page).
+    sectionTitles: {
+      'permanent-collection': 'baroqueart.section.permanentCollection',
+      database: 'baroqueart.section.database',
+      partners: 'baroqueart.section.partners',
+      timeline: 'baroqueart.nav.timeline',
+    },
   },
 
   // The route map: every route named, kebab-case sections, the package id in
@@ -116,8 +146,8 @@ export default {
     {
       path: '/',
       name: 'home',
-      component: () => import('@museumwnf/viewer-layout/views').then((views) => views.HomeView),
-      meta: meta('home', ['items']),
+      component: () => import('@museumwnf/viewer-layout/standalone').then((family) => family.StandaloneHome),
+      meta: meta('home', ['items', 'countries']),
     },
     {
       path: '/permanent-collection',
