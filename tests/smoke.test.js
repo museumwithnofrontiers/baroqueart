@@ -26,13 +26,19 @@ describe('website smoke test', () => {
     expect(host.textContent).toContain(config.siteName)
     expect(host.querySelector('.mwnf-page')).not.toBeNull()
 
-    // The home route renders viewer-layout's HomeView from `config.home`, in
-    // place of viewer-core's generic home view: the welcome and the five
-    // sections, the welcome in the site's panel.
+    // The home route renders legacy's home page (inventory-app#2233): the
+    // standalone family's chrome around the side link and the item of the
+    // day — no card grid, no welcome text legacy never had.
     expect(host.querySelector('.vc-home')).toBeNull()
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-home__welcome')).not.toBeNull(), { timeout: 15000 })
-    expect(host.querySelector('.mwnf-home__welcome').classList.contains('mwnf-panel')).toBe(true)
-    expect(host.querySelectorAll('.mwnf-cards__title')).toHaveLength(5)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-highlight')).not.toBeNull(), { timeout: 15000 })
+    expect(host.querySelector('.mwnf-cards')).toBeNull()
+    expect([...host.querySelectorAll('.mwnf-standalone-home__links li')].map((li) => li.textContent.trim())).toEqual(['Credits'])
+    expect(host.querySelector('.mwnf-standalone-highlight__heading').textContent).toBe('Today’s highlight from the Permanent Collection')
+    // Legacy's menu, in its order, and its cooperation band under the page.
+    expect([...host.querySelectorAll('.mwnf-nav__link')].map((l) => l.textContent.trim())).toEqual([
+      'Permanent Collection', 'Database', 'Exhibitions', 'Partners', 'Timeline', 'My Collection',
+    ])
+    expect(host.querySelector('.mwnf-sponsors').textContent).toContain('Discover Baroque Art has been created in cooperation with partners from')
 
     app.unmount()
     // Longer than vitest's default 5s. This mounts the whole website against
@@ -131,7 +137,6 @@ describe('website smoke test', () => {
     const { app, host } = await mount('#/timeline')
     await vi.waitFor(() => expect(host.querySelector('.mwnf-timeline')).not.toBeNull(), { timeout: 20000 })
     expect(host.querySelector('.mwnf-heading').textContent).toContain('Timeline')
-    expect(host.textContent).toContain('Explore historical events from the Baroque period')
     app.unmount()
   }, 30000)
 
@@ -489,13 +494,11 @@ describe('website smoke test', () => {
     const { app, host } = await mount()
 
     const text = host.textContent
-    // From viewer-i18n: the layout's skip link and the menu's first entry.
+    // From viewer-i18n: the layout's skip link.
     expect(text).toContain('Skip to content')
-    expect(text).toContain('Home')
-    // The header lockup (the logo's name is its alt text), a menu entry.
-    expect(host.querySelector('.site-portal-logo img').getAttribute('alt')).toBe('Museum With No Frontiers')
+    // The header's mark (the logo's name is its alt text), a menu entry.
+    expect(host.querySelector('.mwnf-header__brand-logo').getAttribute('alt')).toBe('Discover Baroque Art - Virtual Museum')
     expect(text).toContain('Permanent Collection')
-    expect(text).toContain('Welcome to Baroque Art')
     // Nothing rendered as a bare entry name, which is what a missing text
     // looks like — there is no exception to throw for one. Every namespace
     // a page actually reads, not just this site's own: a raw shared key
@@ -508,7 +511,7 @@ describe('website smoke test', () => {
     app.unmount()
   }, 20000)
 
-  // The footer is legacy's line (src/SiteShell.vue): its Legal Notice link is
+  // The footer is legacy's line (the standalone shell): its Legal Notice link is
   // the page the package's terms of use name, and there is no rights-holder
   // sentence, which legacy doesn't have (Pascal, 2026-10-20).
   it("links legacy's Legal Notice, the package's terms of use, from the footer", async () => {

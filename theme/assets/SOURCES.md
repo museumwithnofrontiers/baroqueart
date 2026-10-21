@@ -9,7 +9,7 @@ nothing is served from the legacy site or from `images.museumwnf.org`.
 | File | Legacy URL | sha256 | Used in |
 |---|---|---|---|
 | `public/favicon.ico` (served as is, so it lives in `public/`, not here) | https://baroqueart.museumwnf.org/favicon.ico | `35ee0786acc6fd844652b764fc5f58be3c664ce299c70a754b40f5d8a89c7496` | `index.html` |
-| `logo_bar_en.png` | https://baroqueart.museumwnf.org/images/logo_bar_en.png | `1f17bace0ca1e67d9b222d051787dfefe5396598fe10e603df2a807cc97fa308` | the header (`src/SiteShell.vue`) |
+| `logo_bar_en.png` | https://baroqueart.museumwnf.org/images/logo_bar_en.png | `1f17bace0ca1e67d9b222d051787dfefe5396598fe10e603df2a807cc97fa308` | the header (`src/dataset.config.js`, `standalone.logo`) |
 | `banner.jpg` | https://baroqueart.museumwnf.org/images/banner.jpg | `e191f371359dd4016f8bdcee137636a640f39144d4232867a5011c6330ef2283` | the home page's banner (`src/dataset.config.js`) |
 | `banner_inside.jpg` | https://baroqueart.museumwnf.org/images/banner_inside.jpg | `c04d8d84750a80aa7af15644f2a08656c9d5c03de1e41f2797e2b124e2a643d8` | every other page's banner (`src/dataset.config.js`) |
 
@@ -20,7 +20,7 @@ partners and timeline boxes, the Virtual Exhibitions area and the Sponsors page.
 
 | File | Legacy URL | sha256 | Legacy use |
 |---|---|---|---|
-| `logo_print.gif` | https://baroqueart.museumwnf.org/images/logo_print.gif | `d41dcb290764beb9f74a6bc4a2d5f9c642286a6e9694b1ba892b1119e5160fe8` | the logo printed on every inner page |
+| `logo_print.gif` | https://baroqueart.museumwnf.org/images/logo_print.gif | `d41dcb290764beb9f74a6bc4a2d5f9c642286a6e9694b1ba892b1119e5160fe8` | the logo printed on every inner page (`standalone.logo.print`) |
 | `partner_bg.jpg` | https://baroqueart.museumwnf.org/images/partner_bg.jpg | `9229a0cf0b90da8f4fc84333a4ded54f99fdeba45b505535e786e4170c4c76f4` | the picture box of the Partners page |
 | `hcr_header.gif` | https://baroqueart.museumwnf.org/images/hcr_header.gif | `0df2e67becc58502ba88c59ce04cb480d521d1aac0060b76483de8ed5c995c62` | the header of the timeline box |
 | `exhibitions/bg.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/bg.jpg | `be6647f38b5c49cf52d57309fd149c30dc20c9ea4da158f764fbc7f3f5d62fff` | the Virtual Exhibitions background |
