@@ -76,6 +76,7 @@ const thgGalleryGroups = (record) => [{
         :language="language"
         :glossary="glossary"
         :dir="dir"
+        :picture-limit="6"
       />
       <RelatedMedia :media="record.media ?? []" :language="language" heading="record.related.video" :dir="dir" />
       <OnDisplayIn :groups="onDisplayInGroups(record)" :dir="dir" />

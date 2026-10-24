@@ -30,8 +30,9 @@ const objectFacts = [
   // rendered by ItemDetail.vue's `holder` slot (decision D3).
   { key: 'holder', label: 'sheet.field.holdingMuseum', value: 'holder', render: 'custom' },
   { key: 'date', label: 'sheet.field.dateOfObject', value: 'dates' },
-  // The artist's life data in brackets after the artist, as legacy printed it.
-  { key: 'artists', label: 'sheet.field.artists', value: (c) => artistLine((c.record.artist_names ?? []).join(', '), c.text) },
+  // The page's language's own artist line, then the artist's life data in
+  // brackets, as legacy printed it; nothing when that language has no line.
+  { key: 'artists', label: 'sheet.field.artists', value: (c) => artistLine(c.text.artist, c.text) },
   { key: 'scribe', label: 'sheet.field.scribe', value: 'scriber' },
   { key: 'inventoryNumber', label: 'sheet.field.inventoryNumber', value: (c) => c.record.owner_reference },
   // Legacy's Material(s) / Technique(s) line is the record's own materials
@@ -86,6 +87,9 @@ export const itemSheetSpec = {
   fields: (ctx) => (isMonument(ctx) ? monumentFacts : objectFacts),
   sections: (ctx) => (isMonument(ctx) ? monumentSections : objectSections),
   layout: 'table',
+  // Legacy's monument page fetched at most 15 pictures (`LIMIT 0,15`); an
+  // object page, all of them.
+  pictureLimit: (ctx) => (isMonument(ctx) ? 15 : 0),
   // Legacy's collapsible short description (`pc_view_sdesc`), folded under
   // the description when the item also carries the shorter text.
   shortDescription: 'short_description',
