@@ -32,9 +32,10 @@ describe('item sheet spec', () => {
   it("brackets the artist's life data after the artist", () => {
     const field = row(fieldsOf(object), 'artists')
     const text = { artist_birthdate: '1660', artist_birthplace: 'Chemnitz', artist_deathdate: '1736', artist_deathplace: 'Augsburg' }
-    expect(field.value({ record: object, text })).toBe('Andreas Matthäus (1660, Chemnitz-1736, Augsburg)')
-    expect(field.value({ record: object, text: {} })).toBe('Andreas Matthäus')
-    expect(field.value({ record: { ...object, artist_names: [] }, text })).toBe('')
+    expect(field.value({ record: object, text: { artist: 'Andreas Matthäus', ...text } })).toBe('Andreas Matthäus (1660, Chemnitz-1736, Augsburg)')
+    expect(field.value({ record: object, text: { artist: 'Andreas Matthäus' } })).toBe('Andreas Matthäus')
+    // A language without its own line prints none, whatever another language wrote.
+    expect(field.value({ record: object, text })).toBe('')
   })
 
   it("prints the record's own materials line, and the type under its own heading", () => {
