@@ -1,9 +1,9 @@
 <script setup>
-import { timelineLinkFor } from '@museumwnf/viewer-core'
+import { timelineLinkFor, useI18n } from '@museumwnf/viewer-core'
 import { BackLink, OnDisplayIn, PartnerPanel, RecordLanguages, RelatedMedia, SpecialFeatures } from '@museumwnf/viewer-layout/content'
 import { RecordView } from '@museumwnf/viewer-layout/views'
 import { useData } from '../composables/data.js'
-import { exhibitionLinksForItem } from '../composables/exhibitions.js'
+import { exhibitionLinksForItem, minisiteHref } from '../composables/exhibitions.js'
 import { partnerViewOf } from '../composables/partner.js'
 import { itemSheetSpec } from '../composables/sheet.js'
 
@@ -18,6 +18,7 @@ import { itemSheetSpec } from '../composables/sheet.js'
 defineProps({ id: { type: String, required: true } })
 
 const { mdInline, partnerById, tr } = useData()
+const { locale } = useI18n()
 
 const timelineLink = (record) => timelineLinkFor(record, { name: 'timeline-results' })
 
@@ -32,12 +33,12 @@ function holderPartner(record, language) {
   return partnerViewOf(partner, tr('partners', partner.id, language))
 }
 
+// Each exhibition page that places the item, on the exhibition's own website
+// (its mini-site), in the site's language.
 const onDisplayInGroups = (record) => [{
   links: exhibitionLinksForItem(record.id).map((l) => ({
     label: mdInline(l.label),
-    to: l.themeId
-      ? { name: 'exhibition-theme', params: { exhibitionId: l.exhibitionId, themeId: l.themeId } }
-      : { name: 'exhibition-introduction', params: { exhibitionId: l.exhibitionId } },
+    href: minisiteHref(l.exhibitionId, locale.value, l.at) ?? undefined,
   })),
 }]
 
