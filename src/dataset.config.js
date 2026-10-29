@@ -249,23 +249,28 @@ export default {
       component: () => import('./views/ExhibitionsEntrance.vue'),
       meta: meta('exhibitions', ['collections']),
     },
+    // Each exhibition is a website of its own now (src/minisites.json): the
+    // addresses this site gave its pages lead there.
     {
       path: '/exhibitions/:exhibitionId',
       name: 'exhibition',
-      component: () => import('./views/ExhibitionSplash.vue'),
+      component: () => import('./views/ExhibitionMoved.vue'),
+      props: true,
       meta: meta('exhibitions', ['collections']),
     },
     {
       path: '/exhibitions/:exhibitionId/introduction',
       name: 'exhibition-introduction',
-      component: () => import('./views/ExhibitionIntroduction.vue'),
-      meta: meta('exhibitions', ['collections', 'items', 'partners']),
+      component: () => import('./views/ExhibitionMoved.vue'),
+      props: true,
+      meta: meta('exhibitions', ['collections']),
     },
     {
       path: '/exhibitions/:exhibitionId/theme/:themeId',
       name: 'exhibition-theme',
-      component: () => import('./views/ExhibitionTheme.vue'),
-      meta: meta('exhibitions', ['collections', 'items', 'partners']),
+      component: () => import('./views/ExhibitionMoved.vue'),
+      props: true,
+      meta: meta('exhibitions', ['collections']),
     },
     {
       path: '/item/:id',
