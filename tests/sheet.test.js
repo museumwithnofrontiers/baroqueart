@@ -23,6 +23,17 @@ describe('item sheet spec', () => {
     }
   })
 
+  it("prints the location, the province and the country's name, as legacy's Location line", () => {
+    const countries = (entity) => (entity === 'countries' ? { cze: { name: 'Czech Republic' } } : {})
+    for (const record of [{ ...object, country_id: 'cze' }, { ...monument, country_id: 'cze' }]) {
+      const value = row(fieldsOf(record), 'location').value
+      expect(value({ record, translations: countries, text: { location: 'Governor’s Palace, Brno', province: 'Moravia.' } }))
+        .toBe('Governor’s Palace, Brno, Moravia, Czech Republic')
+    }
+    const nameless = { ...object, country_id: 'xyz' }
+    expect(row(fieldsOf(nameless), 'location').value({ record: nameless, translations: countries, text: { location: 'Brno' } })).toBe('Brno')
+  })
+
   it('puts the dynasty after the dimensions on an object and after the architects on a monument', () => {
     const keys = (record) => fieldsOf(record).map((f) => f.key)
     expect(keys(object).indexOf('dynasty')).toBe(keys(object).indexOf('dimensions') + 1)
