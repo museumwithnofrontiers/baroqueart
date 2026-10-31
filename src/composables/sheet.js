@@ -14,9 +14,19 @@ import { artistLine, removeEndingPoint } from '@museumwnf/viewer-core'
 // dynasties.
 const periodDynasty = (c) => removeEndingPoint(c.text.dynasty)
 
+// Legacy's Location line: the location and the province without their ending
+// period, then the country's name in the sheet's language ("Governor's
+// Palace, Brno, Moravia, Czech Republic").
+const locationWithCountry = (c) =>
+  [c.text.location, c.text.province]
+    .map((part) => removeEndingPoint(part ?? ''))
+    .concat(c.translations('countries')[c.record.country_id]?.name ?? '')
+    .filter(Boolean)
+    .join(', ')
+
 const monumentFacts = [
   { key: 'alsoKnownAs', label: 'sheet.field.alsoKnownAs', value: 'alternate_name' },
-  { key: 'location', label: 'sheet.field.location', value: 'location' },
+  { key: 'location', label: 'sheet.field.location', value: locationWithCountry },
   { key: 'date', label: 'sheet.field.dateOfMonument', value: 'dates' },
   { key: 'architects', label: 'sheet.field.architects', value: 'architects' },
   { key: 'dynasty', label: 'sheet.field.periodDynasty', value: periodDynasty },
@@ -25,7 +35,7 @@ const monumentFacts = [
 
 const objectFacts = [
   { key: 'alsoKnownAs', label: 'sheet.field.alsoKnownAs', value: 'alternate_name' },
-  { key: 'location', label: 'sheet.field.location', value: 'location' },
+  { key: 'location', label: 'sheet.field.location', value: locationWithCountry },
   // The holder text, then the partner it refers to (`PartnerPanel`'s summary),
   // rendered by ItemDetail.vue's `holder` slot (decision D3).
   { key: 'holder', label: 'sheet.field.holdingMuseum', value: 'holder', render: 'custom' },
@@ -83,7 +93,7 @@ const isMonument = (ctx) => ctx.record?.type === 'monument'
 
 export const itemSheetSpec = {
   entity: 'items',
-  translations: ['glossary'],
+  translations: ['glossary', 'countries'],
   fields: (ctx) => (isMonument(ctx) ? monumentFacts : objectFacts),
   sections: (ctx) => (isMonument(ctx) ? monumentSections : objectSections),
   layout: 'table',
