@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import {
-  CATALOGUE_DATE_MODE, CATALOGUE_PAGE_SIZE, centuryPresets, searchFieldOptions, searchRowKeys, searchSummary, useFacets, useFieldSearch,
+  CATALOGUE_DATE_MODE, CATALOGUE_PAGE_SIZE, SEARCH_LANGUAGE_KEY, centuryPresets, searchFieldOptions, searchRowKeys, searchSummary, useFacets,
+  useFieldSearch,
 } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
 import { FACETS, SEARCH_FIELDS } from './catalogue.js'
@@ -48,7 +49,7 @@ export const permanentCollectionSearchSpec = computed(() => ({
 // ── `/database/results`: the keyword search ────────────────────────────────
 //
 // `SearchFormView`'s own query keys (`q`/`field`, `q2`/`field2`/`op2`,
-// `q3`/`field3`/`op3`, `from`, `to`, `lang`), read the same way here as the
+// `q3`/`field3`/`op3`, `from`, `to`, `searchlanguage`), read the same way here as the
 // form writes them. `q4`/`field4`/`op4` are the refine row's own — the
 // site's, not the platform's, since the entrance is always three rows.
 
@@ -56,7 +57,7 @@ const { narrow } = useFieldSearch({ fields: SEARCH_FIELDS })
 
 export const databaseResultsSpec = {
   entity: 'items',
-  keys: [...searchRowKeys(), 'from', 'to', 'lang'],
+  keys: [...searchRowKeys(), 'from', 'to', SEARCH_LANGUAGE_KEY],
   narrow,
   dates: { mode: CATALOGUE_DATE_MODE, begin: 'from', end: 'to' },
   // Already ranked by `narrow` (`rank: 'hits'`) — a second, chronological
