@@ -1,7 +1,7 @@
 <script setup>
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSearchFieldOptions } from '@museumwnf/viewer-core'
+import { SEARCH_LANGUAGE_KEY, useSearchFieldOptions } from '@museumwnf/viewer-core'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
 import { useData } from '../composables/data.js'
 import { SEARCH_FIELDS } from '../composables/catalogue.js'
@@ -9,7 +9,7 @@ import { databaseResultsSpec } from '../composables/search.js'
 
 // The database results: the query in the URL, read the same way
 // `SearchFormView` writes it (`q`/`field`, `q2..4`/`field2..4`/`op2..4`,
-// `from`, `to`, `lang`); the eight fields and the AND/OR fold of
+// `from`, `to`, `searchlanguage`); the eight fields and the AND/OR fold of
 // database.php, run by viewer-core's field grammar (decision D3: ranked by
 // hit count, with the glossary and country expansions) over this website's
 // field map (`composables/catalogue.js`). What is this page's own is the
@@ -20,7 +20,7 @@ import { databaseResultsSpec } from '../composables/search.js'
 
 const route = useRoute()
 const { loadTranslations } = useData()
-watch(() => route.query.lang, (lang) => { if (lang) loadTranslations('items', lang) }, { immediate: true })
+watch(() => route.query[SEARCH_LANGUAGE_KEY], (lang) => { if (lang) loadTranslations('items', lang) }, { immediate: true })
 
 // Resolved once here, not per iteration in the template below — a template
 // that called `$t(f.label)` on a value out of an array would be a name the
