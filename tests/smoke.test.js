@@ -77,6 +77,21 @@ describe('website smoke test', () => {
   // Legacy's database_item.php in its three columns (the standalone family's
   // sheet): the way back and the pictures, the sheet opening on the record's
   // name under legacy's word, the Related Content column with Download.
+  // Legacy's "View Short Description" under the description, "Hide Short
+  // Description" while it is open (database_item.php's pc_view_sdesc and
+  // pc_hide_sdesc).
+  it("folds the short description behind legacy's words", async () => {
+    const [items] = await loadEntities(['items'])
+    const object = items.find((i) => i.backward_compatibility === 'mwnf3:objects:BAR:cz:Mus11:3')
+    const { app, host } = await mount(`#/item/${encodeURIComponent(object.id)}?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-sheet__toggle')).not.toBeNull(), { timeout: 20000 })
+    const toggle = host.querySelector('.mwnf-sheet__toggle')
+    expect(toggle.textContent.trim()).toBe('View Short Description')
+    toggle.click()
+    await vi.waitFor(() => expect(toggle.textContent.trim()).toBe('Hide Short Description'))
+    app.unmount()
+  }, 20000)
+
   it('renders the item sheet as legacy drew it', async () => {
     const [items] = await loadEntities(['items'])
     const object = items.find((i) => i.type === 'object') ?? items[0]
