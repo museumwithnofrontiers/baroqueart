@@ -71,6 +71,7 @@ export const databaseResultsSpec = {
   pagination: { window: 7 },
   // Legacy database_results.php's own row: the country, the date and the
   // location, distinct from the Permanent Collection's.
-  record: (item) => itemRow(item, ['country', 'dates', 'location']),
+  // The location and the province, as the package carries them apart.
+  record: (item) => itemRow(item, ['country', 'dates', (i, text) => [text.location, text.province].filter(Boolean).join(', ')]),
   summary: (ctx) => searchSummary(ctx),
 }
