@@ -115,19 +115,18 @@ describe("legacy's chrome", () => {
   }, 60000)
 
   it("renders legacy's Sponsors page: every row, every logo, and its links back to the partner lists", async () => {
-    const { app, host } = await mountOn('#/sponsors', '.sponsors-row')
-    expect(host.querySelector('.sponsors-page .mwnf-heading').textContent).toBe(ownTexts['baroqueart.sponsors.title'])
-    expect(host.querySelector('.sponsors-heading').textContent).toBe(ownTexts['baroqueart.sponsors.localHeading'])
-    expect(host.querySelectorAll('.sponsors-row')).toHaveLength(sponsorRows.length)
+    const { app, host } = await mountOn('#/sponsors', '.mwnf-standalone-sp__row')
+    expect(host.querySelector('.mwnf-standalone-sp__heading').textContent).toBe(ownTexts['baroqueart.sponsors.localHeading'])
+    expect(host.querySelectorAll('.mwnf-standalone-sp__row')).toHaveLength(sponsorRows.length)
     // Every logo a row names is one the site holds, and none comes from
     // images.museumwnf.org (D7).
-    const logos = [...host.querySelectorAll('.sponsors-row__logo img')].map((img) => img.getAttribute('src'))
+    const logos = [...host.querySelectorAll('.mwnf-standalone-sp__logo img')].map((img) => img.getAttribute('src'))
     expect(logos).toHaveLength(sponsorRows.filter((row) => row.logo).length)
     // Resolved against the page's own address, each stays on it.
     const page = 'https://baroqueart.site.test/'
     expect(logos.every((src) => src && new URL(src, page).origin === new URL(page).origin)).toBe(true)
-    const hrefs = [...host.querySelectorAll('.sponsors-back a')].map((a) => a.getAttribute('href'))
-    expect(hrefs.slice(1)).toEqual(['#/partners/results?type=museum', '#/partners/results?type=institution'])
+    const hrefs = [...host.querySelectorAll('.mwnf-standalone-sp__back a')].map((a) => a.getAttribute('href'))
+    expect(hrefs).toEqual(['#/partners/results?type=museum&lang=en', '#/partners/results?type=institution&lang=en'])
     app.unmount()
   }, 60000)
 

@@ -1,20 +1,18 @@
-import { md } from '@museumwnf/viewer-core'
-
-// The Sponsors page's rows: legacy's sponsor rows, as the extraction writes
-// them (src/legacy/sponsors.json, `[{ label, region, name, web, remarks,
-// logo }]`), with their Markdown rendered and their logo resolved to its
-// built URL. `region` is the line legacy prints above a sponsor's name;
-// `remarks` comes without legacy's italics, which the page adds. `logos`
-// maps a path under theme/assets (`sponsors/34.jpg`) to that URL; a row
-// whose logo the site doesn't hold shows none.
+// The Sponsors page's rows, as viewer-layout's StandaloneSponsorList takes
+// them: legacy's sponsor rows as the extraction writes them
+// (src/legacy/sponsors.json, `[{ label, region, name, web, remarks, logo }]`,
+// `label` and `remarks` Markdown), each logo resolved to its built URL.
+// `region` is the line legacy prints above a sponsor's name. `logos` maps a
+// path under theme/assets (`sponsors/34.jpg`) to that URL; a row whose logo
+// the site doesn't hold shows none.
 export function sponsorRows(rows, logos) {
   return (rows ?? []).map((row) => ({
+    label: row.label ?? '',
     region: row.region ?? '',
     name: row.name ?? '',
     web: row.web ?? '',
-    labelHtml: row.label ? md(row.label) : '',
-    remarksHtml: row.remarks ? md(row.remarks) : '',
-    logoUrl: row.logo ? logos[row.logo] ?? '' : '',
+    remarks: row.remarks ?? '',
+    logo: row.logo ? logos[row.logo] ?? '' : '',
   }))
 }
 

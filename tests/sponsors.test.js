@@ -9,21 +9,18 @@ import { assetMap, sponsorRows } from '../src/composables/sponsors.js'
 const logos = { 'sponsors/34.jpg': '/assets/34-abc.jpg' }
 
 describe('sponsor rows', () => {
-  it('renders the Markdown and resolves the logo', () => {
+  it('keeps the Markdown for the list to render and resolves the logo', () => {
     const [row] = sponsorRows([
       { label: 'COUNTRY/  \nREGION', region: 'REGION-LINE', name: 'NAME', web: 'www.example.org', remarks: '*REMARKS*', logo: 'sponsors/34.jpg' },
     ], logos)
-    expect(row.region).toBe('REGION-LINE')
-    expect(row.name).toBe('NAME')
-    expect(row.web).toBe('www.example.org')
-    expect(row.labelHtml).toContain('COUNTRY/<br')
-    expect(row.remarksHtml).toContain('<em>REMARKS</em>')
-    expect(row.logoUrl).toBe('/assets/34-abc.jpg')
+    expect(row).toEqual({
+      label: 'COUNTRY/  \nREGION', region: 'REGION-LINE', name: 'NAME', web: 'www.example.org', remarks: '*REMARKS*', logo: '/assets/34-abc.jpg',
+    })
   })
 
   it('leaves out what a row lacks, and a logo the site does not hold', () => {
     const [row] = sponsorRows([{ name: 'NAME', logo: 'sponsors/99.jpg' }], logos)
-    expect(row).toEqual({ region: '', name: 'NAME', web: '', labelHtml: '', remarksHtml: '', logoUrl: '' })
+    expect(row).toEqual({ label: '', region: '', name: 'NAME', web: '', remarks: '', logo: '' })
     expect(sponsorRows(undefined, logos)).toEqual([])
   })
 

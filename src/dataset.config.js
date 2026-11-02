@@ -137,6 +137,7 @@ export default {
       database: 'baroqueart.section.database',
       partners: 'baroqueart.section.partners',
       timeline: 'baroqueart.nav.timeline',
+      sponsors: 'baroqueart.sponsors.title',
     },
   },
 
@@ -219,7 +220,7 @@ export default {
       path: '/sponsors',
       name: 'sponsors',
       component: () => import('./views/SponsorsPage.vue'),
-      meta: meta('partners'),
+      meta: meta('sponsors'),
     },
     {
       path: '/partner/:id',
