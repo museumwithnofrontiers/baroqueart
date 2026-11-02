@@ -1,74 +1,60 @@
 <script setup>
+import { computed, watch } from 'vue'
 import { useI18n } from '@museumwnf/viewer-core'
-import { BackLink, PartnerPanel, RecordLanguages, RelatedRecords } from '@museumwnf/viewer-layout/content'
-import { RecordView } from '@museumwnf/viewer-layout/views'
-import { heldItemRow, heldItems, partnerObjectsLink, partnerSheetSpec, partnerViewOf } from '../composables/partner.js'
+import { StandalonePartnerPage } from '@museumwnf/viewer-layout/standalone'
+import { useData } from '../composables/data.js'
+import { listsAbout, partnerItemsLink, partnerProfileView } from '../composables/partner.js'
 
-// The partner profile: the platform's composed record page (the record's
-// language, its load, the not-found case), with viewer-layout's
-// `PartnerPanel` as its body — the name and location, the About/Contact/
-// Logo tabs and the homepage link (decision D2, inventory-app#2035), the
-// pictures, the map. What is this website's: the way back and the record's
-// languages, the type badge, the "View Objects/Monuments" action counted
-// from the package's own `item_count` (decision G.1 — never a scan of every
-// item), the map for a museum only, as legacy drew it, and the held items
-// under the panel.
+// The partner profile as legacy's pm_partner.php: the standalone family's
+// page (viewer-layout's `StandalonePartnerPage`), with what is this
+// website's: its ways back, its link to the partner's objects or monuments,
+// the languages its band offers, and every word legacy's own
+// (baroqueart.pp.*, baroqueart.pmi.*).
 
-defineProps({ id: { type: String, required: true } })
+const props = defineProps({ id: { type: String, required: true } })
 
-const { t } = useI18n()
+const { locale } = useI18n()
+const { loadTranslations, partnerById, translations } = useData()
 
-function viewItemsLabel(record) {
-  return record.type === 'institution' ? t('partner.action.viewMonuments') : t('partner.action.viewObjects')
-}
+// Legacy's band offered the languages whose text has a description
+// (getAvailableLang's `description<>''`): every one the partner carries is
+// loaded to tell.
+watch(
+  () => partnerById.value.get(props.id)?.languages,
+  (codes) => (codes ?? []).forEach((code) => loadTranslations('partners', code)),
+  { immediate: true },
+)
+const described = (record, code) => Boolean(translations('partners', code)?.[record.id]?.description)
+
+const list = (type) => ({ name: 'partners-results', query: { type, lang: locale.value } })
+const back = () => [
+  { label: 'baroqueart.pcr.back', history: true },
+  { label: 'baroqueart.pmi.partnerMuseums', to: list('museum') },
+  { label: 'baroqueart.pmi.otherPartners', to: list('institution') },
+  { label: 'baroqueart.partner.sponsors', to: { name: 'sponsors', query: { lang: locale.value } } },
+]
+
+// Legacy named the homepage after the partner's type.
+const labels = computed(() => ({
+  about: 'baroqueart.pp.about',
+  contact: 'baroqueart.pp.contact',
+  logo: 'baroqueart.pp.logo',
+  homepage: partnerById.value.get(props.id)?.type === 'institution' ? 'baroqueart.pp.institutionHomepage' : 'baroqueart.pp.museumHomepage',
+  addresses: 'baroqueart.pp.addresses',
+  phone: 'baroqueart.pp.phone',
+  fax: 'baroqueart.pp.fax',
+  map: 'baroqueart.pp.map',
+}))
 </script>
 
 <template>
-  <RecordView :spec="partnerSheetSpec" :id="id" class="detail mwnf-panel">
-    <template #header="{ language, languages, select }">
-      <BackLink variant="bar" label="partner.nav.back" :to="{ name: 'partners' }" />
-      <RecordLanguages :languages="languages" :language="language" @select="select" />
-    </template>
-
-    <template #before-sheet="{ record, text, dir }">
-      <PartnerPanel
-        variant="full"
-        :partner="partnerViewOf(record, text)"
-        :heading="1"
-        :show="{ map: record.type === 'museum' }"
-        :dir="dir"
-      >
-        <template #badge>
-          <div><span class="detail-type-badge">{{ record.type === 'institution' ? $t('partner.info.typeInstitution') : $t('partner.info.typeMuseum') }}</span></div>
-        </template>
-        <template #actions>
-          <RouterLink v-if="record.item_count" :to="partnerObjectsLink(record)" class="mwnf-button">
-            {{ viewItemsLabel(record) }} ({{ record.item_count }}) →
-          </RouterLink>
-        </template>
-      </PartnerPanel>
-    </template>
-
-    <template #related="{ record }">
-      <RelatedRecords
-        v-if="heldItems(record).length"
-        :heading="$t('record.related.items')"
-        :records="heldItems(record).map(heldItemRow)"
-        variant="list"
-      />
-    </template>
-  </RecordView>
+  <StandalonePartnerPage
+    :id="id"
+    :view="partnerProfileView"
+    :back="back"
+    :items="partnerItemsLink"
+    :about="listsAbout"
+    :languages="described"
+    :labels="labels"
+  />
 </template>
-
-<style scoped>
-.detail-type-badge {
-  display: inline-block;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--mwnf-heading-color);
-  border: 1px solid var(--site-rule-color);
-  padding: 2px 8px;
-  font-family: 'Roboto', sans-serif;
-}
-</style>

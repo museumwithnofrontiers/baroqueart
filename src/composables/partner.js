@@ -1,15 +1,15 @@
-import { CATALOGUE_PAGE_SIZE, partnerView } from '@museumwnf/viewer-core'
+import { CATALOGUE_PAGE_SIZE, partnerView, removeEndingPoint } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
 import { legacyOrder, resultTile } from './catalogue.js'
 
 // The partner pages: the partner lists on `/partners/results` (legacy's
-// pm_partner_list.php, PartnersResults.vue) and what viewer-layout's
-// `RecordView` renders on `/partner/:id`, with `PartnerPanel` as the page's
-// body (inventory-app#2035). What is declared here is only this website's:
-// the lists' groups, and the partner's view-model with this website's
-// routes.
+// pm_partner_list.php, PartnersResults.vue), the profile on `/partner/:id`
+// (pm_partner.php, viewer-layout's `StandalonePartnerPage`) and a partner's
+// objects on `/partner/:id/items`. What is declared here is only this
+// website's: the lists' groups, the partner's view-model with this
+// website's routes, and the objects page's records.
 
-const { countryLabel, items, itemRow, md, mdInline, partners, tr } = useData()
+const { countryLabel, md, mdInline, partners, tr } = useData()
 
 // Legacy's ORDER BY, as MySQL's utf8_general_ci compares: case and accents
 // folded, then character by character.
@@ -59,26 +59,39 @@ export function partnerListGroups(type) {
     })
 }
 
-/**
- * `/partner/:id`: the sheet declares nothing — no field, no section, no media
- * gallery of its own (the pictures are the panel's), no citation (legacy
- * never printed one on this page), no `related` (the held items are a reverse
- * lookup, `item.partner_id`, which PartnerDetail.vue's `#related` slot lists).
- */
-export const partnerSheetSpec = {
-  entity: 'partners',
-  fields: [],
-  shortDescription: false,
-  media: () => [],
-  citation: false,
-  related: false,
-}
-
 // Where a partner's "View Objects"/"View Monuments" lands: legacy's
 // pm_museum_items.php and pm_institution_items.php (PartnerItems.vue).
 export function partnerObjectsLink(partner) {
   return { name: 'partner-items', params: { id: partner.id } }
 }
+
+// The partner profile's pill to that page (PartnerDetail.vue): a museum's
+// objects, an institution's monuments, for a partner that holds any.
+export function partnerItemsLink(partner) {
+  if (!partner?.item_count) return null
+  return {
+    label: partner.type === 'institution' ? 'baroqueart.pp.viewMonuments' : 'baroqueart.pp.viewObjects',
+    to: partnerObjectsLink(partner),
+  }
+}
+
+// The profile's view-model, read as legacy's pm_partner.php printed it: the
+// name, the city and the contact lines without their ending period.
+const plain = (value) => (value ? removeEndingPoint(String(value)) : value)
+export function partnerProfileView(partner, text) {
+  const own = text ?? {}
+  const view = partnerViewOf(partner, {
+    ...own,
+    ...Object.fromEntries(['name', 'city', 'address', 'phone', 'fax', 'email'].map((key) => [key, plain(own[key])])),
+  })
+  view.persons = view.persons.map((person) =>
+    Object.fromEntries(Object.entries(person).map(([key, value]) => [key, typeof value === 'string' ? plain(value) : value])),
+  )
+  return view
+}
+
+// Legacy listed no About tab for its "Further Associated" entries.
+export const listsAbout = (partner) => !furtherAssociated(partner)
 
 // That page's records: a museum's objects, an institution's monuments, in
 // the Permanent Collection's order and tile, twenty a page.
@@ -108,13 +121,3 @@ export function partnerViewOf(partner, text) {
     objectsRoute: partnerObjectsLink,
   })
 }
-
-/** The items a partner holds — the reverse lookup `related: false` leaves to the view. */
-export function heldItems(partner) {
-  if (!partner) return []
-  return items.value.filter((item) => item.partner_id === partner.id)
-}
-
-// The row on a partner's own page: the country and the date, never the
-// holder's own name again.
-export const heldItemRow = (item) => itemRow(item, ['country', 'dates'])
