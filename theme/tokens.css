@@ -75,6 +75,10 @@
   --mwnf-footer-text-color: #ffffff;
   /* Legacy's footer line: 14px. */
   --mwnf-footer-text-size: 14px;
+  /* #social-media's icons: 3px apart on the inner pages (style_inside.css);
+     on a phone at the footer's foot, 25px in from the right. */
+  --mwnf-standalone-inner-footer-social-margin: 3px;
+  --mwnf-standalone-phone-footer-social-right: 25px;
   --mwnf-footer-justify: center; /* legacy: one centred line */
 
   /* ---------- Content: the record page ---------- */
