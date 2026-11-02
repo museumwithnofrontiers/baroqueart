@@ -138,5 +138,7 @@
   "core.footer.cookies": "Cookies",
   "core.footer.credits": "Credits",
   "core.footer.languagePolicy": "Language Policy",
-  "core.footer.legalNotice": "Legal Notice"
+  "core.footer.legalNotice": "Legal Notice",
+  "record.action.hideShortDescription": "Hide Short Description",
+  "record.action.viewShortDescription": "View Short Description"
 }
