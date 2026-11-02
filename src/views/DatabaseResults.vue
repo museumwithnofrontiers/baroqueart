@@ -1,71 +1,78 @@
 <script setup>
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { SEARCH_LANGUAGE_KEY, useSearchFieldOptions } from '@museumwnf/viewer-core'
+import { SEARCH_LANGUAGE_KEY, useI18n } from '@museumwnf/viewer-core'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
+import { StandalonePagination, StandaloneRefine, StandaloneResultsList } from '@museumwnf/viewer-layout/standalone'
 import { useData } from '../composables/data.js'
-import { SEARCH_FIELDS } from '../composables/catalogue.js'
 import { databaseResultsSpec } from '../composables/search.js'
 
-// The database results: the query in the URL, read the same way
-// `SearchFormView` writes it (`q`/`field`, `q2..4`/`field2..4`/`op2..4`,
-// `from`, `to`, `searchlanguage`); the eight fields and the AND/OR fold of
-// database.php, run by viewer-core's field grammar (decision D3: ranked by
-// hit count, with the glossary and country expansions) over this website's
-// field map (`composables/catalogue.js`). What is this page's own is the
-// refine row (a fourth keyword the entrance never offers) and the
-// search-language watch — a second `useListQuery` inside the spec would
-// fight the one `CatalogueResultsView` already keeps, so this reads the
-// route directly instead.
+// The database results as legacy's database_results.php: the "Refine your
+// search" band, the way back, the heading with the count, the records two
+// to a row beside the preview of the one hovered, and legacy's pages — the
+// standalone family's search results page (viewer-layout's
+// `mwnf-standalone-dbr`). The query, the search and the pages are
+// viewer-layout's `CatalogueResultsView` (composables/search.js's spec);
+// every word is legacy's own (baroqueart.dbr.*, baroqueart.pcr.*). The
+// search language's translations are loaded here: a second `useListQuery`
+// inside the spec would fight the one `CatalogueResultsView` keeps.
 
 const route = useRoute()
+const { t, locale } = useI18n()
 const { loadTranslations } = useData()
 watch(() => route.query[SEARCH_LANGUAGE_KEY], (lang) => { if (lang) loadTranslations('items', lang) }, { immediate: true })
 
-// Resolved once here, not per iteration in the template below — a template
-// that called `$t(f.label)` on a value out of an array would be a name the
-// check that every name resolves cannot see.
-const fieldOptions = useSearchFieldOptions(SEARCH_FIELDS)
+// Legacy's refine list: the entrance's fields but "Other".
+const refineFields = computed(() => [
+  { value: 'keyword', label: t('baroqueart.dbr.fieldKeyword') },
+  { value: 'name', label: t('baroqueart.dbr.fieldName') },
+  { value: 'location', label: t('baroqueart.dbr.fieldLocation') },
+  { value: 'provenance', label: t('baroqueart.dbr.fieldProvenance') },
+  { value: 'dynasty', label: t('baroqueart.dbr.fieldDynasty') },
+  { value: 'patron', label: t('baroqueart.dbr.fieldPatron') },
+  { value: 'artist', label: t('baroqueart.dbr.fieldArtist') },
+  { value: 'material', label: t('baroqueart.dbr.fieldMaterial') },
+])
+
+// Search within the results: one more keyword, in its field, and-ed to them.
+const refine = (apply, { keyword, field }) => apply({ q4: keyword, field4: field, op4: 'AND' })
+
+const newSearch = computed(() => ({ name: 'database', query: { lang: locale.value } }))
 </script>
 
 <template>
-  <div>
-    <h1 class="mwnf-heading">{{ $t('standalone.nav.database') }} — {{ $t('catalogue.results.heading') }}</h1>
+  <CatalogueResultsView :spec="databaseResultsSpec" class="mwnf-standalone-pcr mwnf-standalone-dbr">
+    <template #before="{ apply, matching }">
+      <StandaloneRefine
+        :label="t('baroqueart.dbr.refine')"
+        :in-label="t('baroqueart.dbr.in')"
+        :fields="refineFields"
+        :search-label="t('baroqueart.dbr.search')"
+        :new-search-label="t('baroqueart.dbr.newSearch')"
+        :new-search="newSearch"
+        @search="refine(apply, $event)"
+      />
+      <p class="mwnf-standalone-item__back mwnf-standalone-pcr__back">
+        <button type="button" class="mwnf-standalone-item__back-link" @click="$router.back()">{{ t('baroqueart.pcr.back') }}</button>
+        <RouterLink class="mwnf-standalone-item__back-link" :to="newSearch">{{ t('baroqueart.dbr.startPage') }}</RouterLink>
+      </p>
+      <h3 class="mwnf-standalone-pcr__heading">{{ t('baroqueart.dbr.title') }} | {{ matching.length }}&nbsp;{{ t('baroqueart.dbr.records') }}</h3>
+    </template>
 
-    <div class="mwnf-panel">
-      <CatalogueResultsView :spec="databaseResultsSpec">
-        <template #actions>
-          <RouterLink :to="{ name: 'database' }" class="mwnf-button mwnf-button--secondary small">{{ $t('catalogue.search.newSearch') }}</RouterLink>
-        </template>
+    <template #records="{ rows }">
+      <StandaloneResultsList :rows="rows" :empty="t('baroqueart.dbr.empty')" />
+    </template>
 
-        <template #filters="{ filters }">
-          <div class="refine-row">
-            <span class="refine-label">{{ $t('catalogue.search.refine') }}</span>
-            <select v-model="filters.op4" class="mwnf-select cond">
-              <option value="AND">{{ $t('catalogue.search.and') }}</option>
-              <option value="OR">{{ $t('catalogue.search.or') }}</option>
-            </select>
-            <select v-model="filters.field4" class="mwnf-select field">
-              <option v-for="f in fieldOptions" :key="f.value" :value="f.value">{{ f.label }}</option>
-            </select>
-            <input v-model="filters.q4" type="text" class="keyword" :placeholder="$t('catalogue.search.keywordPlaceholder')" />
-          </div>
-        </template>
+    <!-- Legacy's pages run under both columns: drawn after them. -->
+    <template #pagination></template>
 
-        <template #empty>
-          {{ $t('catalogue.results.noResultsSearch') }}
-          <RouterLink :to="{ name: 'database' }">{{ $t('catalogue.search.tryNewSearch') }}</RouterLink>
-        </template>
-      </CatalogueResultsView>
-    </div>
-  </div>
+    <template #after="{ pageInfo, goToPage }">
+      <StandalonePagination
+        :page-info="pageInfo"
+        :previous-label="t('baroqueart.pcr.previous')"
+        :next-label="t('baroqueart.pcr.next')"
+        @navigate="goToPage"
+      />
+    </template>
+  </CatalogueResultsView>
 </template>
-
-<style scoped>
-.mwnf-button.small { font-size: 12px; padding: 4px 12px; text-decoration: none; }
-.refine-row { display: flex; align-items: center; gap: 8px; }
-.refine-label { font-size: 12px; color: var(--mwnf-color-muted); }
-.cond { width: 60px; }
-.field { width: 200px; }
-.keyword { width: 200px; }
-</style>

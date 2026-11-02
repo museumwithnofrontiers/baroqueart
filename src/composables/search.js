@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import {
-  CATALOGUE_DATE_MODE, CATALOGUE_PAGE_SIZE, SEARCH_LANGUAGE_KEY, centuryPresets, searchFieldOptions, searchRowKeys, searchSummary, useFacets,
+  CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, centuryPresets, removeEndingPoint, searchFieldOptions, searchRowKeys, useFacets,
   useFieldSearch,
 } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
@@ -15,7 +15,7 @@ import { FACETS, SEARCH_FIELDS } from './catalogue.js'
 // here is only this website's: which fields the rows search (`catalogue.js`'s
 // `SEARCH_FIELDS`), and the refine row's own extra keyword.
 
-const { items, itemRow } = useData()
+const { countryLabel, itemRoute, items } = useData()
 
 // ── `/database`: the three-row keyword entrance ────────────────────────────
 
@@ -63,15 +63,37 @@ export const databaseResultsSpec = {
   // Already ranked by `narrow` (`rank: 'hits'`) — a second, chronological
   // sort here would undo it.
   sort: false,
-  pageSize: CATALOGUE_PAGE_SIZE,
-  variant: 'list',
-  recordRoute: 'item',
-  filterMode: 'apply',
-  empty: 'catalogue.results.noResultsSearch',
-  pagination: { window: 7 },
-  // Legacy database_results.php's own row: the country, the date and the
-  // location, distinct from the Permanent Collection's.
-  // The location and the province, as the package carries them apart.
-  record: (item) => itemRow(item, ['country', 'dates', (i, text) => [text.location, text.province].filter(Boolean).join(', ')]),
-  summary: (ctx) => searchSummary(ctx),
+  // Legacy's twelve a page.
+  pageSize: 12,
+  record: databaseRow,
+  // The count is in the heading, as legacy's "| 88 records".
+  summary: () => [],
+  empty: 'baroqueart.dbr.empty',
+}
+
+// Legacy's row (database_results.php): the name and the location with the
+// country's name; the date, cut at 145 characters past 150, and the
+// free-text dynasty. Its preview: the date line uncut, an object's holding
+// museum, and the location, the province and the country.
+export function databaseRow(item, { tr, renderInline }) {
+  const text = tr('items', item.id)
+  const plain = (value) => removeEndingPoint(String(value ?? '').replace(/[\r\n]/g, ''))
+  const date = plain(text.dates)
+  const listed = String(text.dates ?? '').length > 150 ? `${date.slice(0, 145)}...` : date
+  const dynasty = plain(text.dynasty)
+  const country = countryLabel(item.country_id)
+  const line = (...parts) => renderInline(parts.filter(Boolean).join(', '))
+  return {
+    id: item.id,
+    to: itemRoute(item),
+    image: item.images?.[0]?.url ?? '',
+    name: renderInline(plain(text.name ?? item.internal_name)),
+    place: line(plain(text.location), country),
+    dates: line(listed, dynasty),
+    preview: {
+      lines: [line(date, dynasty)],
+      holder: item.type === 'object' && text.holder ? renderInline(plain(text.holder)) : '',
+      location: line(plain(text.location), plain(text.province), country),
+    },
+  }
 }

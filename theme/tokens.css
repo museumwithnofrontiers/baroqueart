@@ -274,6 +274,12 @@
   --mwnf-standalone-results-border: rgba(20, 33, 78, 0.29);
   --mwnf-standalone-results-panel: #fffced;
   --mwnf-standalone-select-arrow: url('./assets/select.png');
+  /* The search results' "Refine your search" band (section.timeline_color):
+     white words on blue, the field list's blue border; the buttons are the
+     family's navy. */
+  --mwnf-standalone-refine-background: #12376b;
+  --mwnf-standalone-refine-color: #ffffff;
+  --mwnf-standalone-refine-select-border: #4973af;
   /* The sheet's labels, values and their links (.center_contents). */
   --mwnf-standalone-sheet-label-color: #000000;
   --mwnf-standalone-sheet-value-color: #222222;

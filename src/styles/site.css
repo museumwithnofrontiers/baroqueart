@@ -19,23 +19,3 @@ a:hover {
   color: var(--mwnf-link-hover-text);
   text-decoration: underline;
 }
-
-/* ── Text inputs ────────────────────────────────────────────────────────────
- * No shared content class covers a raw text/number input (only the kit's
- * select class does), so the one page that still writes one (the Database
- * results' refine row) draws it as the select is drawn.
- */
-input[type='text'],
-input[type='number'] {
-  font-family: inherit;
-  font-size: 13px;
-  padding: 4px 8px;
-  border: var(--mwnf-select-border);
-  background: var(--mwnf-select-background);
-  color: var(--mwnf-select-text);
-  border-radius: 0;
-  width: auto;
-}
-input:focus {
-  outline: var(--mwnf-select-focus-outline);
-}
