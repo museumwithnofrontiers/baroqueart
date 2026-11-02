@@ -179,6 +179,15 @@ export default {
       meta: meta('database', ['items', 'countries', 'partners']),
     },
     {
+      // hcr.php: the item's timeline window the item sheet opens, drawn alone
+      // as legacy's window was.
+      path: '/item/:id/timeline',
+      name: 'item-timeline',
+      component: () => import('./views/ItemTimeline.vue'),
+      props: (route) => ({ id: decodeURIComponent(route.params.id) }),
+      meta: { ...meta('timeline', ['items', 'timeline_events', 'countries']), bare: true },
+    },
+    {
       path: '/timeline',
       name: 'timeline',
       component: () => import('./views/TimelineEntrance.vue'),
@@ -291,7 +300,8 @@ export default {
       // Collection, the Database search and Exhibitions alike — but its own
       // full-text lookup is the Database entry, so that is the section it
       // carries (matching carpets' item route, itself under 'database').
-      meta: meta('database', ['items', 'collections', 'partners', 'countries', 'glossary']),
+      // 'timeline_events' decides whether the sheet offers the item's timeline.
+      meta: meta('database', ['items', 'collections', 'partners', 'countries', 'glossary', 'timeline_events']),
     },
   ],
 
