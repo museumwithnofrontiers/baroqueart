@@ -362,12 +362,37 @@ describe('website smoke test', () => {
     // and finding it in the `keyword` field's own haystack
     // (`composables/catalogue.js`'s `SEARCH_FIELDS`, decision D3).
     const { app, host } = await mount('#/database/results?q=Hungary&field=keyword&q2=Adoring+Angel&field2=name&op2=AND')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-list__row')).not.toBeNull(), { timeout: 20000 })
-    const rows = host.querySelectorAll('.mwnf-list__row')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-list__cell')).not.toBeNull(), { timeout: 20000 })
+    const rows = host.querySelectorAll('.mwnf-standalone-list__cell')
     expect(rows.length).toBe(1)
     expect(rows[0].textContent).toContain('Adoring Angel')
     app.unmount()
   }, 20000)
+
+  // Legacy's database_results.php: the "Refine your search" band, the way
+  // back, the heading with the count, the list beside the first record's
+  // preview, twelve a page.
+  it('renders the database results as legacy drew them', async () => {
+    const { app, host } = await mount('#/database/results?q=Brno&field=keyword&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-list__cell')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-refine__label')].map((l) => l.textContent)).toEqual(['Refine your search:', 'in'])
+    expect([...host.querySelectorAll('.mwnf-standalone-refine option')].map((o) => o.textContent)).not.toContain('Other')
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent)).toEqual(['Back', 'Database start page'])
+    expect(host.querySelector('.mwnf-standalone-pcr__heading').textContent).toMatch(/^Results of your search \| \d+ records$/)
+    const cells = host.querySelectorAll('.mwnf-standalone-list__cell')
+    expect(cells.length).toBeLessThanOrEqual(12)
+    const first = cells[0].querySelector('.mwnf-standalone-list__name').textContent
+    expect(host.querySelector('.mwnf-standalone-list__preview strong').textContent).toBe(first.replace(/,$/, ''))
+    app.unmount()
+  }, 30000)
+
+  it('says so when nothing is found, in legacy\'s words', async () => {
+    const { app, host } = await mount('#/database/results?q=zzqqxx&field=keyword&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-list__empty')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelector('.mwnf-standalone-list__empty').textContent).toBe('No result.\nPlease try a search with other criteria.')
+    expect(host.querySelector('.mwnf-standalone-pcr__heading').textContent).toBe('Results of your search | 0 records')
+    app.unmount()
+  }, 30000)
 
   it('renders the Permanent Collection entrance on the composed search form, one filter at a time', async () => {
     const { app, host } = await mount('#/permanent-collection')
