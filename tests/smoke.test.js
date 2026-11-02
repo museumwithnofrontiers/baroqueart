@@ -282,32 +282,23 @@ describe('website smoke test', () => {
     app.unmount()
   }, 30000)
 
-  it('renders a partner profile on the composed record view, with contact and held items', async () => {
-    // The Borghese Gallery: a museum with images, contact details and 50
-    // held objects — enough to exercise the panel's contact tab and the
-    // reverse `partner_id` lookup the platform's `related` cannot express
-    // (partner.js's `heldItems`).
+  // Legacy's pm_partner.php (viewer-layout's `StandalonePartnerPage`): the
+  // way back, the name and place, the About | Contact | Logo | homepage pill
+  // in legacy's words, "View Objects" to the partner's own page, the map.
+  it("renders a partner profile as legacy's pm_partner.php", async () => {
     const partnerId = 'fae81dae-0250-52ec-acc1-171da28b9eef'
-    const { app, host } = await mount(`#/partner/${partnerId}`)
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-partner-panel--full')).not.toBeNull(), { timeout: 20000 })
-
-    // The body is viewer-layout's `PartnerPanel` (inventory-app#2035).
-    expect(host.querySelector('h1.mwnf-partner-panel__name').textContent).toContain('Borghese Gallery')
-    expect(host.querySelector('.detail-type-badge').textContent.trim()).toBe('Museum')
-    expect(host.querySelector('.mwnf-partner-panel__location').textContent).toBe('Rome, Italy')
-    expect([...host.querySelectorAll('[role="tab"]')].map((tab) => tab.textContent)).toContain('Contact')
-
-    // The contact tab's own lines, in the DOM behind the tab.
-    expect(host.querySelector('.mwnf-partner-panel__panel--contact').textContent).toContain('+39 06 8413979')
-
-    // "View objects (50)" — item_count is the package's own count, not a
-    // scan of every item.
-    const viewItems = host.querySelector('.mwnf-partner-panel__actions')
-    expect(viewItems).not.toBeNull()
-    expect(viewItems.textContent).toContain('View objects')
-    expect(viewItems.textContent).toContain('50')
-    expect(viewItems.querySelector('a').getAttribute('href')).toBe(`#/partner/${partnerId}/items`)
-
+    const { app, host } = await mount(`#/partner/${partnerId}?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-partner__items')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent))
+      .toEqual(['Back', 'Partner Museums', 'Other Partners', 'Sponsors'])
+    expect(host.querySelector('.mwnf-standalone-partner__location').textContent).toContain('Rome, Italy')
+    const tabs = [...host.querySelectorAll('[role="tab"]')].map((tab) => tab.textContent.trim())
+    expect(tabs).toEqual(['About', 'Contact', 'Logo'])
+    expect(host.querySelector('.mwnf-standalone-partner__homepage').textContent.trim()).toBe('Go to the Museum’s homepage')
+    const viewItems = host.querySelector('.mwnf-standalone-partner__items')
+    expect(viewItems.textContent.trim()).toBe('View Objects')
+    expect(viewItems.getAttribute('href')).toContain(`#/partner/${partnerId}/items`)
+    expect(host.querySelector('.mwnf-standalone-partner__map-heading').textContent).toBe('The Partner on Google Maps')
     app.unmount()
   }, 30000)
 
