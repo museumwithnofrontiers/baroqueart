@@ -63,6 +63,16 @@ describe('item sheet spec', () => {
     expect(keys.indexOf('type')).toBeGreaterThan(keys.indexOf('workshop'))
   })
 
+  it("prints the period of activity between the type and the place of production, without its ending period", () => {
+    const fields = fieldsOf(object)
+    const period = row(fields, 'periodOfActivity')
+    expect(period.label).toBe('baroqueart.sheet.periodOfActivity')
+    expect(period.value({ record: object, text: { period_activity: '17th century.' } })).toBe('17th century')
+    const keys = fields.map((f) => f.key)
+    expect(keys.indexOf('periodOfActivity')).toBe(keys.indexOf('type') + 1)
+    expect(keys.indexOf('placeOfProduction')).toBe(keys.indexOf('periodOfActivity') + 1)
+  })
+
   it('closes both sheets with the rights line', () => {
     for (const record of [object, monument]) {
       expect(sectionsOf(record).at(-1)).toMatchObject({ key: 'copyright', label: 'baroqueart.sheet.copyrightInformation', value: 'copyright' })
