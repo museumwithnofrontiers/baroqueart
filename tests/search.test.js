@@ -8,7 +8,7 @@ import { SEARCH_FIELDS, SEARCH_SCORE } from '../src/composables/catalogue.js'
 const TEXT = [
   'name', 'alternate_name', 'location', 'province', 'dates', 'dynasty', 'initial_owner', 'artist', 'keywords',
   'materials', 'description', 'short_description', 'method_for_datation', 'type', 'owner', 'provenance',
-  'dimensions', 'artist_birthdate', 'artist_birthplace', 'artist_deathdate', 'artist_deathplace',
+  'dimensions', 'artist_birthdate', 'artist_birthplace', 'artist_deathdate', 'artist_deathplace', 'period_activity',
   'place_of_production', 'workshop', 'method_for_provenance', 'obtention', 'bibliography', 'author', 'holder',
   'architects', 'patrons', 'address', 'history',
 ]

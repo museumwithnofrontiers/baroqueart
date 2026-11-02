@@ -60,6 +60,8 @@ const objectFacts = [
   { key: 'workshop', label: 'baroqueart.sheet.workshop', value: 'workshop' },
   { key: 'provenance', label: 'baroqueart.sheet.provenance', value: 'provenance' },
   { key: 'type', label: 'baroqueart.sheet.type', value: 'type' },
+  // The artist's period of activity, per language (inventory-app#2442).
+  { key: 'periodOfActivity', label: 'baroqueart.sheet.periodOfActivity', value: plain('period_activity') },
   { key: 'placeOfProduction', label: 'baroqueart.sheet.placeOfProduction', value: 'place_of_production' },
   { key: 'binding', label: 'baroqueart.sheet.binding', value: 'binding_desc' },
 ]

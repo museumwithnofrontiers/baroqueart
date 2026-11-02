@@ -19,14 +19,13 @@ const { countries, countryLabel, itemRoute, itemRow, partnerLabel, partners, tr,
 // fields theirs. Legacy's Provenance, Material and Patron searches dropped
 // their condition for the type the column did not belong to, and Other had
 // none at all, so each listed everything; those fields search their own
-// columns here, and Other the descriptive fields. Legacy's `period_activity`
-// was not imported, so it is not searched.
+// columns here, and Other the descriptive fields.
 const LEGACY_COLUMNS = (item, text) => [
   text.name, text.alternate_name, text.location, text.province, text.dates, text.dynasty, text.initial_owner,
   text.artist, text.keywords, text.materials, text.description, text.short_description, item.mwnf_reference,
   text.method_for_datation, item.owner_reference, text.type, item.start_date, item.end_date, text.owner,
   text.provenance, text.dimensions, text.artist_birthdate, text.artist_birthplace, text.artist_deathdate,
-  text.artist_deathplace, text.place_of_production, text.workshop, text.method_for_provenance, text.obtention,
+  text.artist_deathplace, text.period_activity, text.place_of_production, text.workshop, text.method_for_provenance, text.obtention,
   text.bibliography, text.author, text.holder,
   text.architects, text.patrons, text.address, text.history,
 ]
