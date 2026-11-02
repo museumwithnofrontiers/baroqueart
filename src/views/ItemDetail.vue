@@ -1,19 +1,19 @@
 <script setup>
 import { timelineLinkFor, useI18n } from '@museumwnf/viewer-core'
-import { BackLink, OnDisplayIn, PartnerPanel, RecordLanguages, RelatedMedia, SpecialFeatures } from '@museumwnf/viewer-layout/content'
-import { RecordView } from '@museumwnf/viewer-layout/views'
+import { OnDisplayIn, PartnerPanel, RelatedMedia, SpecialFeatures } from '@museumwnf/viewer-layout/content'
+import { StandaloneItemSheet } from '@museumwnf/viewer-layout/standalone'
 import { useData } from '../composables/data.js'
 import { exhibitionLinksForItem, minisiteHref } from '../composables/exhibitions.js'
 import { partnerViewOf } from '../composables/partner.js'
 import { itemSheetSpec } from '../composables/sheet.js'
 
-// The item sheet is the platform's composed record page, rendering the spec
-// in composables/sheet.js. What is this website's fills the page's slots:
-// the header — the way back, the timeline link, the type badge — the holding
-// museum's partner line, and, after the sheet, the platform's item-page
-// blocks fed with this website's records: a monument's special features,
-// the related media, the exhibitions the item is on display in, the THG
-// galleries.
+// The item sheet: legacy database_item.php in its three columns, the
+// standalone family's `StandaloneItemSheet` over the spec in
+// composables/sheet.js. What is this website's fills its slots: the holding
+// museum's partner line in the sheet, a monument's special features under
+// it, and, in the Related Content column, legacy's blocks in legacy's order
+// — the timeline for this item, the related videos, then where the item is
+// on display (the exhibitions and the THG galleries).
 
 defineProps({ id: { type: String, required: true } })
 
@@ -21,6 +21,38 @@ const { mdInline, partnerById, tr } = useData()
 const { locale } = useI18n()
 
 const timelineLink = (record) => timelineLinkFor(record, { name: 'timeline-results' })
+
+// The way back, as legacy's breadcrumbs: the previous page, then the
+// collection's start page.
+const back = [
+  { label: 'baroqueart.item.back', history: true },
+  { label: 'baroqueart.item.collectionStart', to: { name: 'permanent-collection' } },
+]
+
+// Related Content's own parts: the related records by type, and Download:
+// the browser's print ("As PDF") and legacy's export.php ("As Word"), the
+// sheet's texts as a .doc named after the record's legacy key and language
+// (object;BAR;hu;Mus11;22;en → object_BAR_hu_Mus11_22_en.doc).
+const wordFile = (record, language) => {
+  const [, table, ...key] = String(record?.backward_compatibility ?? '').split(':')
+  const type = { objects: 'object', monuments: 'monument' }[table] ?? 'item'
+  return `${[type, ...key, language].join('_')}.doc`
+}
+
+const related = {
+  heading: 'baroqueart.item.relatedContent',
+  groups: [
+    { heading: 'baroqueart.item.relatedObjects', type: 'object' },
+    { heading: 'baroqueart.item.relatedMonuments', type: 'monument' },
+  ],
+  download: {
+    heading: 'baroqueart.item.download',
+    print: 'baroqueart.item.asPdf',
+    word: 'baroqueart.item.asWord',
+    title: 'baroqueart.item.wordTitle',
+    wordFile,
+  },
+}
 
 // The holding museum (decision D3, inventory-app#2035): the item's holder
 // text, then the partner it refers to as `PartnerPanel`'s summary — "About
@@ -50,24 +82,16 @@ const thgGalleryGroups = (record) => [{
 </script>
 
 <template>
-  <RecordView :spec="itemSheetSpec" :id="id" class="detail mwnf-panel">
-    <template #header="{ record, text, language, languages, select, dir, glossary }">
-      <div class="detail-top">
-        <BackLink variant="bar" label="record.action.backToResults" :to="{ name: 'home' }" />
-        <RouterLink v-if="timelineLink(record)" :to="timelineLink(record)" class="mwnf-back-bar mwnf-back-bar--link">{{ $t('record.action.viewOnTimeline') }} →</RouterLink>
-      </div>
-      <!-- In a block of its own: the view lays the header out as a column,
-           and a badge placed directly in it would stretch to the full width. -->
-      <div><span class="detail-type-badge">{{ record.type }}</span></div>
-      <RecordLanguages :languages="languages" :language="language" @select="select" />
-      <h1 class="detail-title" :dir="dir" v-html="mdInline(text.name ?? record.internal_name ?? record.id, { glossary })"></h1>
-    </template>
-
+  <StandaloneItemSheet :spec="itemSheetSpec" :id="id" :back="back" :related="related">
     <template #holder="{ row, record, language, dir, glossary }">
       <span v-html="mdInline(row.value, { glossary })"></span>
-      <template v-for="partner in [holderPartner(record, language)]" :key="'holder-partner'">
-        <PartnerPanel v-if="partner" variant="summary" :partner="partner" label="partner.info.about" :dir="dir" />
-      </template>
+      <PartnerPanel
+        v-if="holderPartner(record, language)"
+        variant="summary"
+        :partner="holderPartner(record, language)"
+        label="partner.info.about"
+        :dir="dir"
+      />
     </template>
 
     <template #after-sheet="{ record, language, dir, glossary }">
@@ -79,34 +103,28 @@ const thgGalleryGroups = (record) => [{
         :dir="dir"
         :picture-limit="6"
       />
-      <RelatedMedia :media="record.media ?? []" :language="language" heading="record.related.video" :dir="dir" />
-      <OnDisplayIn :groups="onDisplayInGroups(record)" :dir="dir" />
-      <OnDisplayIn heading="record.related.galleries" :groups="thgGalleryGroups(record)" :dir="dir" />
     </template>
-  </RecordView>
+
+    <template #sidebar="{ record, language, dir }">
+      <p v-if="timelineLink(record)" class="baroqueart-timeline-link">
+        <RouterLink :to="timelineLink(record)">{{ $t('baroqueart.item.timeline') }}</RouterLink>
+      </p>
+      <RelatedMedia :media="record.media ?? []" :language="language" heading="baroqueart.item.relatedVideos" :dir="dir" />
+      <div v-if="onDisplayInGroups(record)[0].links.length || thgGalleryGroups(record)[0].links.length" class="baroqueart-on-display">
+        <br><p><strong><u>{{ $t('baroqueart.item.onDisplayIn') }}</u></strong></p>
+      </div>
+      <OnDisplayIn heading="baroqueart.item.exhibitions" :groups="onDisplayInGroups(record)" :dir="dir" />
+      <OnDisplayIn heading="baroqueart.item.galleries" :groups="thgGalleryGroups(record)" :dir="dir" />
+    </template>
+  </StandaloneItemSheet>
 </template>
 
 <style scoped>
-/* mwnf-back-bar is one link wide; this page puts two side by side, so the
-   row layout stays the site's own on top of the shared bar. */
-.detail-top { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-
-.detail-type-badge {
-  display: inline-block;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--mwnf-heading-color);
-  border: 1px solid var(--site-rule-color);
-  padding: 2px 8px;
-  margin-bottom: 10px;
-}
-
-.detail-title {
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--mwnf-heading-color);
-  margin: 10px 0 16px;
-  line-height: 1.3;
+/* Legacy's "On display in": a line of the column's text, then the words on
+   their own line, 16px under the block before them and 10px over the
+   exhibitions (Baroque Art's template drew it as a block, Islamic Art's as a
+   paragraph). */
+.baroqueart-on-display {
+  margin: 16px 0 10px;
 }
 </style>
