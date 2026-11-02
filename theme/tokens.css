@@ -324,6 +324,15 @@
   --mwnf-standalone-refine-background: #12376b;
   --mwnf-standalone-refine-color: #ffffff;
   --mwnf-standalone-refine-select-border: #4973af;
+  /* The Database entrance (database.php, section.db_start_page): the
+     keywords typed, and Go (input.db_search_submit). */
+  --mwnf-standalone-db-keyword-color: rgb(20 33 78);
+  --mwnf-standalone-db-go-background: rgb(63 98 137);
+  --mwnf-standalone-db-go-border: rgb(18 55 107);
+  --mwnf-standalone-db-go-hover-background: #12376b;
+  --mwnf-standalone-db-go-hover-border: #12376b;
+  /* Legacy's listing arrow was an <img> right before the words. */
+  --mwnf-standalone-db-listing-indent: 12px;
   /* The partner lists (pm_partner_list.php, .white_contents): white words,
      lighter where legacy drew them at 300, on blue; the blue rules and
      band, whose arrow never turns up (legacy's up arrow lost to the white

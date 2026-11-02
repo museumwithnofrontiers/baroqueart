@@ -336,25 +336,46 @@ describe('website smoke test', () => {
   }, 60000)
 
 
-  // The Database entrance and its keyword results moved onto
-  // viewer-layout's `SearchFormView`/`CatalogueResultsView` (metanull/baroqueart#66):
-  // the rows, the AND/OR fold and the century presets are the platform's;
-  // this website's own field map (`composables/catalogue.js`'s
-  // `SEARCH_FIELDS`) and the two legacy expansions (decision D3) still run
-  // the actual search.
-  it('renders the Database entrance on the composed search form', async () => {
-    const { app, host } = await mount('#/database')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-search-form')).not.toBeNull(), { timeout: 20000 })
-    expect(host.querySelector('.mwnf-heading').textContent).toContain('Database')
-    // Legacy's three keyword rows, in their own order.
-    expect(host.querySelectorAll('.mwnf-search-form__row').length).toBe(3)
-    expect(host.textContent).toContain('Keyword 1')
-    // The asymmetric century presets (database.php:88-124): "from" runs to
-    // 2001, "to" only to 2000.
-    const fromOptions = [...host.querySelectorAll('.mwnf-search-form__dates select')[0].options].map((o) => o.value)
+  // Legacy's database.php (viewer-layout's `StandaloneDatabaseForm`): three
+  // keyword rows in their categories, joined by and/or, the centuries, the
+  // search language, Go; in legacy's words. Go writes the query the results
+  // page reads.
+  it("renders the Database entrance as legacy's database.php", async () => {
+    const { app, host, router } = await mount('#/database?lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-db__criteria')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelector('.mwnf-standalone-db__criteria').textContent).toBe('Enter your criteria:')
+    expect(host.querySelectorAll('.mwnf-standalone-db__keyword')).toHaveLength(3)
+    expect(host.querySelectorAll('.mwnf-standalone-db__cond')).toHaveLength(2)
+    expect([...host.querySelectorAll('.mwnf-standalone-db__field select')[0].options].map((o) => o.textContent))
+      .toEqual(['Keyword(s)', 'Name', 'Location', 'Provenance', 'Period/Dynasty', 'Patron', 'Architect/Artist/Master', 'Material/Technique', 'Other'])
+    // The asymmetric century presets (database.php): "from" runs to 2001,
+    // "to" only to 2000.
+    const fromOptions = [...host.querySelectorAll('.mwnf-standalone-db__dates select')[0].options].map((o) => o.value)
     expect(fromOptions).toContain('2001')
+    expect(host.querySelector('.mwnf-standalone-db__go button').textContent).toBe('Go')
+    expect(host.querySelector('.mwnf-standalone-db__options')).toBeNull()
+
+    const [first, second] = host.querySelectorAll('.mwnf-standalone-db__keyword')
+    first.value = 'angel'
+    first.dispatchEvent(new Event('input'))
+    second.value = 'Brno'
+    second.dispatchEvent(new Event('input'))
+    const field2 = host.querySelectorAll('.mwnf-standalone-db__field select')[1]
+    field2.value = 'location'
+    field2.dispatchEvent(new Event('change'))
+    await vi.waitFor(() => expect(host.querySelectorAll('.mwnf-standalone-db__language option').length).toBeGreaterThan(1))
+    expect([...host.querySelectorAll('.mwnf-standalone-db__language option')].map((o) => o.textContent))
+      .toEqual(['', 'Czech', 'German', 'English', 'Italian', 'Portuguese'])
+    const language = host.querySelector('.mwnf-standalone-db__language select')
+    language.value = 'cs'
+    language.dispatchEvent(new Event('change'))
+    host.querySelector('form.mwnf-standalone-db').dispatchEvent(new Event('submit', { cancelable: true }))
+    await vi.waitFor(() => expect(router.currentRoute.value.name).toBe('database-results'), { timeout: 20000 })
+    expect(router.currentRoute.value.query).toMatchObject({
+      q: 'angel', field: 'keyword', q2: 'Brno', field2: 'location', op2: 'AND', searchlanguage: 'cs',
+    })
     app.unmount()
-  }, 20000)
+  }, 30000)
 
   it('finds a record by field, and by its country name through the keyword expansion', async () => {
     // "Adoring Angel" (Hungarian National Gallery) carries no literal

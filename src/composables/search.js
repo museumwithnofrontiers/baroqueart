@@ -1,33 +1,21 @@
 import {
-  CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, centuryPresets, removeEndingPoint, searchFieldOptions, searchRowKeys,
-  useLegacySearch,
+  CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, removeEndingPoint, searchRowKeys, useLegacySearch,
 } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
 import { SEARCH_FIELDS, SEARCH_SCORE } from './catalogue.js'
 
-// The search pages: what viewer-layout's `SearchFormView` renders on
-// `/database` (the three-row keyword form), and what its
-// `CatalogueResultsView` sibling renders on `/database/results` over the
-// same field grammar. The row/AND-OR fold, the field grammar, the keyword
-// rows and the index are the platform's; what is declared here is only this
-// website's: which fields the rows search (`catalogue.js`'s
-// `SEARCH_FIELDS`), the refine row's own extra keyword, and legacy's row.
+// The search results: what viewer-layout's `CatalogueResultsView` renders on
+// `/database/results`, from the query the entrance on `/database` writes
+// (DatabaseSearch.vue, legacy's database.php). The index is the platform's;
+// what is declared here is only this website's: which fields the rows search
+// (`catalogue.js`'s `SEARCH_FIELDS`), the refine row's own extra keyword,
+// and legacy's row.
 
 const { countryLabel, itemRoute } = useData()
 
-// ── `/database`: the three-row keyword entrance ────────────────────────────
-
-export const databaseSearchSpec = {
-  mode: 'rows',
-  fields: searchFieldOptions(SEARCH_FIELDS),
-  dates: { presets: centuryPresets() },
-  language: 'items',
-  target: 'database-results',
-}
-
 // ── `/database/results`: the keyword search ────────────────────────────────
 //
-// `SearchFormView`'s own query keys (`q`/`field`, `q2`/`field2`/`op2`,
+// The entrance's query keys (`q`/`field`, `q2`/`field2`/`op2`,
 // `q3`/`field3`/`op3`, `from`, `to`, `searchlanguage`), read the same way here as the
 // form writes them. `q4`/`field4`/`op4` are the refine row's own — the
 // site's, not the platform's, since the entrance is always three rows.
