@@ -229,6 +229,15 @@ export default {
       meta: meta('partners', ['partners', 'items', 'countries']),
     },
     {
+      // Legacy's pm_museum_items.php / pm_institution_items.php: a partner's
+      // objects or monuments.
+      path: '/partner/:id/items',
+      name: 'partner-items',
+      component: () => import('./views/PartnerItems.vue'),
+      props: (route) => ({ id: decodeURIComponent(route.params.id) }),
+      meta: meta('partners', ['partners', 'items', 'countries']),
+    },
+    {
       // Legacy's own credits page (mwnf_credit.php), which no menu entry
       // opens: other MWNF sites link to it. Its text is legacy's, extracted.
       path: '/credits',

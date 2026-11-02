@@ -1,5 +1,6 @@
-import { partnerView } from '@museumwnf/viewer-core'
+import { CATALOGUE_PAGE_SIZE, partnerView } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
+import { legacyOrder, resultTile } from './catalogue.js'
 
 // The partner pages: what viewer-layout's `PartnerListView` renders on
 // `/partners/results` (one spec per type, the site's own museum/institution
@@ -47,10 +48,26 @@ export const partnerSheetSpec = {
   related: false,
 }
 
-// Where a partner's "View Objects"/"View Monuments" lands: the Permanent
-// Collection, filtered on the partner.
+// Where a partner's "View Objects"/"View Monuments" lands: legacy's
+// pm_museum_items.php and pm_institution_items.php (PartnerItems.vue).
 export function partnerObjectsLink(partner) {
-  return { path: '/permanent-collection/results', query: { partner: partner.id } }
+  return { name: 'partner-items', params: { id: partner.id } }
+}
+
+// That page's records: a museum's objects, an institution's monuments, in
+// the Permanent Collection's order and tile, twenty a page.
+export function partnerItemsSpec(partnerId, type) {
+  const kind = type === 'institution' ? 'monument' : 'object'
+  return {
+    entity: 'items',
+    keys: [],
+    scope: (item) => item.partner_id === partnerId && item.type === kind,
+    sort: legacyOrder,
+    pageSize: CATALOGUE_PAGE_SIZE,
+    record: resultTile,
+    summary: () => [],
+    empty: 'baroqueart.pcr.empty',
+  }
 }
 
 // The partner's view-model, which `PartnerPanel` renders on the partner page
