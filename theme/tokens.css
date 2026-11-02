@@ -237,6 +237,10 @@
   --mwnf-standalone-header-link-color: #ffffff;
   --mwnf-standalone-header-height: 81px;
   --mwnf-standalone-banner-height: 160px;
+  /* The inner pages' band title (.banner-text h2 span): white, 30px. */
+  --mwnf-standalone-banner-title-size: 30px;
+  --mwnf-standalone-banner-title-color: #ffffff;
+  --mwnf-standalone-banner-title-padding: 8px 0 14px 64px;
   --mwnf-standalone-sponsors-background: #3f6289;
   --mwnf-standalone-sponsors-padding: 36px;
   --mwnf-standalone-sponsors-text-size: 16px;
@@ -264,6 +268,12 @@
   --mwnf-standalone-related-margin: 0 -15px;
   --mwnf-standalone-related-reach-top: 20px;
   --mwnf-standalone-related-reach-right: 167%;
+  /* The results pages (pclist_all.php): the heading, the tiles' navy frame
+     and pale panel, the date lists' arrow (span.select_png). */
+  --mwnf-standalone-results-heading-color: #222222;
+  --mwnf-standalone-results-border: rgba(20, 33, 78, 0.29);
+  --mwnf-standalone-results-panel: #fffced;
+  --mwnf-standalone-select-arrow: url('./assets/select.png');
   /* The sheet's labels, values and their links (.center_contents). */
   --mwnf-standalone-sheet-label-color: #000000;
   --mwnf-standalone-sheet-value-color: #222222;

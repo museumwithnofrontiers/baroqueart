@@ -57,14 +57,20 @@ describe('website smoke test', () => {
   // composed views (metanull/viewer-core#50): the rows and the filter panel
   // come from the catalogue spec, the sheet's labels from the sheet spec,
   // and what only this website has fills the views' slots.
-  it('renders the Permanent Collection on the composed results view', async () => {
-    const { app, host } = await mount('#/permanent-collection/results')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-list__row')).not.toBeNull(), { timeout: 20000 })
-    expect(host.querySelector('.mwnf-catalogue')).not.toBeNull()
-    expect(host.querySelector('.mwnf-filter')).not.toBeNull()
-    expect(host.querySelector('.mwnf-heading').textContent).toContain('Permanent Collection')
-    // Legacy's count, in its two halves.
-    expect(host.querySelectorAll('.mwnf-summary__count').length).toBe(2)
+  // Legacy's pclist_all.php: the heading naming the selection with its
+  // count, legacy's tiles, "Change your selection" with its lists, the
+  // country's timeline under "Related Content".
+  it('renders the Permanent Collection results as legacy drew them', async () => {
+    const [items] = await loadEntities(['items'])
+    const country = items.find((i) => i.country_id)?.country_id
+    const { app, host } = await mount(`#/permanent-collection/results?country=${country}&lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-results__tile')).not.toBeNull(), { timeout: 20000 })
+    const heading = host.querySelector('.mwnf-standalone-pcr__heading').textContent
+    expect(heading).toMatch(/^Permanent Collection \| \S/)
+    expect(heading).toMatch(/\[\d+ Objects|\[\d+ Monuments/)
+    expect(host.querySelector('.mwnf-standalone-pcr__panel strong').textContent).toBe('Change your selection')
+    expect([...host.querySelectorAll('.mwnf-standalone-pcr__date option')].slice(0, 2).map((o) => o.textContent)).toEqual(['Start Date', '1500 A.D.'])
+    expect(host.querySelector('.mwnf-standalone-pcr__related a').textContent).toMatch(/^Timeline \| /)
     app.unmount()
   }, 60000)
 
