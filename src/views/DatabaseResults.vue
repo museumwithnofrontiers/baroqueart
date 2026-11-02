@@ -1,11 +1,9 @@
 <script setup>
-import { computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { SEARCH_LANGUAGE_KEY, useI18n } from '@museumwnf/viewer-core'
+import { computed } from 'vue'
+import { useI18n } from '@museumwnf/viewer-core'
 import { CatalogueResultsView } from '@museumwnf/viewer-layout/views'
 import { StandalonePagination, StandaloneRefine, StandaloneResultsList } from '@museumwnf/viewer-layout/standalone'
-import { useData } from '../composables/data.js'
-import { databaseResultsSpec } from '../composables/search.js'
+import { databaseResultsSpec, databaseSearch } from '../composables/search.js'
 
 // The database results as legacy's database_results.php: the "Refine your
 // search" band, the way back, the heading with the count, the records two
@@ -13,14 +11,13 @@ import { databaseResultsSpec } from '../composables/search.js'
 // standalone family's search results page (viewer-layout's
 // `mwnf-standalone-dbr`). The query, the search and the pages are
 // viewer-layout's `CatalogueResultsView` (composables/search.js's spec);
-// every word is legacy's own (baroqueart.dbr.*, baroqueart.pcr.*). The
-// search language's translations are loaded here: a second `useListQuery`
-// inside the spec would fight the one `CatalogueResultsView` keeps.
+// every word is legacy's own (baroqueart.dbr.*, baroqueart.pcr.*). The page
+// waits for the search's translations: every language is searched, so the
+// count is drawn once they are all there.
 
-const route = useRoute()
 const { t, locale } = useI18n()
-const { loadTranslations } = useData()
-watch(() => route.query[SEARCH_LANGUAGE_KEY], (lang) => { if (lang) loadTranslations('items', lang) }, { immediate: true })
+const { prepare, ready } = databaseSearch
+prepare()
 
 // Legacy's refine list: the entrance's fields but "Other".
 const refineFields = computed(() => [
@@ -41,7 +38,7 @@ const newSearch = computed(() => ({ name: 'database', query: { lang: locale.valu
 </script>
 
 <template>
-  <CatalogueResultsView :spec="databaseResultsSpec" class="mwnf-standalone-pcr mwnf-standalone-dbr">
+  <CatalogueResultsView v-if="ready" :spec="databaseResultsSpec" class="mwnf-standalone-pcr mwnf-standalone-dbr">
     <template #before="{ apply, matching }">
       <StandaloneRefine
         :label="t('baroqueart.dbr.refine')"

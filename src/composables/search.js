@@ -1,9 +1,9 @@
 import {
   CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, centuryPresets, removeEndingPoint, searchFieldOptions, searchRowKeys,
-  useFieldSearch,
+  useLegacySearch,
 } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
-import { SEARCH_FIELDS } from './catalogue.js'
+import { SEARCH_FIELDS, SEARCH_SCORE } from './catalogue.js'
 
 // The search pages: what viewer-layout's `SearchFormView` renders on
 // `/database` (the three-row keyword form), and what its
@@ -32,15 +32,26 @@ export const databaseSearchSpec = {
 // form writes them. `q4`/`field4`/`op4` are the refine row's own — the
 // site's, not the platform's, since the entrance is always three rows.
 
-const { narrow } = useFieldSearch({ fields: SEARCH_FIELDS })
+// The search is legacy's (decision D3, viewer-core's `useLegacySearch`):
+// every language unless one is chosen, the columns database_results.php
+// searched, a country's records for a word naming it in Keywords and
+// Location, a glossary term's spellings in Keywords, legacy's relevance and
+// then the start date. The results page waits for `prepare()`, which loads
+// every language searched.
+export const databaseSearch = useLegacySearch({
+  fields: SEARCH_FIELDS,
+  score: SEARCH_SCORE,
+  countryFields: ['keyword', 'location'],
+  glossaryFields: ['keyword'],
+})
 
 export const databaseResultsSpec = {
   entity: 'items',
   keys: [...searchRowKeys(), 'from', 'to', SEARCH_LANGUAGE_KEY],
-  narrow,
+  narrow: databaseSearch.narrow,
   dates: { mode: CATALOGUE_DATE_MODE, begin: 'from', end: 'to' },
-  // Already ranked by `narrow` (`rank: 'hits'`) — a second, chronological
-  // sort here would undo it.
+  // The search already put the matches in legacy's order; resorting here
+  // would discard it.
   sort: false,
   // Legacy's twelve a page.
   pageSize: 12,
