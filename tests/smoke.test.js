@@ -389,13 +389,20 @@ describe('website smoke test', () => {
     app.unmount()
   }, 30000)
 
-  it('renders the Permanent Collection entrance on the composed search form, one filter at a time', async () => {
-    const { app, host } = await mount('#/permanent-collection')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-search-form--radio')).not.toBeNull(), { timeout: 20000 })
-    expect(host.querySelector('.mwnf-heading').textContent).toContain('Permanent Collection')
-    // The country radio's own options are the values the items actually
-    // carry (`useFacets`), so a real country name must render, not an id.
-    expect(host.textContent).toContain('Italy')
+  // Legacy's pc_entrance.php: "Sort by" and its four lists, "About" and
+  // legacy's text; a pick opens the results at once, as legacy's onchange did.
+  it("renders the Permanent Collection entrance as legacy's, opening the results on a pick", async () => {
+    const { app, host, router } = await mount('#/permanent-collection?lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-pc select option[value="ita"]')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-pc__heading')].map((h) => h.textContent)).toEqual(['Sort by', 'About'])
+    const selects = [...host.querySelectorAll('.mwnf-standalone-pc select')]
+    expect(selects.map((s) => s.options[0].textContent)).toEqual(['Country', 'Partners', 'Start Date', 'End Date'])
+    expect(selects[2].options[1].textContent).toBe('1500 A.D.')
+    expect(host.querySelector('.mwnf-standalone-pc__about').textContent).toContain('The Permanent Collection offers three ways')
+    selects[0].value = 'ita'
+    selects[0].dispatchEvent(new Event('change'))
+    await vi.waitFor(() => expect(router.currentRoute.value.name).toBe('permanent-collection-results'))
+    expect(router.currentRoute.value.query.country).toBe('ita')
     app.unmount()
   }, 20000)
 

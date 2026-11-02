@@ -1,21 +1,19 @@
-import { computed } from 'vue'
 import {
-  CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, centuryPresets, removeEndingPoint, searchFieldOptions, searchRowKeys, useFacets,
+  CATALOGUE_DATE_MODE, SEARCH_LANGUAGE_KEY, centuryPresets, removeEndingPoint, searchFieldOptions, searchRowKeys,
   useFieldSearch,
 } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
-import { FACETS, SEARCH_FIELDS } from './catalogue.js'
+import { SEARCH_FIELDS } from './catalogue.js'
 
 // The search pages: what viewer-layout's `SearchFormView` renders on
-// `/database` (the three-row keyword form) and `/permanent-collection`
-// (the one-filter-at-a-time radio form), and what its `CatalogueResultsView`
-// sibling renders on `/database/results` over the same field grammar. The
-// row/AND-OR fold, the facet derivation, the field grammar, the keyword rows,
-// the index and the "searched for" line are the platform's; what is declared
-// here is only this website's: which fields the rows search (`catalogue.js`'s
-// `SEARCH_FIELDS`), and the refine row's own extra keyword.
+// `/database` (the three-row keyword form), and what its
+// `CatalogueResultsView` sibling renders on `/database/results` over the
+// same field grammar. The row/AND-OR fold, the field grammar, the keyword
+// rows and the index are the platform's; what is declared here is only this
+// website's: which fields the rows search (`catalogue.js`'s
+// `SEARCH_FIELDS`), the refine row's own extra keyword, and legacy's row.
 
-const { countryLabel, itemRoute, items } = useData()
+const { countryLabel, itemRoute } = useData()
 
 // ── `/database`: the three-row keyword entrance ────────────────────────────
 
@@ -26,25 +24,6 @@ export const databaseSearchSpec = {
   language: 'items',
   target: 'database-results',
 }
-
-// ── `/permanent-collection`: one filter at a time ──────────────────────────
-//
-// The country/holding-institution options are the same derivation the
-// Permanent Collection results page's own facets use (`catalogue.js`'s
-// `FACETS`) — a value the reference entity does not carry is not offered.
-
-const pcFacetOptions = useFacets(items, FACETS)
-
-export const permanentCollectionSearchSpec = computed(() => ({
-  mode: 'radio',
-  facets: [
-    { key: 'country', label: 'catalogue.facet.country', options: pcFacetOptions.value.country },
-    { key: 'partner', label: 'catalogue.facet.holdingInstitution', options: pcFacetOptions.value.partner },
-    { key: 'begin', label: 'catalogue.facet.startDate', type: 'year' },
-    { key: 'end', label: 'catalogue.facet.endDate', type: 'year' },
-  ],
-  target: 'permanent-collection-results',
-}))
 
 // ── `/database/results`: the keyword search ────────────────────────────────
 //

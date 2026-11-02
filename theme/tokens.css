@@ -73,7 +73,8 @@
   --mwnf-footer-padding: 0.625rem;
   --mwnf-footer-background: #14214e;
   --mwnf-footer-text-color: #ffffff;
-  --mwnf-footer-text-size: 0.75rem;
+  /* Legacy's footer line: 14px. */
+  --mwnf-footer-text-size: 14px;
   --mwnf-footer-justify: center; /* legacy: one centred line */
 
   /* ---------- Content: the record page ---------- */
