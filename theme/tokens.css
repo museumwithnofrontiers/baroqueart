@@ -22,7 +22,8 @@
   --mwnf-link-hover-text: #12376b;
   --mwnf-color-muted: #5a5a5a;
   --mwnf-color-border: #8fa3ba;
-  --mwnf-content-width: 60rem; /* legacy 960px container */
+  /* Legacy's Bootstrap container: 1233px of a 1366px window, every page. */
+  --mwnf-content-width: min(90.3%, 1349px);
   --mwnf-content-padding: 1rem;
   --mwnf-space: 0.75rem;
   --mwnf-radius: 0; /* legacy design has square corners */
@@ -234,8 +235,37 @@
   --mwnf-standalone-menu-link: #ffffff;
   --mwnf-standalone-menu-hover: #f5da66;
   --mwnf-standalone-header-link-color: #ffffff;
+  --mwnf-standalone-header-height: 81px;
   --mwnf-standalone-banner-height: 160px;
   --mwnf-standalone-sponsors-background: #3f6289;
   --mwnf-standalone-sponsors-padding: 36px;
   --mwnf-standalone-sponsors-text-size: 16px;
+  /* The item sheet (modules/database_item.php, css/style_inside.css): the
+     arrows before its links and its way back; the language band, navy with
+     the shown language on slate; the "medium" picture's 320×240 box and its
+     50px thumbnails 10px apart; the slate Related Content column with white
+     words and white arrows, as legacy's .col-lg-3 of a row 15px wider than
+     the container, up to the band and out to the page's right. */
+  --mwnf-standalone-bullet: url('./assets/next_arrow.png');
+  --mwnf-standalone-back-arrow: url('./assets/back_arrow.png');
+  --mwnf-standalone-related-bullet: url('./assets/white_next_arrow.png');
+  --mwnf-standalone-download-icon: url('./assets/download_white.png');
+  --mwnf-standalone-language-bar: #12376b;
+  --mwnf-standalone-language-color: #ffffff;
+  --mwnf-standalone-language-active: #3f6289;
+  --mwnf-standalone-item-picture-width: 320px;
+  --mwnf-standalone-item-picture-height: 240px;
+  --mwnf-standalone-item-thumb-size: 50px;
+  --mwnf-standalone-item-thumb-gap: 10px;
+  --mwnf-standalone-item-thumb-margin: 10px 0;
+  --mwnf-standalone-related-background: #3f6289;
+  --mwnf-standalone-related-text: #ffffff;
+  --mwnf-standalone-related-link: #ffffff;
+  --mwnf-standalone-related-margin: 0 -15px;
+  --mwnf-standalone-related-reach-top: 20px;
+  --mwnf-standalone-related-reach-right: 167%;
+  /* The sheet's labels, values and their links (.center_contents). */
+  --mwnf-standalone-sheet-label-color: #000000;
+  --mwnf-standalone-sheet-value-color: #222222;
+  --mwnf-standalone-sheet-link-color: rgb(1 141 206);
 }

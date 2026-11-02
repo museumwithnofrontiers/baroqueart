@@ -17,7 +17,7 @@ describe('item sheet spec', () => {
   it('prints the free-text Period / Dynasty line without its ending period', () => {
     for (const record of [object, monument]) {
       const field = row(fieldsOf(record), 'dynasty')
-      expect(field.label).toBe('sheet.field.periodDynasty')
+      expect(field.label).toBe('baroqueart.sheet.periodDynasty')
       expect(field.value({ record, text: { dynasty: 'Baroque.' } })).toBe('Baroque')
       expect(field.value({ record, text: {} })).toBe('')
     }
@@ -52,12 +52,12 @@ describe('item sheet spec', () => {
   it("prints the record's own materials line, and the type under its own heading", () => {
     const fields = fieldsOf(object)
     const materials = row(fields, 'materials')
-    expect(materials.label).toBe('sheet.field.materials')
+    expect(materials.label).toBe('baroqueart.sheet.materials')
     expect(materials.value({ record: object, text: { materials: ['Silver, gilded; enamel.'], type: 'Monstrance' } })).toEqual([
       'Silver, gilded; enamel.',
     ])
     expect(materials.join).toBe('; ')
-    expect(row(fields, 'type')).toMatchObject({ label: 'sheet.field.type', value: 'type' })
+    expect(row(fields, 'type')).toMatchObject({ label: 'baroqueart.sheet.type', value: 'type' })
     const keys = fields.map((f) => f.key)
     expect(keys.indexOf('type')).toBeGreaterThan(keys.indexOf('provenance'))
     expect(keys.indexOf('type')).toBeGreaterThan(keys.indexOf('workshop'))
@@ -65,7 +65,7 @@ describe('item sheet spec', () => {
 
   it('closes both sheets with the rights line', () => {
     for (const record of [object, monument]) {
-      expect(sectionsOf(record).at(-1)).toMatchObject({ key: 'copyright', label: 'sheet.field.copyrightInformation', value: 'copyright' })
+      expect(sectionsOf(record).at(-1)).toMatchObject({ key: 'copyright', label: 'baroqueart.sheet.copyrightInformation', value: 'copyright' })
     }
   })
 })

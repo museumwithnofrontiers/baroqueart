@@ -2,16 +2,21 @@ import { describe, expect, it, vi } from 'vitest'
 import { loadEntities, mergeMessages, projectLabel } from '@museumwnf/viewer-core'
 import { checkOfferedLanguages, checkRoutes, checkSectionMeta, checkTextsRendered, mountSite } from '@museumwnf/viewer-core/testing'
 import { catalogues as sharedTexts } from '@museumwnf/viewer-i18n/standalone'
-import ownTexts from '../locales/en.json'
 import manifest from '../node_modules/@museumwnf/baroqueart-data/manifest.json'
 import config from '../src/dataset.config.js'
 import { useData } from '../src/composables/data.js'
 import minisites from '../src/minisites.json'
 
 // The same two layers main.js assembles, in the same order: the shared bundle
-// first, this website's own file last. Mounting without them would prove
-// nothing about the chrome — every text would render as its own name.
-const messages = mergeMessages(sharedTexts, { en: ownTexts })
+// first, this website's own files last, one per language (the sheet's words
+// come in every language its records are written in). Mounting without them
+// would prove nothing about the chrome — every text would render as its own
+// name.
+const localeFiles = import.meta.glob('../locales/*.json', { eager: true })
+const ownTexts = Object.fromEntries(
+  Object.entries(localeFiles).map(([path, module]) => [path.split('/').pop().replace(/\.json$/, ''), module.default]),
+)
+const messages = mergeMessages(sharedTexts, ownTexts)
 
 // Mounted on the address under test, as a visitor arrives from a link — the
 // kit's own `mountSite`, curried over this website's config and messages.
@@ -63,14 +68,20 @@ describe('website smoke test', () => {
     app.unmount()
   }, 60000)
 
-  it('renders the item sheet on the composed record view', async () => {
+  // Legacy's database_item.php in its three columns (the standalone family's
+  // sheet): the way back and the pictures, the sheet opening on the record's
+  // name under legacy's word, the Related Content column with Download.
+  it('renders the item sheet as legacy drew it', async () => {
     const [items] = await loadEntities(['items'])
     const object = items.find((i) => i.type === 'object') ?? items[0]
-    const { app, host } = await mount(`#/item/${encodeURIComponent(object.id)}`)
+    const { app, host } = await mount(`#/item/${encodeURIComponent(object.id)}?lang=en`)
     await vi.waitFor(() => expect(host.querySelector('.mwnf-sheet__label')).not.toBeNull(), { timeout: 20000 })
-    expect(host.querySelector('.mwnf-record')).not.toBeNull()
-    expect(host.querySelector('.detail-type-badge').textContent.trim()).toBe(object.type)
-    expect(host.querySelector('.detail-title').textContent.trim()).not.toBe('')
+    expect(host.querySelector('.mwnf-standalone-item')).not.toBeNull()
+    expect(host.querySelector('.mwnf-sheet__label').textContent).toBe('Name of Object:')
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent)).toEqual(['Back', 'Collection start page'])
+    expect(host.querySelector('.mwnf-standalone-related__heading').textContent).toBe('Related Content')
+    expect([...host.querySelectorAll('.mwnf-standalone-related__download button')].map((b) => b.textContent))
+      .toEqual(['As PDF (including images)', 'As Word (text only)'])
 
     // The citation's permalink (viewer-core's sourceUrl), now that this site
     // declares site.origin — the sheet's own record, not a guessed address.
@@ -89,6 +100,20 @@ describe('website smoke test', () => {
     expect(expectedProjectName).toBeTruthy()
     expect(host.querySelector('.mwnf-credits__citation').textContent).toContain(expectedProjectName)
 
+    app.unmount()
+  }, 60000)
+
+  // Legacy printed a sheet's labels in the language the record is shown in
+  // (db_GetTERM), whatever the site's: a Czech record's sheet is Czech.
+  it("prints a Czech record's labels in legacy's Czech words", async () => {
+    const [items] = await loadEntities(['items'])
+    const czech = items.find((i) => i.type === 'object' && (i.languages ?? []).includes('cs'))
+    expect(czech).toBeTruthy()
+    const { app, host } = await mount(`#/item/${encodeURIComponent(czech.id)}?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-languages')).not.toBeNull(), { timeout: 20000 })
+    const button = [...host.querySelectorAll('.mwnf-languages button')].find((b) => /cs|če|cze/i.test(b.textContent))
+    button.click()
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-sheet__label').textContent).toBe('Název díla:'), { timeout: 20000 })
     app.unmount()
   }, 60000)
 
