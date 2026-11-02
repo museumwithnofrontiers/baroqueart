@@ -2,35 +2,61 @@ import { CATALOGUE_PAGE_SIZE, partnerView } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
 import { legacyOrder, resultTile } from './catalogue.js'
 
-// The partner pages: what viewer-layout's `PartnerListView` renders on
-// `/partners/results` (one spec per type, the site's own museum/institution
-// axis) and what its `RecordView` sibling renders on `/partner/:id`, with
-// `PartnerPanel` as the page's body (inventory-app#2035). The grouping, the
-// accordion, the record's language and the panel — its About/Contact/Logo
-// tabs, the pictures, the map — are the platform's; what is declared here is
-// only this website's: which axis a list is scoped to, and the partner's
-// view-model with this website's routes.
+// The partner pages: the partner lists on `/partners/results` (legacy's
+// pm_partner_list.php, PartnersResults.vue) and what viewer-layout's
+// `RecordView` renders on `/partner/:id`, with `PartnerPanel` as the page's
+// body (inventory-app#2035). What is declared here is only this website's:
+// the lists' groups, and the partner's view-model with this website's
+// routes.
 
-const { countryLabel, items, itemRow, md, mdInline } = useData()
+const { countryLabel, items, itemRow, md, mdInline, partners, tr } = useData()
+
+// Legacy's ORDER BY, as MySQL's utf8_general_ci compares: case and accents
+// folded, then character by character.
+const folded = (text) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+const legacyCompare = (a, b) => {
+  const x = folded(a)
+  const y = folded(b)
+  return x < y ? -1 : x > y ? 1 : 0
+}
+const nameOf = (partner) => tr('partners', partner.id, 'en').name ?? partner.internal_name ?? ''
+const furtherAssociated = (partner) => /^further associated /i.test(nameOf(partner))
 
 /**
- * `/partners/results`: one spec per type (`'museum'` / `'institution'`),
- * the site's own axis — `PartnersEntrance.vue` still picks it, unchanged.
- * `nested: true` carries an associated partner under its own main partner
- * (`partnerHierarchy`) rather than the flat "Associated Partners" column, for
- * the third that has one.
+ * The partner lists, as legacy's pm_partner_list.php read them: per country
+ * by its English name, the partners of one type by English name, each shown
+ * as "name, city"; under them every associated partner of theirs by name and
+ * city, the "Further Associated" entries (shown by name alone) last.
+ * Legacy grouped a country's partners by region too ("Italy / Bologna"):
+ * the package carries no region.
  */
-export function partnersResultsSpec(type) {
-  return {
-    entity: 'partners',
-    scope: (partner) => partner.type === type,
-    group: { tier: 'level' },
-    nested: true,
-    route: 'partner',
-    count: true,
-    label: (countryId, ctx) => (countryId ? countryLabel(countryId) : ctx.t('catalogue.field.other')),
-    empty: type === 'museum' ? 'standalone.partner.noMuseums' : 'standalone.partner.noInstitutions',
+export function partnerListGroups(type) {
+  const list = partners.value ?? []
+  const label = (partner, withCity = true) => {
+    const city = tr('partners', partner.id, 'en').city
+    return withCity && city ? `${nameOf(partner)}, ${city}` : nameOf(partner)
   }
+  const byLabel = (a, b) => legacyCompare(label(a), label(b))
+  const groups = new Map()
+  for (const partner of list.filter((p) => p.type === type && p.level === 'partner')) {
+    const country = countryLabel(partner.country_id, 'en')
+    if (!groups.has(country)) groups.set(country, { label: country, main: [], associated: [] })
+    groups.get(country).main.push(partner)
+  }
+  const entry = (partner, withCity) => ({ id: partner.id, label: label(partner, withCity), to: { name: 'partner', params: { id: partner.id } } })
+  return [...groups.values()]
+    .sort((a, b) => legacyCompare(a.label, b.label))
+    .map((group) => {
+      const main = group.main.sort(byLabel)
+      const associated = main.flatMap((parent) => {
+        const own = list.filter((p) => p.parent_id === parent.id)
+        return [
+          ...own.filter((p) => !furtherAssociated(p)).sort(byLabel).map((p) => entry(p, true)),
+          ...own.filter(furtherAssociated).sort((a, b) => legacyCompare(nameOf(a), nameOf(b))).map((p) => entry(p, false)),
+        ]
+      })
+      return { label: group.label, main: main.map((p) => entry(p, true)), associated }
+    })
 }
 
 /**

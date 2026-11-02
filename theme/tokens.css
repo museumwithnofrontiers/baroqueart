@@ -280,6 +280,27 @@
   --mwnf-standalone-refine-background: #12376b;
   --mwnf-standalone-refine-color: #ffffff;
   --mwnf-standalone-refine-select-border: #4973af;
+  /* The partner lists (pm_partner_list.php, .white_contents): white words,
+     lighter where legacy drew them at 300, on blue; the blue rules and
+     band, whose arrow never turns up (legacy's up arrow lost to the white
+     one); an open institution keeps the ground. */
+  --mwnf-standalone-pl-ground: #12376b;
+  --mwnf-standalone-pl-back-color: #ffffff;
+  --mwnf-standalone-pl-back-weight: 400;
+  --mwnf-standalone-pl-back-arrow: url('./assets/white_back_arrow.png');
+  --mwnf-standalone-pl-heading-color: #ffffff;
+  --mwnf-standalone-pl-heading-weight: 300;
+  --mwnf-standalone-pl-group-color: #ffffff;
+  --mwnf-standalone-pl-group-weight: 400;
+  --mwnf-standalone-pl-rule: #3f6289;
+  --mwnf-standalone-pl-toggle-color: #ffffff;
+  --mwnf-standalone-pl-title-color: #ffffff;
+  --mwnf-standalone-pl-title-weight: 400;
+  --mwnf-standalone-pl-title-active: transparent;
+  --mwnf-standalone-pl-link-color: #ffffff;
+  --mwnf-standalone-pl-link-weight: 300;
+  --mwnf-standalone-pl-bullet: url('./assets/white_next_arrow.png');
+  --mwnf-standalone-accordion-closed: url('./assets/white_down_arrow.png');
   /* The sheet's labels, values and their links (.center_contents). */
   --mwnf-standalone-sheet-label-color: #000000;
   --mwnf-standalone-sheet-value-color: #222222;

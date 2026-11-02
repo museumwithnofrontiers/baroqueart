@@ -252,38 +252,33 @@ describe('website smoke test', () => {
 
   // The Partners entrance stays this site's own (the museum/institution
   // choice); the results list and the profile sheet moved onto
-  // viewer-layout's `PartnerListView`/`RecordView` (metanull/baroqueart#65):
-  // the country grouping, the main/associated tiers and the nested
-  // hierarchy are the platform's, over the republished partner shape
-  // (`level`, `parent_id`, `item_count`) — this website's own composable
-  // (`composables/partner.js`) supplies only the museum/institution axis,
-  // the contact/logo blocks and the reverse item lookup.
-  it('renders the Partners results on the composed list view, tiers nested by country', async () => {
-    const [partners] = await loadEntities(['partners'])
+  // Legacy's pm_partner_list.php (viewer-layout's `StandalonePartnerList`):
+  // the way back, the two headings, one row a country, the museums' "See
+  // Associated Museums" band opening that country's associated museums,
+  // the "Further Associated" entries last.
+  it("renders the partner museums as legacy's list, the associated ones behind each country's band", async () => {
+    const { app, host } = await mount('#/partners/results?type=museum&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-pl__group')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent)).toEqual(['Back', 'Other Partners', 'Sponsors'])
+    expect([...host.querySelectorAll('.mwnf-standalone-pl__heads h3')].map((h) => h.textContent)).toEqual(['Partner Museums', 'Associated Museums'])
+    const czech = [...host.querySelectorAll('.mwnf-standalone-pl__group')].find((g) => g.querySelector('h3').textContent === 'Czech Republic')
+    expect(czech.querySelector('.mwnf-standalone-pl__main').textContent).toBe('Moravian Gallery, Brno')
+    const associated = czech.querySelector('.mwnf-standalone-pl__associated')
+    expect(associated.style.display).toBe('none')
+    czech.querySelector('.mwnf-standalone-pl__toggle').click()
+    await vi.waitFor(() => expect(associated.style.display).toBe(''))
+    const names = [...associated.querySelectorAll('a')].map((a) => a.textContent)
+    expect(names[0]).toBe('City Museum, Brno')
+    expect(names.at(-1)).toBe('Further Associated Museums')
+    app.unmount()
+  }, 30000)
 
-    const { app, host } = await mount('#/partners/results?type=museum')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-partner-list__row')).not.toBeNull(), { timeout: 20000 })
-
-    expect(host.querySelector('.mwnf-partner-list')).not.toBeNull()
-    expect(host.querySelector('.mwnf-heading, .mwnf-partner-list__title').textContent).toContain('Museums')
-
-    // The "Partners found" count is the platform's own row count: a nested
-    // associated partner is folded under its parent's row, not counted
-    // again, so this is main museums plus the associated ones that stay
-    // flat (no museum parent in the list) — not every museum record.
-    const museums = partners.filter((p) => p.type === 'museum')
-    const museumIds = new Set(museums.map((p) => p.id))
-    const nestedCount = museums.filter((p) => p.parent_id && museumIds.has(p.parent_id)).length
-    expect(host.querySelector('.mwnf-partner-list__count').textContent).toContain(`${museums.length - nestedCount}`)
-
-    // Moravian Gallery (main, Czech Republic) and its associated City
-    // Museum: the child nests under its own parent's row rather than a
-    // flat "Associated" column, reading `parent_id` through `partnerHierarchy`.
-    expect(host.textContent).toContain('Moravian Gallery')
-    expect(host.textContent).toContain('City Museum')
-    const parentRow = [...host.querySelectorAll('.mwnf-partner-list__row-block')].find((el) => el.textContent.includes('Moravian Gallery'))
-    expect(parentRow?.querySelector('.mwnf-partner-list__children')?.textContent).toContain('City Museum')
-
+  it("renders the other partners as legacy's list, every country open", async () => {
+    const { app, host } = await mount('#/partners/results?type=institution&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-pl__group')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent)).toEqual(['Back', 'Partner Museums', 'Sponsors'])
+    expect([...host.querySelectorAll('.mwnf-standalone-pl__heads h3')].map((h) => h.textContent)).toEqual(['Other Partners', 'Associated Institutions'])
+    expect([...host.querySelectorAll('.mwnf-standalone-pl__row')].every((r) => r.style.display === '')).toBe(true)
     app.unmount()
   }, 30000)
 
