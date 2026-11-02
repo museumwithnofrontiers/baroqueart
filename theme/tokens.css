@@ -394,4 +394,25 @@
   --mwnf-standalone-sheet-label-color: #000000;
   --mwnf-standalone-sheet-value-color: #222222;
   --mwnf-standalone-sheet-link-color: rgb(1 141 206);
+
+  /* ---------- Phone (below 768px) ---------- */
+  /* Legacy's phone frame, measured at 390px: the 82px logo 13px down and
+     30px in, the heading 12px in the middle 35px down; the menu a drawer of
+     dark blue rows, every other one lighter, its words white. */
+  --mwnf-standalone-phone-header-columns: 98px 1fr 85px;
+  --mwnf-standalone-phone-logo-offset: 13px 0 0 30px;
+  --mwnf-standalone-phone-logo-width: 82px;
+  --mwnf-standalone-phone-title-offset: 35px;
+  --mwnf-standalone-phone-heading-size: 12px;
+  --mwnf-standalone-phone-heading-weight: 500;
+  --mwnf-standalone-phone-heading-line-height: normal;
+  --mwnf-standalone-phone-tools-offset: 17px 10px 0 0;
+  --mwnf-standalone-phone-header-link-size: 12px;
+  --mwnf-standalone-phone-content-padding: 24px;
+  --mwnf-standalone-phone-drawer-background: #3f6289;
+  --mwnf-standalone-phone-drawer-row: #14214e;
+  --mwnf-standalone-phone-drawer-row-alt: #3f6289;
+  --mwnf-standalone-phone-drawer-rule: none;
+  --mwnf-standalone-phone-drawer-link-color: #ffffff;
+  --mwnf-standalone-phone-drawer-sublink-color: #ffffff;
 }
