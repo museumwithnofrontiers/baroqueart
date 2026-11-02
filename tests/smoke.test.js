@@ -355,6 +355,24 @@ describe('website smoke test', () => {
     app.unmount()
   }, 20000)
 
+  // Decision D3: the counts are legacy's, every language searched unless one
+  // is chosen. Measured on legacy's database_results.php on 2026-11-02:
+  // "angel" and "altar" also in the monuments' special features, "anděl" in
+  // the Czech texts, "church" in the names.
+  it.each([
+    ['angel', 'keyword', 251],
+    ['altar', 'keyword', 266],
+    ['Brno', 'keyword', 88],
+    ['anděl', 'keyword', 75],
+    ['church', 'name', 156],
+    ['Bernini', 'artist', 14],
+  ])('finds as many records as legacy for %s in %s', async (word, field, count) => {
+    const { app, host } = await mount(`#/database/results?q=${encodeURIComponent(word)}&field=${field}&lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-list__cell')).not.toBeNull(), { timeout: 40000 })
+    expect(host.querySelector('.mwnf-standalone-pcr__heading').textContent).toBe(`Results of your search | ${count} records`)
+    app.unmount()
+  }, 60000)
+
   // Legacy's database_results.php: the "Refine your search" band, the way
   // back, the heading with the count, the list beside the first record's
   // preview, twelve a page.
