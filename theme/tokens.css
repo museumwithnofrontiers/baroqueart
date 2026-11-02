@@ -333,6 +333,24 @@
   --mwnf-standalone-db-go-hover-border: #12376b;
   /* Legacy's listing arrow was an <img> right before the words. */
   --mwnf-standalone-db-listing-indent: 12px;
+  /* The Timeline results (hcr_result.php): the navy band under the banner,
+     its white words light, its lists' blue border; the events' navy strips,
+     their words white and light; the navy Related Content column, its
+     words white, its links light, its arrows white. */
+  --mwnf-standalone-tlr-band: #12376b;
+  --mwnf-standalone-tlr-band-color: #ffffff;
+  --mwnf-standalone-tlr-band-weight: 300;
+  --mwnf-standalone-tlr-label-weight: 400;
+  --mwnf-standalone-tlr-select-border: #4973af;
+  --mwnf-standalone-tlr-strip: #12376b;
+  --mwnf-standalone-tlr-strip-color: #ffffff;
+  --mwnf-standalone-tlr-strip-weight: 300;
+  --mwnf-standalone-tlr-related: #12376b;
+  --mwnf-standalone-tlr-related-color: #ffffff;
+  --mwnf-standalone-tlr-related-heading-weight: 400;
+  --mwnf-standalone-tlr-link-weight: 300;
+  --mwnf-standalone-tlr-download-weight: 400;
+  --mwnf-standalone-tlr-bullet: url('./assets/white_next_arrow.png');
   /* The partner lists (pm_partner_list.php, .white_contents): white words,
      lighter where legacy drew them at 300, on blue; the blue rules and
      band, whose arrow never turns up (legacy's up arrow lost to the white

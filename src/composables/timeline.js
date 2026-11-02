@@ -1,105 +1,141 @@
-import {
-  CATALOGUE_DATE_MODE, CATALOGUE_PAGE_SIZE, dateRange, effectiveYearTo, eventDateLabel, objectsAndMonumentsSummary,
-} from '@museumwnf/viewer-core'
+import { CATALOGUE_PAGE_SIZE } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
-import { itemRecord } from './catalogue.js'
+import { QUARTER_CENTURIES, legacyOrder, resultTile } from './catalogue.js'
 
-// The timeline spec: what viewer-layout's `TimelineResultsView` renders on
-// `/timeline` (`entrance: true`, the form alone) and `/timeline/results`
-// (the same country merge, paginated), and what its `CatalogueResultsView`
-// sibling renders on `/timeline/gallery` — the legacy `hcr_gallery.php` this
-// site had dropped (decision D1). The engine — the country merge, the
-// overlap rule, the query state — is the platform's; what is declared here
-// is only this website's: the per-event "View items from this period" link
-// into the Permanent Collection results (unchanged since before this spec
-// existed), and the gallery's own country-and-period scope.
+// The Timeline, as legacy's hcr_home.php, hcr_result.php and hcr_gallery.php
+// read it, drawn by viewer-layout's standalone family (TimelineEntrance.vue,
+// TimelineResults.vue, TimelineGallery.vue). What is declared here is only
+// this website's: which events a search finds and in what order, the lists
+// the pages offer, the line that says the search in words, and the records
+// the gallery shows. Every word is legacy's own (baroqueart.tl.*, its
+// translation table).
+//
+// The query: `country` (`none` when no country was chosen, empty for all
+// countries) and `start`/`end` (`none` for a list left on its first entry),
+// as legacy's own lists sent them; `page` for the results' pages. The item
+// sheet and the dynasty pages link with `begin` for the start and
+// `country=all`, which read the same.
 
-const { countryLabel, items, md, mdInline, tr } = useData()
+const { countryLabel, items, md, timelineEvents, tr } = useData()
 
-/** The three controls every one of this site's Timeline pages offers. */
-const CONTROLS = [{ key: 'country' }, { key: 'begin' }, { key: 'end' }]
+/** Legacy's period when a date was left on its first entry. */
+const DEFAULT_START = 1500
+const DEFAULT_END = 1800
 
-function itemsLink(event) {
-  const yt = effectiveYearTo(event)
+/** Fifteen events a page, as hcr_result.php showed them. */
+export const EVENTS_PAGE_SIZE = 15
+
+const chosen = (value) => value !== undefined && value !== null && value !== '' && value !== 'none'
+
+/** The search a query stands for: the country (empty for all) and the period. */
+export function timelineQuery(query) {
   return {
-    name: 'permanent-collection-results',
-    query: {
-      country: event.country_id,
-      begin: String(event.year_from),
-      end: String(yt !== null ? yt : event.year_from),
-    },
+    country: query.country === 'all' ? '' : query.country ?? '',
+    start: query.start ?? query.begin ?? 'none',
+    end: query.end ?? 'none',
   }
 }
 
-function timelineEvent(event, ctx) {
-  const { t } = ctx
+export function timelineSearch(raw) {
+  const query = timelineQuery(raw)
+  return {
+    country: query.country,
+    start: chosen(query.start) ? Number(query.start) : DEFAULT_START,
+    end: chosen(query.end) ? Number(query.end) : DEFAULT_END,
+  }
+}
+
+/** "[DATE] A.D.", legacy's `AD` word, for a year. */
+export const yearLabel = (t, year) => t('baroqueart.tl.ad').replace('[DATE]', String(year))
+
+// HCRList::Search: an event with an end runs into the period, one without
+// falls inside it, both bounds left open; the country, when one is chosen;
+// in order of its first year.
+export function findEvents(search) {
+  const { country, start, end } = search
+  return (timelineEvents.value ?? [])
+    .filter((event) => {
+      const from = Number(event.year_from) || 0
+      const to = Number(event.year_to) || 0
+      const inPeriod = to ? to > start && from < end : from > start && from < end
+      return inPeriod && (!country || event.country_id === country)
+    })
+    .sort((a, b) => (a.year_from - b.year_from) || (a.display_order - b.display_order))
+}
+
+/** An event as hcr_result.php printed it: its years, its country, its description. */
+export function eventRow(event, t) {
   const text = tr('timeline_events', event.id)
+  let years = event.year_from ? String(event.year_from) : ''
+  if (event.year_to) years += ` - ${event.year_to}`
   return {
     id: event.id,
-    date: eventDateLabel(event, text, t),
-    caption: mdInline(countryLabel(event.country_id)),
-    description: text?.description ? md(text.description) : '',
-    // `TimelineEventList` renders an action's `label` verbatim (it is not a
-    // `RecordList`/`RelatedRecords` row, which resolve their own); the entry
-    // is named here, but it is `t`, not the view, that resolves it.
-    actions: [{ label: t('timeline.action.viewItemsFromPeriod'), to: itemsLink(event) }],
+    date: yearLabel(t, years),
+    country: event.country_id ? countryLabel(event.country_id) : '',
+    html: text.description ? md(text.description) : '',
   }
 }
 
-/** The scope the gallery and the "See gallery" cross-link both test. */
-function scopedToFilters(item, filters) {
-  return !filters.country || item.country_id === filters.country
+// The countries, by name. The entrance lists those with events and Discover
+// Baroque Art objects, as legacy's query did; the results page every
+// country with events.
+const byName = (list) => [...list].sort((a, b) => a.label.localeCompare(b.label))
+const eventCountries = () => new Set((timelineEvents.value ?? []).map((event) => event.country_id).filter(Boolean))
+
+export function entranceCountries() {
+  const withObjects = new Set((items.value ?? []).filter((item) => item.type === 'object').map((item) => item.country_id))
+  return byName([...eventCountries()].filter((id) => withObjects.has(id)).map((id) => ({ value: id, label: countryLabel(id) })))
 }
 
-function galleryCount(ctx) {
-  return dateRange(items.value.filter((item) => scopedToFilters(item, ctx.filters)), {
-    begin: ctx.filters.begin,
-    end: ctx.filters.end,
-    mode: CATALOGUE_DATE_MODE,
-  }).length
+export function resultCountries() {
+  return byName([...eventCountries()].map((id) => ({ value: id, label: countryLabel(id) })))
 }
 
-const shared = {
-  scope: 'country',
-  countryLabel,
-  tr: (id) => tr('timeline_events', id),
-  controls: CONTROLS,
-  event: timelineEvent,
+/** The start and end lists: legacy's quarter centuries, 1500 to 1800, the same on both. */
+export function dateOptions(t) {
+  const list = QUARTER_CENTURIES.map((year) => ({ value: year, label: yearLabel(t, year) }))
+  return { starts: list, ends: list }
 }
 
-/** `/timeline`: the form alone, navigating to the results on submit. */
-export const timelineEntranceSpec = {
-  ...shared,
-  entrance: true,
-  route: 'timeline-results',
-  submitLabel: 'core.action.go',
+// hcr_result.php's line over the lists: the period, then the country in
+// capitals, or all countries.
+export function searchLine(search, t) {
+  const country = search.country ? countryLabel(search.country) : t('baroqueart.tl.allCountries')
+  return `${yearLabel(t, search.start)} to ${yearLabel(t, search.end)} | ${country.toUpperCase()}`
 }
 
-/** `/timeline/results`: the same controls, paginated, with the gallery cross-link. */
-export const timelineResultsSpec = {
-  ...shared,
-  pageSize: 15,
-  filterTitle: 'catalogue.filter.heading',
-  gallery: { route: 'timeline-gallery', items: galleryCount },
+// export_hcr_content.php: its line ("TIMELINE | 1600 to 1700 | ITALY") and
+// its file's name.
+export function wordLine(search, t) {
+  const country = search.country ? countryLabel(search.country) : t('baroqueart.tl.allCountries')
+  return `${t('baroqueart.tl.title').toUpperCase()} | ${search.start} to ${search.end} | ${country.toUpperCase()}`
+}
+export const wordFile = (search) => `DBA_${search.country}-${search.start}-${search.end}-en.doc`
+
+// hcr_gallery.php: the objects and monuments dated inside the period, in
+// the country when one is chosen, in legacy's order (the start, then the
+// end, then the record's key), twenty a page.
+const galleryScope = (search) => (item) =>
+  (!search.country || item.country_id === search.country)
+  && Number.isFinite(item.start_date) && item.start_date >= search.start
+  && Number.isFinite(item.end_date) && item.end_date <= search.end
+
+export function galleryItems(search) {
+  return (items.value ?? []).filter(galleryScope(search))
 }
 
-/**
- * `/timeline/gallery`: the Permanent Collection objects of the country and
- * period the results page was showing. The row and the objects/monuments
- * summary are the Permanent Collection's own, unchanged — this is the same
- * catalogue, scoped rather than re-described.
- */
-export const timelineGallerySpec = {
-  entity: 'items',
-  keys: ['country', 'begin', 'end'],
-  scope: scopedToFilters,
-  dates: { mode: CATALOGUE_DATE_MODE },
-  sort: 'chronological',
-  pageSize: CATALOGUE_PAGE_SIZE,
-  variant: 'list',
-  recordRoute: 'item',
-  empty: 'catalogue.results.noResultsFilter',
-  pagination: { window: 7 },
-  record: itemRecord,
-  summary: objectsAndMonumentsSummary,
+const galleryOrder = (list) =>
+  legacyOrder(list).sort((a, b) => (a.start_date - b.start_date) || (a.end_date - b.end_date))
+
+export function gallerySpec(search) {
+  return {
+    entity: 'items',
+    keys: [],
+    scope: galleryScope(search),
+    sort: galleryOrder,
+    pageSize: CATALOGUE_PAGE_SIZE,
+    record: resultTile,
+    summary: () => [],
+    empty: 'baroqueart.tl.empty',
+  }
 }

@@ -26,7 +26,8 @@ const catalogue = useCatalogue({
 catalogue.loadEnglish()
 
 const collections = catalogue.entity('collections')
+const timelineEvents = catalogue.entity('timeline_events')
 
 export function useData() {
-  return { ...catalogue, collections, defaultLang }
+  return { ...catalogue, collections, timelineEvents, defaultLang }
 }

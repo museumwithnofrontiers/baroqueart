@@ -173,59 +173,52 @@ describe('website smoke test', () => {
     app.unmount()
   }, 60000)
 
-  // The Timeline entrance, results and gallery pages moved onto
-  // viewer-layout's `TimelineResultsView`/`CatalogueResultsView` (metanull/baroqueart#64):
-  // the country merge, the overlap filter and the pagination are the
-  // platform's; the per-event link into the Permanent Collection results and
-  // the gallery cross-link (decision D1, the legacy `hcr_gallery.php` this
-  // site had dropped) are this website's own, declared in `composables/timeline.js`.
-  it('renders the Timeline entrance on the composed results view', async () => {
-    const { app, host } = await mount('#/timeline')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-timeline')).not.toBeNull(), { timeout: 20000 })
-    expect(host.querySelector('.mwnf-heading').textContent).toContain('Timeline')
+  // Legacy's hcr_home.php: the country, the quarter centuries from 1500 to
+  // 1800 and Go, in legacy's words; Go writes the query the results page
+  // reads.
+  it("renders the Timeline entrance as legacy's hcr_home.php", async () => {
+    const { app, host, router } = await mount('#/timeline?lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-tle')).not.toBeNull(), { timeout: 20000 })
+    const [country, start, end] = host.querySelectorAll('.mwnf-standalone-tle select')
+    const options = (select) => [...select.options].map((o) => o.textContent)
+    expect(options(country).slice(0, 2)).toEqual(['Select a Country', 'All Countries'])
+    expect(options(country)).toContain('Italy')
+    expect(options(start)).toEqual(['Start Date', ...[1500, 1525, 1550, 1575, 1600, 1625, 1650, 1675, 1700, 1725, 1750, 1775, 1800].map((y) => `${y} A.D.`)])
+    expect(options(end)[1]).toBe('1500 A.D.')
+    country.value = 'ita'
+    country.dispatchEvent(new Event('change'))
+    host.querySelector('form.mwnf-standalone-tle').dispatchEvent(new Event('submit', { cancelable: true }))
+    await vi.waitFor(() => expect(router.currentRoute.value.name).toBe('timeline-results'), { timeout: 20000 })
+    expect(router.currentRoute.value.query).toMatchObject({ country: 'ita', start: 'none', end: 'none' })
     app.unmount()
   }, 30000)
 
-  it('renders the Timeline results with events and offers the gallery cross-link', async () => {
-    const { app, host } = await mount('#/timeline/results?country=hun')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-timeline__row')).not.toBeNull(), { timeout: 20000 })
-
-    // Every one of Hungary's sixty events, paginated fifteen a page (legacy's size).
-    expect(host.querySelectorAll('.mwnf-timeline__row').length).toBe(15)
-
-    // The per-event action, unchanged since before this page moved onto the spec.
-    const action = host.querySelector('.mwnf-timeline__action')
-    expect(action).not.toBeNull()
-    expect(action.textContent).toContain('View items from this period')
-
-    // Hungary carries objects, so the gallery cross-link must appear, with a count.
-    const gallery = host.querySelector('.mwnf-timeline__gallery')
-    expect(gallery).not.toBeNull()
-    expect(gallery.textContent).toContain('See Gallery')
-    expect(gallery.textContent).toContain('86')
-
-    // Timeline events now carry their descriptions (inventory-app#1705):
-    // verify a row's rendered description and date against the fixture.
-    const descriptions = [...host.querySelectorAll('.mwnf-timeline__description')].map((el) => el.textContent.trim())
-    const dates = [...host.querySelectorAll('.mwnf-timeline__date')].map((el) => el.textContent.trim())
-    expect(descriptions.some((desc) => desc.startsWith('According to the double conquest theory'))).toBe(true)
-    expect(dates).toContain('670/680')
-
+  // Legacy's hcr_result.php: the search in words, the events legacy found for
+  // Italy from 1600 to 1700 (two, measured on its page on 2026-11-02), "See
+  // Gallery" while the period has records, and the downloads.
+  it("renders the Timeline results as legacy's hcr_result.php", async () => {
+    const { app, host } = await mount('#/timeline/results?country=ita&start=1600&end=1700&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-tlr__row')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelector('.mwnf-standalone-tlr__summary').textContent).toBe('Timeline | 1600 A.D. to 1700 A.D. | ITALY')
+    expect([...host.querySelectorAll('.mwnf-standalone-tlr__date span')].map((s) => s.textContent)).toEqual(['1610 A.D.', '1633 A.D.'])
+    expect(host.querySelector('.mwnf-standalone-tlr__content span').textContent).toBe('Italy')
+    const related = [...host.querySelectorAll('.mwnf-standalone-tlr__related a')]
+    expect(related.map((a) => a.textContent)).toEqual(['See Gallery', 'As PDF (including images)', 'As Word (text only)'])
+    expect(related[0].getAttribute('href')).toContain('#/timeline/gallery?country=ita&start=1600&end=1700')
     app.unmount()
   }, 30000)
 
-  it('reaches the Permanent Collection objects of that country from the Timeline gallery', async () => {
-    const { app, host } = await mount('#/timeline/gallery?country=hun')
-    await vi.waitFor(() => expect(host.querySelector('.mwnf-list__row')).not.toBeNull(), { timeout: 20000 })
-
-    expect(host.querySelector('.mwnf-heading').textContent).toContain('Timeline Gallery')
-    // Twenty rows a page, the Permanent Collection's own page size.
-    expect(host.querySelectorAll('.mwnf-list__row').length).toBe(20)
-    // The Permanent Collection's own two-part count (objects, monuments) totalling 86.
-    const counts = [...host.querySelectorAll('.mwnf-summary__count')].map((el) => Number(el.textContent))
-    expect(counts.length).toBe(2)
-    expect(counts.reduce((a, b) => a + b, 0)).toBe(86)
-
+  // Legacy's hcr_gallery.php: the period's records as the Permanent
+  // Collection's tiles, the search in words with "Gallery", and the way
+  // back to the events.
+  it("renders the Timeline gallery as legacy's hcr_gallery.php", async () => {
+    const { app, host } = await mount('#/timeline/gallery?country=ita&start=1600&end=1700&lang=en')
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-results__tile')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelector('.mwnf-standalone-pcr__heading').textContent.replace(/\s+/g, ' ').trim())
+      .toBe('Timeline | 1600 A.D. to 1700 A.D. | Italy | Gallery')
+    const seeTimeline = host.querySelector('.mwnf-standalone-pcr__related a')
+    expect(seeTimeline.textContent.replace(/\s+/g, ' ').trim()).toBe('See Timeline Italy')
+    expect(seeTimeline.getAttribute('href')).toContain('#/timeline/results?country=ita&start=1600&end=1700')
     app.unmount()
   }, 30000)
 
