@@ -299,6 +299,21 @@
   --mwnf-standalone-phone-results-see-offset: 18px;
   --mwnf-standalone-phone-results-gap: 0px;
   --mwnf-standalone-phone-pcr-heading-gap: 21px;
+  /* Below 750px the Database's own phone form (database.php): rows 49px
+     apart, the complete listing under Go. */
+  --mwnf-standalone-phone-db-row-gap: 19px;
+  /* The Collections entrance's About under its lists, on a phone. */
+  --mwnf-standalone-phone-pc-about-gap: 40px;
+  /* pc_entrance.php's 100px spacer section under the content. */
+  --mwnf-standalone-pc-padding-bottom: 126px;
+  --mwnf-standalone-phone-pc-bottom: 138px;
+  --mwnf-standalone-phone-db-top: 18px;
+  --mwnf-standalone-phone-db-bottom: 43px;
+  --mwnf-standalone-db-padding-bottom: 19px;
+  --mwnf-standalone-phone-db-go-offset: 14px;
+  --mwnf-standalone-phone-db-listing-width: 100%;
+  --mwnf-standalone-phone-db-listing-gap: 0px;
+  --mwnf-standalone-phone-db-listing-offset: 11px;
   --mwnf-standalone-pill-color: #ffffff;
   --mwnf-standalone-pill-muted: rgb(255 255 255 / 0.59);
   --mwnf-standalone-pill-weight: 400;
