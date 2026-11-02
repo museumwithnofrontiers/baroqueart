@@ -234,8 +234,22 @@
   --mwnf-standalone-menu-alt-background: #3f6289;
   --mwnf-standalone-menu-link: #ffffff;
   --mwnf-standalone-menu-hover: #f5da66;
+  --mwnf-standalone-menu-weight: 400;
   --mwnf-standalone-header-link-color: #ffffff;
   --mwnf-standalone-header-height: 81px;
+  /* The header hangs from the top, 65px in: the logo (120 wide)
+     and the links 15px down, the light heading 30px (under legacy's empty
+     line). */
+  --mwnf-standalone-header-inset: 65px;
+  --mwnf-standalone-header-align: start;
+  --mwnf-standalone-header-brand-offset: 15px;
+  --mwnf-standalone-header-title-offset: 30px;
+  --mwnf-standalone-header-tools-offset: 15px;
+  --mwnf-standalone-header-links-gap: 5.5px;
+  --mwnf-standalone-header-title-line-height: normal;
+  --mwnf-standalone-heading-weight: 300;
+  --mwnf-standalone-logo-height: 50px;
+  --mwnf-standalone-logo-width: 120px;
   --mwnf-standalone-banner-height: 160px;
   /* The inner pages' band title (.banner-text h2 span): white, 30px. */
   --mwnf-standalone-banner-title-size: 30px;
