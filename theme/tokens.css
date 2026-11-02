@@ -351,6 +351,24 @@
   --mwnf-standalone-tlr-link-weight: 300;
   --mwnf-standalone-tlr-download-weight: 400;
   --mwnf-standalone-tlr-bullet: url('./assets/white_next_arrow.png');
+  /* The item's timeline window (hcr.php, #hcr_timeline): blue ground, the
+     band over legacy's picture, the violet ×, the navy article with white
+     words, the years on legacy's orange band, the picture at its own size. */
+  --mwnf-standalone-window-background: rgb(63 98 137);
+  --mwnf-standalone-window-header: rgb(106 136 174);
+  --mwnf-standalone-window-header-image: url('./assets/hcr_header.gif');
+  --mwnf-standalone-window-heading-color: #ffffff;
+  --mwnf-standalone-window-heading-weight: 500;
+  --mwnf-standalone-window-close: rgb(102 64 254);
+  --mwnf-standalone-window-article: #12376b;
+  --mwnf-standalone-window-panel: #f0ede4;
+  --mwnf-standalone-window-input-border: #4973af;
+  --mwnf-standalone-hcr-scale: #febe40;
+  --mwnf-standalone-hcr-dash: url('./assets/hcr_timeline_dash.gif');
+  --mwnf-standalone-hcr-text-color: #ffffff;
+  --mwnf-standalone-hcr-image-width: auto;
+  --mwnf-standalone-hcr-image-height: 135px;
+  --mwnf-standalone-hcr-image-ground: transparent;
   /* The partner lists (pm_partner_list.php, .white_contents): white words,
      lighter where legacy drew them at 300, on blue; the blue rules and
      band, whose arrow never turns up (legacy's up arrow lost to the white

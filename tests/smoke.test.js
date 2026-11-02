@@ -208,6 +208,26 @@ describe('website smoke test', () => {
     app.unmount()
   }, 30000)
 
+  // Legacy's hcr.php ("Timeline for this item"): the sheet offers the window
+  // when the item's country has events; the window shows the item's country
+  // and period, the item, and legacy's events for it (this Hungarian
+  // statue, 1664–1699: 1671 and 1686, measured on legacy's window on
+  // 2026-11-02).
+  it("opens the item's timeline as legacy's hcr.php", async () => {
+    const statue = '16a31ba5-4c16-5a18-9197-2cffb96b8f18'
+    const sheet = await mount(`#/item/${statue}?lang=en`)
+    await vi.waitFor(() => expect(sheet.host.querySelector('.baroqueart-timeline-link a')).not.toBeNull(), { timeout: 20000 })
+    expect(sheet.host.querySelector('.baroqueart-timeline-link a').getAttribute('href')).toContain(`#/item/${statue}/timeline`)
+    sheet.app.unmount()
+
+    const { app, host } = await mount(`#/item/${statue}/timeline?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-hcr__event')).not.toBeNull(), { timeout: 20000 })
+    expect(host.querySelector('.mwnf-standalone-hcr__main h3').textContent).toBe('Hungary - 1664 - 1699 A.D.')
+    expect([...host.querySelectorAll('.mwnf-standalone-hcr__event b')].map((b) => b.textContent)).toEqual(['1671 A.D.', '1686 A.D.'])
+    expect(host.querySelector('.mwnf-standalone-hcr__left strong em').textContent).toBe('A Member of Nagyszeben (Sibiu) Town Council')
+    app.unmount()
+  }, 60000)
+
   // Legacy's hcr_gallery.php: the period's records as the Permanent
   // Collection's tiles, the search in words with "Gallery", and the way
   // back to the events.
