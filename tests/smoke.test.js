@@ -311,9 +311,28 @@ describe('website smoke test', () => {
     expect(viewItems).not.toBeNull()
     expect(viewItems.textContent).toContain('View objects')
     expect(viewItems.textContent).toContain('50')
+    expect(viewItems.querySelector('a').getAttribute('href')).toBe(`#/partner/${partnerId}/items`)
 
     app.unmount()
   }, 30000)
+
+  // Legacy's pm_museum_items.php: the way back to the partner lists and the
+  // Sponsors page, the partner's name and place, its objects as the
+  // Permanent Collection's tiles, "Partner Profile" beside them.
+  it("renders a partner's objects as legacy drew them", async () => {
+    const [partners, items] = await loadEntities(['partners', 'items'])
+    const partner = partners.find((p) => p.backward_compatibility === 'mwnf3:museums:Mus11:cz')
+    const held = items.filter((i) => i.partner_id === partner.id && i.type === 'object')
+    const { app, host } = await mount(`#/partner/${partner.id}/items?lang=en`)
+    await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-results__tile')).not.toBeNull(), { timeout: 20000 })
+    expect([...host.querySelectorAll('.mwnf-standalone-item__back-link')].map((a) => a.textContent))
+      .toEqual(['Back', 'Partner Museums', 'Other Partners', 'Sponsors'])
+    expect(host.querySelector('.mwnf-standalone-pmi__heading h3').textContent).toBe('Moravian Gallery')
+    expect(host.querySelector('.mwnf-standalone-pmi__heading i').textContent).toBe('Brno, Czech Republic')
+    expect(host.querySelectorAll('.mwnf-standalone-results__tile').length).toBe(Math.min(held.length, 20))
+    expect(host.querySelector('.mwnf-standalone-pcr__related a').textContent).toBe('Partner Profile')
+    app.unmount()
+  }, 60000)
 
 
   // The Database entrance and its keyword results moved onto
