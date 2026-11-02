@@ -27,8 +27,10 @@ const furtherAssociated = (partner) => /^further associated /i.test(nameOf(partn
  * by its English name, the partners of one type by English name, each shown
  * as "name, city"; under them every associated partner of theirs by name and
  * city, the "Further Associated" entries (shown by name alone) last.
- * Legacy grouped a country's partners by region too ("Italy / Bologna"):
- * the package carries no region.
+ * A partner with a region in the page's language (legacy's `regionnames`,
+ * the translation's `region`) has a group of its own, "Italy / Bologna",
+ * placed where its first partner falls in that order, as legacy keyed its
+ * list by country and region in reading order.
  */
 export function partnerListGroups(type) {
   const list = partners.value ?? []
@@ -37,15 +39,19 @@ export function partnerListGroups(type) {
     return withCity && city ? `${nameOf(partner)}, ${city}` : nameOf(partner)
   }
   const byLabel = (a, b) => legacyCompare(label(a), label(b))
+  const country = (partner) => countryLabel(partner.country_id, 'en')
   const groups = new Map()
-  for (const partner of list.filter((p) => p.type === type && p.level === 'partner')) {
-    const country = countryLabel(partner.country_id, 'en')
-    if (!groups.has(country)) groups.set(country, { label: country, main: [], associated: [] })
-    groups.get(country).main.push(partner)
+  const members = list
+    .filter((p) => p.type === type && p.level === 'partner')
+    .sort((a, b) => legacyCompare(country(a), country(b)) || byLabel(a, b))
+  for (const partner of members) {
+    const region = tr('partners', partner.id).region
+    const heading = region ? `${country(partner)} / ${region}` : country(partner)
+    if (!groups.has(heading)) groups.set(heading, { label: heading, main: [], associated: [] })
+    groups.get(heading).main.push(partner)
   }
   const entry = (partner, withCity) => ({ id: partner.id, label: label(partner, withCity), to: { name: 'partner', params: { id: partner.id } } })
   return [...groups.values()]
-    .sort((a, b) => legacyCompare(a.label, b.label))
     .map((group) => {
       const main = group.main.sort(byLabel)
       const associated = main.flatMap((parent) => {
