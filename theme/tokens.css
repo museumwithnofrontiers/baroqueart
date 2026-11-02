@@ -285,6 +285,20 @@
   /* The partner profile's pills (.tabs-menu, .tabs-menu-sh): blue, the open
      tab and "View Objects" white, the other tabs and the homepage paler. */
   --mwnf-standalone-pill: #12376b;
+  /* On a phone (below 620px) the tabs are pills of their own; the name
+     stays regular (below 750px). */
+  --mwnf-standalone-phone-pill: #12376b;
+  --mwnf-standalone-phone-pill-active: #14214e;
+  --mwnf-standalone-phone-partner-name-weight: 400;
+  /* Below 750px the results keep their tile-wide frame, a blank line after
+     the date and before "See Database Entry"; no gap between them. */
+  --mwnf-standalone-phone-results-frame-width: 231px;
+  --mwnf-standalone-phone-results-panel-display: block;
+  --mwnf-standalone-phone-results-rule: rgba(19, 48, 80, 0.17);
+  --mwnf-standalone-phone-results-date-gap: 18px;
+  --mwnf-standalone-phone-results-see-offset: 18px;
+  --mwnf-standalone-phone-results-gap: 0px;
+  --mwnf-standalone-phone-pcr-heading-gap: 21px;
   --mwnf-standalone-pill-color: #ffffff;
   --mwnf-standalone-pill-muted: rgb(255 255 255 / 0.59);
   --mwnf-standalone-pill-weight: 400;
