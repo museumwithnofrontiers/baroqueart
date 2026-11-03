@@ -6,6 +6,8 @@ import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
 import { mountSite } from '@museumwnf/viewer-core/testing'
 import { catalogues as sharedTexts } from '@museumwnf/viewer-i18n/standalone'
 import ownTexts from '../locales/en.json'
+import { creditTexts } from '../src/composables/credits.js'
+import creditRows from '../src/legacy/credits.json'
 import sponsorRows from '../src/legacy/sponsors.json'
 import config from '../src/dataset.config.js'
 
@@ -132,10 +134,29 @@ describe("legacy's chrome", () => {
     app.unmount()
   }, 60000)
 
-  it("renders legacy's credits page", async () => {
-    const { app, host } = await mountOn('#/credits', '.mwnf-prose p')
-    expect(host.querySelector('.mwnf-text-page__heading').textContent).toBe(sharedTexts.en['core.section.credits'])
-    expect(host.querySelector('.mwnf-prose').textContent.trim()).not.toBe('')
+  it("renders legacy's credits page: its band, its back link, each role beside its people", async () => {
+    const { app, host } = await mountOn('#/credits', '.baroqueart-credits__row')
+    expect(host.querySelector('.mwnf-standalone-banner').textContent.trim()).toBe(ownTexts['core.footer.credits'])
+    expect(host.querySelector('.baroqueart-credits__back').textContent.trim()).toBe(ownTexts['baroqueart.item.back'])
+    // A row and a column for each the extraction lists, every listed entry printed.
+    const rows = [...host.querySelectorAll('.baroqueart-credits__row')]
+    expect(rows).toHaveLength(creditRows.length)
+    rows.forEach((row, r) => expect(row.querySelectorAll(':scope > .baroqueart-credits__column')).toHaveLength(creditRows[r].length))
+    const spelled = Object.keys(creditTexts((name) => name))
+    for (const column of creditRows.flat().filter((c) => c.entry)) {
+      expect(ownTexts[column.entry], column.entry).toBeTruthy()
+      expect(spelled, column.entry).toContain(column.entry)
+    }
+    // Austria's roles, then its people beside them, a line lower.
+    const austria = rows.find((row) => row.querySelector('.baroqueart-credits__column strong')?.textContent === 'Austria')
+    const [roles, people] = austria.querySelectorAll('.baroqueart-credits__column')
+    expect(roles.style.getPropertyValue('--md')).toBe('6')
+    expect(people.textContent).toContain('Innsbruck Tourism')
+    expect(people.querySelector('p').firstChild.nodeName).toBe('BR')
+    // The MWNF team's heading, under the line legacy leaves over it.
+    expect(host.querySelectorAll('.baroqueart-credits__lead br')).toHaveLength(
+      creditRows.flat().reduce((sum, column) => sum + (column.lead ?? 0), 0)
+    )
     app.unmount()
   }, 60000)
 })

@@ -147,6 +147,8 @@ export default {
       partners: 'baroqueart.section.partners',
       timeline: 'baroqueart.nav.timeline',
       sponsors: 'baroqueart.sponsors.title',
+      // mwnf_credit.php prints its own "Credits", the footer's word.
+      credits: 'core.footer.credits',
     },
   },
 
@@ -261,14 +263,7 @@ export default {
       // opens: other MWNF sites link to it. Its text is legacy's, extracted.
       path: '/credits',
       name: 'credits',
-      component: () => import('@museumwnf/viewer-layout/views').then((views) => views.TextPageView),
-      props: {
-        spec: {
-          heading: 'core.section.credits',
-          body: 'baroqueart.credits.body',
-          back: false,
-        },
-      },
+      component: () => import('./views/CreditsPage.vue'),
       meta: meta('credits'),
     },
     {
