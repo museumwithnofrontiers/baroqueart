@@ -290,6 +290,11 @@
   --mwnf-standalone-phone-pill: #12376b;
   --mwnf-standalone-phone-pill-active: #14214e;
   --mwnf-standalone-phone-partner-name-weight: 400;
+  /* Legacy's empty paragraph between the map's heading and the map; below
+     750px the heading 44px under the profile (its section's 24px padding
+     and the next one's 20px). */
+  --mwnf-standalone-partner-map-extra: 10px;
+  --mwnf-standalone-phone-partner-map-offset: 44px;
   /* Below 750px the results keep their tile-wide frame, a blank line after
      the date and before "See Database Entry"; no gap between them. */
   --mwnf-standalone-phone-results-frame-width: 231px;
