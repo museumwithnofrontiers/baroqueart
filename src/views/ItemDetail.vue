@@ -92,14 +92,18 @@ const onDisplayInGroups = (record) => [{
 const thgGalleryGroups = (record) => [{
   links: (record.thg_galleries ?? []).map((g) => ({ id: g.name, label: mdInline(g.name) })),
 }]
+
+// Legacy drew a monument's Contact Details when it had an address, a phone,
+// a fax or an e-mail; its responsible institution alone drew none.
+const hasContact = (contact) => Boolean(contact?.address || contact?.phone || contact?.fax || contact?.email)
 </script>
 
 <template>
   <StandaloneItemSheet :spec="itemSheetSpec" :id="id" :back="back" :related="related">
     <!-- A monument's Location, then its Contact Details when it has any. -->
     <template #location="{ row, text }">
-      <span class="mwnf-sheet__inline">{{ row.value }}</span><br v-if="text?.contact" />
-      <ContactDetails v-if="text?.contact" :contact="text.contact" :name="text.name ?? ''" />
+      <span class="mwnf-sheet__inline">{{ row.value }}</span><br v-if="hasContact(text?.contact)" />
+      <ContactDetails v-if="hasContact(text?.contact)" :contact="text.contact" :name="text.name ?? ''" />
     </template>
     <template #holder="{ row, record, language, dir, glossary }">
       <span v-html="mdInline(row.value, { glossary })"></span>
