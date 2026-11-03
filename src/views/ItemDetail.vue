@@ -75,10 +75,13 @@ function holderPartner(record, language) {
 }
 
 // Each exhibition page that places the item, on the exhibition's own website
-// (its mini-site), in the site's language.
+// (its mini-site), in the site's language, under legacy's heading for the
+// Discover Baroque Art exhibitions (`gn_rel_exhibition_dba`) and read as
+// legacy read it: "Exhibition | *Theme*".
 const onDisplayInGroups = (record) => [{
+  heading: 'baroqueart.item.relExhibition',
   links: exhibitionLinksForItem(record.id).map((l) => ({
-    label: mdInline(l.label),
+    label: `${mdInline(l.label)} | <i>${mdInline(l.theme)}</i>`,
     href: minisiteHref(l.exhibitionId, locale.value, l.at) ?? undefined,
   })),
 }]
@@ -103,8 +106,21 @@ const thgGalleryGroups = (record) => [{
       />
     </template>
 
-    <template #after-sheet="{ record, language, dir, glossary }">
+    <!-- A monument's special features after its dating method, before the
+         bibliography (legacy's .specials); after the sheet when it has none. -->
+    <template #after-datation="{ record, language, dir, glossary }">
       <SpecialFeatures
+        :features="record.details ?? []"
+        :tr="(feature) => tr('items', feature.id, language)"
+        :language="language"
+        :glossary="glossary"
+        :dir="dir"
+        :picture-limit="6"
+      />
+    </template>
+    <template #after-sheet="{ record, text, language, dir, glossary }">
+      <SpecialFeatures
+        v-if="!text?.method_for_datation"
         :features="record.details ?? []"
         :tr="(feature) => tr('items', feature.id, language)"
         :language="language"
