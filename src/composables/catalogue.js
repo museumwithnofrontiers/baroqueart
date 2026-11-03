@@ -162,6 +162,16 @@ export function resultTile(item, { tr, renderInline }) {
   }
 }
 
+// The timeline gallery's and a partner's items' tile (hcr_gallery.php,
+// pm_museum_items.php, pm_institution_items.php): as the catalogue's, but
+// the date whole and without its ending period, and no artist.
+export function galleryTile(item, context) {
+  const text = context.tr('items', item.id)
+  const plain = (value) => removeEndingPoint(String(value ?? '').replace(/[\r\n]/g, ''))
+  const dates = [plain(text.dates), plain(text.dynasty)].filter(Boolean).join(', ')
+  return { ...resultTile(item, context), lines: dates ? [context.renderInline(dates)] : [] }
+}
+
 export const permanentCollectionResultsSpec = {
   entity: 'items',
   keys: ['country', 'province', 'partner', 'begin', 'end'],
