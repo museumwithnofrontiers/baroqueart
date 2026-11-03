@@ -1,6 +1,6 @@
 import { CATALOGUE_PAGE_SIZE } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
-import { QUARTER_CENTURIES, legacyOrder, resultTile } from './catalogue.js'
+import { QUARTER_CENTURIES, galleryTile, legacyOrder } from './catalogue.js'
 
 // The Timeline, as legacy's hcr_home.php, hcr_result.php and hcr_gallery.php
 // read it, drawn by viewer-layout's standalone family (TimelineEntrance.vue,
@@ -134,7 +134,7 @@ export function gallerySpec(search) {
     scope: galleryScope(search),
     sort: galleryOrder,
     pageSize: CATALOGUE_PAGE_SIZE,
-    record: resultTile,
+    record: galleryTile,
     summary: () => [],
     empty: 'baroqueart.tl.empty',
   }

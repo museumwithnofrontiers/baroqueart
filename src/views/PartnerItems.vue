@@ -38,7 +38,11 @@ const backLinks = computed(() => [
 </script>
 
 <template>
-  <CatalogueResultsView :spec="spec" class="mwnf-standalone-pcr mwnf-standalone-pmi">
+  <CatalogueResultsView
+    :spec="spec"
+    class="mwnf-standalone-pcr mwnf-standalone-pmi"
+    :class="{ 'baroqueart-pmi--monuments': partner?.type === 'institution' }"
+  >
     <template #before>
       <p class="mwnf-standalone-item__back mwnf-standalone-pcr__back">
         <button type="button" class="mwnf-standalone-item__back-link" @click="$router.back()">{{ t('baroqueart.pcr.back') }}</button>

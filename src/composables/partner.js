@@ -1,6 +1,6 @@
 import { CATALOGUE_PAGE_SIZE, partnerView, removeEndingPoint } from '@museumwnf/viewer-core'
 import { useData } from './data.js'
-import { legacyOrder, resultTile } from './catalogue.js'
+import { galleryTile, legacyOrder } from './catalogue.js'
 
 // The partner pages: the partner lists on `/partners/results` (legacy's
 // pm_partner_list.php, PartnersResults.vue), the profile on `/partner/:id`
@@ -109,7 +109,7 @@ export function partnerItemsSpec(partnerId, type) {
     scope: (item) => item.partner_id === partnerId && item.type === kind,
     sort: legacyOrder,
     pageSize: CATALOGUE_PAGE_SIZE,
-    record: resultTile,
+    record: galleryTile,
     summary: () => [],
     empty: 'baroqueart.pcr.empty',
   }
