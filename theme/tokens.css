@@ -281,7 +281,11 @@
   --mwnf-standalone-highlight-paragraph-gap: 10px;
   --mwnf-standalone-highlight-width: 775px;
   --mwnf-standalone-highlight-color: #000000;
+  /* Its "View description" in the links' #222 (.partner_contents a). */
+  --mwnf-standalone-highlight-action-color: #222222;
   --mwnf-standalone-sponsors-line-height: 19px;
+  /* On a phone the band's lines are 15px (style_responsive.css). */
+  --mwnf-standalone-phone-sponsors-text-size: 15px;
   /* The partner profile's pills (.tabs-menu, .tabs-menu-sh): blue, the open
      tab and "View Objects" white, the other tabs and the homepage paler. */
   --mwnf-standalone-pill: #12376b;

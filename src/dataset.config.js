@@ -1,4 +1,4 @@
-import { languageLabels, mwnfLinks, offeredLanguages, useDataPackage } from '@museumwnf/viewer-core'
+import { languageLabels, mwnfLinks, offeredLanguages, removeEndingPoint, useDataPackage } from '@museumwnf/viewer-core'
 import { mwnfSocialLinks } from '@museumwnf/viewer-layout'
 import { StandaloneShell } from '@museumwnf/viewer-layout/standalone'
 import homeItems from './home-items.json'
@@ -98,6 +98,15 @@ export default {
         // random_image/DBA_new/1.jpg to 75.jpg, a cycle of its own by the day
         // of the year, kept under theme/assets/.
         pictures: Array.from({ length: 75 }, (_, i) => `random_image/DBA_new/${i + 1}.jpg`),
+        // Legacy's place line (dbaTemplates/randomText.php): the location and
+        // the province without their ending period, then the country. Its
+        // Palestinian exception names records Baroque Art doesn't have.
+        place: (record, text, country) =>
+          [text.location, text.province]
+            .map((part) => removeEndingPoint(part ?? ''))
+            .concat(country)
+            .filter(Boolean)
+            .join(', '),
       },
     },
   },
