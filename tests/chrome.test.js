@@ -30,7 +30,7 @@ async function mountOn(hash, selector) {
   return mounted
 }
 const HOME = '.mwnf-standalone-highlight'
-const PARTNERS = '.partners-credits'
+const PARTNERS = '.mwnf-standalone-pe__row'
 
 describe("legacy's chrome", () => {
   it("declares legacy's favicon, served from public/", () => {
@@ -102,15 +102,17 @@ describe("legacy's chrome", () => {
     inner.app.unmount()
   }, 60000)
 
-  it("gives the Partners page legacy's About text and its Sponsors and Credits links", async () => {
+  it("draws the Partners page as legacy's partners.php: the project's box, About and its four links", async () => {
     const { app, host } = await mountOn('#/partners', PARTNERS)
-    expect(host.querySelector('.intro-text').textContent.trim()).not.toBe('')
-    const sponsors = host.querySelector('.partners-sponsors a')
-    expect(sponsors.getAttribute('href')).toBe('#/sponsors')
-    expect(sponsors.textContent).toBe(ownTexts['baroqueart.partner.sponsors'])
-    const credits = host.querySelector('.partners-credits a')
-    expect(credits.getAttribute('href')).toBe('https://www.museumwnf.org/about/credits')
-    expect(credits.textContent).toBe(ownTexts['core.footer.credits'])
+    expect(host.querySelector('.mwnf-standalone-pe__name').textContent).toBe(ownTexts['baroqueart.partner.projectName'])
+    expect(host.querySelector('.mwnf-standalone-pe__about').textContent.trim()).toBe(ownTexts['baroqueart.partner.aboutLink'])
+    const links = [...host.querySelectorAll('.mwnf-standalone-pe__links a')]
+    expect(links.map((a) => [a.getAttribute('href'), a.textContent])).toEqual([
+      ['#/partners/results?type=museum', ownTexts['baroqueart.partner.museums']],
+      ['#/partners/results?type=institution', ownTexts['baroqueart.partner.others']],
+      ['#/sponsors', ownTexts['baroqueart.partner.sponsors']],
+      ['https://www.museumwnf.org/about/credits', ownTexts['core.footer.credits']],
+    ])
     app.unmount()
   }, 60000)
 
