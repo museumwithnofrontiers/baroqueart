@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { OnDisplayIn, PartnerPanel, RelatedMedia, SpecialFeatures } from '@museumwnf/viewer-layout/content'
 import { StandaloneItemSheet } from '@museumwnf/viewer-layout/standalone'
 import { useData } from '../composables/data.js'
+import ContactDetails from './ContactDetails.vue'
 import { exhibitionLinksForItem, minisiteHref } from '../composables/exhibitions.js'
 import { partnerViewOf } from '../composables/partner.js'
 import { itemSheetSpec } from '../composables/sheet.js'
@@ -95,6 +96,11 @@ const thgGalleryGroups = (record) => [{
 
 <template>
   <StandaloneItemSheet :spec="itemSheetSpec" :id="id" :back="back" :related="related">
+    <!-- A monument's Location, then its Contact Details when it has any. -->
+    <template #location="{ row, text }">
+      <span class="mwnf-sheet__inline">{{ row.value }}</span><br v-if="text?.contact" />
+      <ContactDetails v-if="text?.contact" :contact="text.contact" :name="text.name ?? ''" />
+    </template>
     <template #holder="{ row, record, language, dir, glossary }">
       <span v-html="mdInline(row.value, { glossary })"></span>
       <PartnerPanel

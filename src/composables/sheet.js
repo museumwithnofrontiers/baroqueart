@@ -28,7 +28,9 @@ const locationWithCountry = (c) =>
 const monumentFacts = [
   { key: 'name', label: 'baroqueart.sheet.nameOfMonument', value: plain('name') },
   { key: 'alsoKnownAs', label: 'baroqueart.sheet.alsoKnownAs', value: plain('alternate_name') },
-  { key: 'location', label: 'baroqueart.sheet.location', value: locationWithCountry },
+  // The Location, with the monument's Contact Details under it (ItemDetail.vue's
+  // `location` slot).
+  { key: 'location', label: 'baroqueart.sheet.location', value: locationWithCountry, render: 'custom' },
   { key: 'date', label: 'baroqueart.sheet.dateOfMonument', value: plain('dates') },
   { key: 'architects', label: 'baroqueart.sheet.architects', value: 'architects' },
   { key: 'dynasty', label: 'baroqueart.sheet.periodDynasty', value: plain('dynasty') },
