@@ -334,6 +334,13 @@
   --mwnf-standalone-bullet: url('./assets/next_arrow.png');
   --mwnf-standalone-back-arrow: url('./assets/back_arrow.png');
   --mwnf-standalone-related-bullet: url('./assets/white_next_arrow.png');
+  /* The Partners entrance (partners.php): the picture box, About's text in
+     white on navy, and six blank lines under the row. */
+  --mwnf-standalone-pe-picture: url('./assets/partner_bg.jpg');
+  --mwnf-standalone-pe-popup: #3f6289;
+  --mwnf-standalone-pe-popup-color: #fff;
+  --mwnf-standalone-pe-bottom: 118px;
+  --mwnf-standalone-phone-pe-bottom: 112px;
   --mwnf-standalone-download-icon: url('./assets/download_white.png');
   --mwnf-standalone-language-bar: #12376b;
   --mwnf-standalone-language-color: #ffffff;
