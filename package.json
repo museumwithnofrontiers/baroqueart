@@ -16,7 +16,7 @@
     "namespace": "baroqueart"
   },
   "dependencies": {
-    "@museumwnf/baroqueart-data": "^2.0.37",
+    "@museumwnf/baroqueart-data": "^2.0.38",
     "@museumwnf/viewer-core": "^2.15.0",
     "@museumwnf/viewer-i18n": "^6.5.0",
     "@museumwnf/viewer-layout": "^3.59.0",
