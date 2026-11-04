@@ -327,8 +327,6 @@
   --mwnf-standalone-pill-muted: rgb(255 255 255 / 0.59);
   --mwnf-standalone-pill-weight: 400;
   --mwnf-standalone-pill-separator: #ffffff;
-  /* Its ways back as legacy spaced them: 15px and the space between links. */
-  --mwnf-standalone-partner-back-gap: 17px;
   /* The item sheet (modules/database_item.php, css/style_inside.css): the
      arrows before its links and its way back; the language band, navy with
      the shown language on slate; the "medium" picture's 320×240 box and its
