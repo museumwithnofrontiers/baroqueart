@@ -256,6 +256,9 @@
   --mwnf-standalone-logo-height: 50px;
   --mwnf-standalone-logo-width: 120px;
   --mwnf-standalone-banner-height: 160px;
+  /* Legacy's `.banner-image` sets its picture with the `background`
+     shorthand: it sits at its top left. */
+  --mwnf-standalone-banner-position: 0 0;
   /* The inner pages' band title (.banner-text h2 span): white, 30px. */
   --mwnf-standalone-banner-title-size: 30px;
   --mwnf-standalone-banner-title-color: #ffffff;
