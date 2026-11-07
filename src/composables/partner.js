@@ -21,6 +21,9 @@ const legacyCompare = (a, b) => {
 }
 const nameOf = (partner) => tr('partners', partner.id, 'en').name ?? partner.internal_name ?? ''
 const furtherAssociated = (partner) => /^further associated /i.test(nameOf(partner))
+// Legacy's lists join each partner to its English name (an INNER JOIN on
+// `institutionnames`/`museumnames` with lang='en'): one without is not listed.
+const named = (partner) => Boolean(tr('partners', partner.id, 'en').name)
 
 /**
  * The partner lists, as legacy's pm_partner_list.php read them: per country
@@ -42,7 +45,7 @@ export function partnerListGroups(type) {
   const country = (partner) => countryLabel(partner.country_id, 'en')
   const groups = new Map()
   const members = list
-    .filter((p) => p.type === type && p.level === 'partner')
+    .filter((p) => p.type === type && p.level === 'partner' && named(p))
     .sort((a, b) => legacyCompare(country(a), country(b)) || byLabel(a, b))
   for (const partner of members) {
     const region = tr('partners', partner.id).region
@@ -55,7 +58,7 @@ export function partnerListGroups(type) {
     .map((group) => {
       const main = group.main.sort(byLabel)
       const associated = main.flatMap((parent) => {
-        const own = list.filter((p) => p.parent_id === parent.id)
+        const own = list.filter((p) => p.parent_id === parent.id && named(p))
         return [
           ...own.filter((p) => !furtherAssociated(p)).sort(byLabel).map((p) => entry(p, true)),
           ...own.filter(furtherAssociated).sort((a, b) => legacyCompare(nameOf(a), nameOf(b))).map((p) => entry(p, false)),

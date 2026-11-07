@@ -11,14 +11,19 @@ const partners = ref([
   { id: 'b', type: 'museum', level: 'partner', country_id: 'ita' },
   { id: 'c', type: 'museum', level: 'partner', country_id: 'ita' },
   { id: 'd', type: 'museum', level: 'partner', country_id: 'aut' },
+  // Legacy lists a partner by its English name: one without is not listed.
+  { id: 'e', type: 'institution', level: 'partner', country_id: 'ita' },
+  { id: 'f', type: 'institution', level: 'partner', country_id: 'svn' },
+  { id: 'g', type: 'institution', level: 'associated', country_id: 'svn', parent_id: 'f' },
 ])
 const texts = {
   a: { name: 'Alpha Museum', city: 'Rome' },
   b: { name: 'Beta Gallery', city: 'Rome', region: 'Villa Borghese' },
   c: { name: 'Gamma Museum', city: 'Bologna', region: 'Bologna' },
   d: { name: 'Delta Museum', city: 'Vienna' },
+  f: { name: 'Foxtrot Institute', city: 'Ljubljana' },
 }
-const countries = { ita: 'Italy', aut: 'Austria' }
+const countries = { ita: 'Italy', aut: 'Austria', svn: 'Slovenia' }
 
 vi.mock('../src/composables/data.js', () => ({
   useData: () => ({
@@ -42,5 +47,12 @@ describe('partner list regions', () => {
       ['Beta Gallery, Rome'],
       ['Gamma Museum, Bologna'],
     ])
+  })
+
+  it('leaves out a partner with no English name, as legacy joins on it', () => {
+    const groups = partnerListGroups('institution')
+    expect(groups.map((group) => group.label)).toEqual(['Slovenia'])
+    expect(groups[0].main.map((p) => p.label)).toEqual(['Foxtrot Institute, Ljubljana'])
+    expect(groups[0].associated).toEqual([])
   })
 })
