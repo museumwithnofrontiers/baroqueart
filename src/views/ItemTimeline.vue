@@ -40,12 +40,6 @@ const shown = computed(() => {
   }
 })
 
-const labels = computed(() => ({
-  heading: t('baroqueart.tl.title'),
-  close: t('record.glossary.close'),
-  country: t('baroqueart.hcr.country'),
-  range: t('baroqueart.hcr.range'),
-}))
 const heading = computed(() =>
   `${search.value.country ? countryLabel(search.value.country) : ''} - ${yearLabel(t, `${search.value.start} - ${search.value.end}`)}`,
 )
@@ -61,7 +55,7 @@ function change({ key, value }) {
 
 <template>
   <StandaloneHistoricalCrossRef
-    :labels="labels"
+    texts="baroqueart"
     :start="search.start"
     :end="search.end"
     :countries="resultCountries()"
