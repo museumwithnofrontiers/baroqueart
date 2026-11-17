@@ -181,8 +181,11 @@ describe('website smoke test', () => {
     await vi.waitFor(() => expect(host.querySelector('.mwnf-standalone-tle')).not.toBeNull(), { timeout: 20000 })
     const [country, start, end] = host.querySelectorAll('.mwnf-standalone-tle select')
     const options = (select) => [...select.options].map((o) => o.textContent)
-    expect(options(country).slice(0, 2)).toEqual(['Select a Country', 'All Countries'])
-    expect(options(country)).toContain('Italy')
+    // Legacy's countries: those with events and Baroque Art objects
+    // (hcr_home.php, measured on its page on 2026-11-17).
+    expect(options(country)).toEqual([
+      'Select a Country', 'All Countries', 'Croatia', 'Czech Republic', 'Germany', 'Hungary', 'Italy', 'Portugal',
+    ])
     expect(options(start)).toEqual(['Start Date', ...[1500, 1525, 1550, 1575, 1600, 1625, 1650, 1675, 1700, 1725, 1750, 1775, 1800].map((y) => `${y} A.D.`)])
     expect(options(end)[1]).toBe('1500 A.D.')
     country.value = 'ita'

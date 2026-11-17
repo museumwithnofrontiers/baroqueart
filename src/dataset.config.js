@@ -202,7 +202,10 @@ export default {
       path: '/timeline',
       name: 'timeline',
       component: () => import('./views/TimelineEntrance.vue'),
-      meta: meta('timeline', ['timelines', 'timeline_events', 'countries']),
+      // 'items' feeds the country list: legacy's lists the countries with
+      // events and Baroque Art objects (composables/timeline.js). Without it,
+      // a visit that starts here would list no country at all.
+      meta: meta('timeline', ['timelines', 'timeline_events', 'countries', 'items']),
     },
     {
       path: '/timeline/results',
