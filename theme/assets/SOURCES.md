@@ -44,6 +44,14 @@ partners and timeline boxes, the Virtual Exhibitions area and the Sponsors page.
 | `exhibitions/logo_pt.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_pt.gif | `456ffca8d409048def8730811a03d76c52e49ac2f9c7a9528dd5489c6ddf5723` | Portuguese |
 | `exhibitions/logo_es.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_es.gif | `da4f8d434cd3a0cb3649f0ecc53d7824e85dced87628e3d5da6ab416e126e5bd` | Spanish |
 | `exhibitions/logo_ar.gif` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/logo_ar.gif | `dffc44f00d5488d21dafac73e4b41887b420ea9a8822a61d816142b50f0f33cd` | Arabic |
+| `exhibitions/item_43.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_43.jpg | `43da725461a131fece133e6725d3bcae61d48cd20e00252bd69dbb0c494cd6f2` | an exhibition's picture, shown while the pointer is on its name |
+| `exhibitions/item_44.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_44.jpg | `9505e51cdc27c85776c9dfbe695410dea4c3451770fe6608df437ee51dc8149f` | 〃 |
+| `exhibitions/item_45.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_45.jpg | `6ce9c74e18f20e06d98d647be983adc61e417f5a41801881d8ea7219349fed22` | 〃 |
+| `exhibitions/item_46.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_46.jpg | `d0cee3fae89cfbf57100939e8717d584aa3f52b84f1735d27f644ca6a2ede925` | 〃 |
+| `exhibitions/item_47.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_47.jpg | `e50824b2054009d3fe1cd3abec66081fbc982aa9158c34cf35c970f0fc275c78` | 〃 |
+| `exhibitions/item_48.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_48.jpg | `7feb3d65a269eabd3fc9d17facfc83d2700b3fde872873a843e95954ed8d3a08` | 〃 |
+| `exhibitions/item_50.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_50.jpg | `196698a1b2e58169b3aacdc56c3feca587933729d76db3b6822cca4f6c5b975a` | 〃 |
+| `exhibitions/item_51.jpg` | https://baroqueart.museumwnf.org/exhibitions/BAR/images/item_51.jpg | `4c76835133cdc6681f8b38829633a85d9d04df77b73b2674fa01bee6922ce6e6` | 〃 |
 | `sponsors/34.jpg` | https://images.museumwnf.org/full/sponsors/34.jpg | `e46908a55189b937247d9b3bd13524ced0482ea9c408216abb45b0eeb1e82b46` | the Sponsors page (`atrium_sponsor_detail.php?id=BAR&flg=local`), once its rows are extracted |
 | `sponsors/35.jpg` | https://images.museumwnf.org/full/sponsors/35.jpg | `6eb6099f58bf7259bd3c55adbde5e221273c72e5b520d8ec4da6932dd4b132d1` | 〃 |
 | `sponsors/36.jpg` | https://images.museumwnf.org/full/sponsors/36.jpg | `b25cc924ba96c18bc63ee0f1e52880b6fe44d6d326f4d036e6fad7fc2c39b337` | 〃 |
