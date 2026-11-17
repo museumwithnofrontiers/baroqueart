@@ -267,10 +267,12 @@ export default {
       meta: meta('credits'),
     },
     {
+      // The Virtual Exhibitions' landing page (exhibitions/BAR/index.php) had
+      // a frame of its own, which the page draws: the shell leaves it bare.
       path: '/exhibitions',
       name: 'exhibitions',
       component: () => import('./views/ExhibitionsEntrance.vue'),
-      meta: meta('exhibitions', ['collections']),
+      meta: { ...meta('exhibitions', ['collections']), bare: true },
     },
     // Each exhibition is a website of its own now (src/minisites.json): the
     // addresses this site gave its pages lead there.
